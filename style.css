@@ -223,7 +223,6 @@ canvas {
 /* =======================================================
    LIQUID METAL MAP
 ======================================================= */
-
 #mapContainer {
   width: 85%;
   margin: 50px auto;
@@ -258,7 +257,7 @@ canvas {
   filter: drop-shadow(0 0 20px #fff);
 }
 
-/* Info Panel */
+/* INFO PANEL */
 .info-box {
   position: absolute;
   right: 20px;
@@ -288,19 +287,22 @@ canvas {
   display: block;
   background: #03060e;
 }
-/* FIX: liquid background should never block clicks */
+
+/* =======================================================
+   FIXED: liquid-bg & ripple BLOCKING CLICKS
+======================================================= */
 .liquid-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -2;           /* push behind everything */
-  pointer-events: none;  /* DO NOT block clicks */
+  z-index: -2;           /* Push behind everything */
+  pointer-events: none;  /* Do not block clicks */
 }
 
-/* FIX: mouse ripple should never block UI */
 .ripple {
-  pointer-events: none;  /* critical fix */
-  z-index: -1;
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;           /* Always behind UI */
 }
