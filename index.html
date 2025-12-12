@@ -10,7 +10,8 @@
 
 <!-- Global CSS -->
 <link rel="stylesheet" href="style.css">
-     
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Global JS -->
@@ -19,12 +20,8 @@
 </head>
 <body>
 
-<!-- 🌊 GLOBAL LIQUID BACKGROUND + MOUSE RIPPLE -->
-<div class="liquid-bg"></div>
-<div class="ripple"></div>
-
 <!-- ==========================================================
-     OPENING SCREEN
+     OPENING SCREEN (MUST BE FIRST)
 =========================================================== -->
 <div class="opening-screen">
     <img src="assets/bg_main.jpg" class="opening-bg" />
@@ -63,6 +60,7 @@
 
     <div class="home-panel">
         <h2>The Cyber Age of Faith</h2>
+
         <p>
             In the year 2150, belief has transformed beyond ancient traditions.
             Humanity fuses biological evolution, artificial intelligence,  
@@ -70,7 +68,7 @@
         </p>
 
         <p>
-            This world is shaped by dynamic techno-faiths—ever-shifting,  
+            This world is shaped by dynamic techno-faiths—ever-shifting,
             merging, fracturing, evolving. What you see here represents  
             the next frontier of belief in a hyper-connected civilization.
         </p>
@@ -89,6 +87,12 @@
     </div>
 
 </section>
+
+<!-- ==========================================================
+     BACKGROUND MUST BE LAST (FIXES CLICK ISSUE)
+=========================================================== -->
+<div class="liquid-bg"></div>
+<div class="ripple"></div>
 
 </body>
 </html>
