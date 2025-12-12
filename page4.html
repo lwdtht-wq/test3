@@ -2,63 +2,56 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Liquid Metal Simulation · Abstract Consciousness</title>
+<title>Liquid Metal Simulation · Cyber Faith</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
-<script defer src="liquidMetal.js"></script>
+<script defer src="main.js"></script>
 
 </head>
 <body>
 
-<!-- ==========================================================
-     PAGE OPENING (USING open4.jpg)
-=========================================================== -->
+<!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
-    <img src="assets/open4.jpg" />
-    <div class="page-title-overlay glitch" data-text="LIQUID METAL SIMULATION">
-        LIQUID METAL SIMULATION
+    <img src="assets/open4.jpg">
+    <div class="page-title-overlay glitch" data-text="ABSTRACT VISUALIZATION OF THE WORLD">
+        ABSTRACT VISUALIZATION OF THE WORLD
     </div>
 </div>
 
-<!-- ==========================================================
-     LEFT NAVIGATION
-=========================================================== -->
-<!-- COLLAPSIBLE NAVIGATION -->
-<div id="navToggle">≡</div>
-
-<nav id="sideNav" class="closed">
-    <a href="index.html" data-label="Home">🜂</a>
-    <a href="page1.html" data-label="Trends">🜁</a>
-    <a href="page2.html" data-label="New Faiths">⟟</a>
-    <a href="page3.html" data-label="World Map">🜄</a>
-    <a href="page4.html" data-label="Liquid Metal">⟁</a>
-    <a href="page5.html" data-label="Story">⛛</a>
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- ==========================================================
-     TITLE PANEL (YOUR CUSTOM TEXT)
-=========================================================== -->
+<!-- ======================= PANEL TEXT ======================= -->
 <section class="page-panel">
-    <h2>Abstract Visualization of the World</h2>
-
+    <h2>Liquid Metal Consciousness Field</h2>
     <p>
-        This interactive liquid-metal simulation represents an abstract  
-        spiritual landscape—where thoughts, memories, and belief systems  
-        drift, merge, and connect like metallic particles in motion.
+        This simulation visualizes the fragmented collective consciousness of the cybernetic world.
+        The particles represent belief clusters, drifting, merging, and dispersing according to unseen
+        forces—just like future religions reshaped by technology, memory, and quantum behavior.
     </p>
-
     <p>
-        Move your cursor and observe how the world bends and reshapes itself  
-        through invisible forces. In this model, every particle symbolizes  
-        a fragment of collective consciousness in the cyber-faith era.
+        Move your cursor across the canvas to attract and disturb the particles.
+        This abstract model symbolizes how individual actions can ripple through a global belief system.
     </p>
 </section>
 
-<!-- ==========================================================
-     LIQUID METAL PARTICLE SIMULATION CANVAS
-=========================================================== -->
-<canvas id="liquidMetalCanvas"></canvas>
+<!-- ======================= LIQUID METAL CANVAS ======================= -->
+<div style="width:100%;height:650px;position:relative;">
+    <canvas id="liquidCanvas"></canvas>
+    <div class="liquid-label">Liquid Metal Particle Simulation</div>
+</div>
+
+<!-- ======================= LIQUID JS ======================= -->
+<script src="liquidMetal.js"></script>
 
 </body>
 </html>
+
