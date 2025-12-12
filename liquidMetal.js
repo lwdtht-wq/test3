@@ -1,65 +1,155 @@
-const canvas = document.getElementById("liquidMetalCanvas");
-if (canvas) {
+/* ==========================================================
+   Liquid Metal Particle Simulation
+   — Fully Interactive (Attract + Repel + Flow)
+========================================================== */
 
+const canvas = document.getElementById("liquidCanvas");
 const ctx = canvas.getContext("2d");
-let w, h;
 
-function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
 
-const nodes = [];
-const count = 120;
+let particles = [];
+const particleCount = 220;        // Number of liquid particles
+const interactionRadius = 140;    // Mouse attraction/repulsion distance
+const forceStrength = 0.12;       // How strongly particles react
 
-for (let i = 0; i < count; i++) {
-    nodes.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2
-    });
-}
+let mouse = {
+    x: null,
+    y: null,
+    down: false,
+    lastX: null,
+    lastY: null,
+    speed: 0
+};
 
-function animate() {
-    ctx.clearRect(0,0,w,h);
+/* ==========================================================
+   TRACK MOUSE SPEED (to determine attraction / repulsion)
+========================================================== */
+window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
 
-    for (let n of nodes) {
-        n.x += n.vx;
-        n.y += n.vy;
+    if (mouse.lastX !== null) {
+        const dx = e.clientX - mouse.lastX;
+        const dy = e.clientY - mouse.lastY;
+        mouse.speed = Math.sqrt(dx * dx + dy * dy);
+    }
 
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
+    mouse.lastX = e.clientX;
+    mouse.lastY = e.clientY;
+});
+
+window.addEventListener("mousedown", () => mouse.down = true);
+window.addEventListener("mouseup", () => mouse.down = false);
+
+/* ==========================================================
+   CREATE PARTICLES
+========================================================== */
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+
+        this.baseX = this.x;
+        this.baseY = this.y;
+
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+
+        this.size = 6 + Math.random() * 4;
+    }
+
+    draw() {
+        const gradient = ctx.createRadialGradient(
+            this.x, this.y, 0,
+            this.x, this.y, this.size * 2.3
+        );
+        gradient.addColorStop(0, "rgba(180,220,255,0.85)");
+        gradient.addColorStop(1, "rgba(80,150,255,0.05)");
 
         ctx.beginPath();
-        ctx.fillStyle = "#4af1ff55";
-        ctx.shadowColor = "#4af1ff";
-        ctx.shadowBlur = 8;
-        ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    for (let i = 0; i < count; i++) {
-        for (let j = i+1; j < count; j++) {
-            const a = nodes[i];
-            const b = nodes[j];
-            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
 
-            if (dist < 120) {
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(74, 241, 255, ${(120 - dist) / 120})`;
-                ctx.lineWidth = 1.5;
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
+        // Soft boundary bounce
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+        // Mouse Interaction
+        if (mouse.x && mouse.y) {
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < interactionRadius) {
+                let force = (interactionRadius - dist) / interactionRadius;
+
+                // Repel when mouse moves quickly
+                if (mouse.speed > 12) force *= 2.5;
+
+                // Pull toward mouse when mouse is slow
+                const directionX = dx / dist;
+                const directionY = dy / dist;
+
+                if (mouse.speed > 10) {
+                    // Repulsion
+                    this.x += directionX * force * 12;
+                    this.y += directionY * force * 12;
+                } else {
+                    // Attraction
+                    this.x -= directionX * force * 6;
+                    this.y -= directionY * force * 6;
+                }
             }
         }
     }
+}
+
+/* ==========================================================
+   INIT PARTICLES
+========================================================== */
+function initParticles() {
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+}
+
+initParticles();
+
+/* ==========================================================
+   ANIMATION LOOP
+========================================================== */
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Soft glow background
+    ctx.fillStyle = "rgba(5, 10, 20, 0.28)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
 
     requestAnimationFrame(animate);
 }
+
 animate();
 
-}
+/* ==========================================================
+   HANDLE CANVAS RESIZE
+========================================================== */
+window.addEventListener("resize", () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initParticles();
+});
+
