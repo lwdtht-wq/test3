@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Liquid Metal World Map · Cyber Faith</title>
+<title>Liquid Metal Faith Map · Abstract World</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -11,15 +11,19 @@
 </head>
 <body>
 
-<!-- ======================= PAGE OPENING ======================= -->
+<!-- ==========================================================
+     PAGE OPENING
+=========================================================== -->
 <div class="page-opening">
-    <img src="assets/open3.jpg">
+    <img src="assets/open3.jpg" />
     <div class="page-title-overlay glitch" data-text="LIQUID METAL WORLD MAP">
         LIQUID METAL WORLD MAP
     </div>
 </div>
 
-<!-- ======================= FLOATING NAV ======================= -->
+<!-- ==========================================================
+     LEFT NAVIGATION (FULL MATCH WITH HOMEPAGE)
+=========================================================== -->
 <nav id="sideNav">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
@@ -29,65 +33,68 @@
     <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- ======================= DESCRIPTION PANEL ======================= -->
+<!-- ==========================================================
+     CONTENT PANEL
+=========================================================== -->
 <section class="page-panel">
-<h2>Abstract Liquid-Metal Map of Global Faith (2150)</h2>
+    <h2>Abstract Liquid-Metal Map of Global Faith Influence (2150)</h2>
 
-<p>
-This map represents an abstract, liquid-metal interpretation of the world, divided into  
-five major ideological zones. Each region flows organically, mirroring how techno-faith  
-systems evolve, merge, fracture and reshape the spiritual landscape of the future.
-</p>
+    <p>
+        This abstract map illustrates ideological flows reshaping Earth in a future  
+        where belief systems merge with technology, quantum cognition, and  
+        liquid-metal consciousness structures.
+    </p>
 
-<p>
-Hover to reveal liquid-metal glow.  
-Click any region to view its techno-spiritual composition.
-</p>
+    <p>
+        Hover to reveal metallic glow.  
+        Click a region to view its techno-faith distribution.
+    </p>
 </section>
 
-<!-- ======================= MAP CONTAINER ======================= -->
+<!-- ==========================================================
+     MAP + INFO PANEL
+=========================================================== -->
 <div id="mapContainer">
 
-    <!-- Info Box -->
+    <!-- Dynamic info panel -->
     <div id="mapInfo" class="info-box">
         <h3 id="infoTitle">Click a Region</h3>
-        <div id="infoContent">Hover above the glowing territories.</div>
+        <div id="infoContent">Hover above a metallic territory.</div>
     </div>
 
-<!-- ======================= NEW LIQUID METAL MAP SVG ======================= -->
+<!-- ==========================================================
+     LIQUID METAL ABSTRACT WORLD MAP (SVG)
+=========================================================== -->
 <svg id="metalMap" width="100%" height="100%" viewBox="0 0 900 600">
 
-    <!-- NORTH CROWN -->
+    <!-- ================= NORTH CROWN ================= -->
     <path id="north" class="region metal"
         d="M200,80 Q350,20 520,60 Q680,120 720,200 Q690,240 600,260 Q500,280 400,260 Q280,240 210,200 Q150,150 200,80 Z"
-        fill="url(#northGrad)"
-        onclick="showRegionInfo('north')"/>
+        fill="url(#northGrad)" onclick="showRegionInfo('north')"/>
 
-    <!-- EAST SHARD -->
+    <!-- ================= EAST SHARD ================= -->
     <path id="east" class="region metal"
         d="M720,200 Q780,260 820,360 Q780,420 720,460 Q650,500 580,460 Q600,380 580,320 Q640,280 720,200 Z"
-        fill="url(#eastGrad)"
-        onclick="showRegionInfo('east')"/>
+        fill="url(#eastGrad)" onclick="showRegionInfo('east')"/>
 
-    <!-- SOUTH RIFT -->
+    <!-- ================= SOUTH RIFT ================= -->
     <path id="south" class="region metal"
         d="M350,350 Q420,300 520,320 Q600,360 580,460 Q520,540 430,560 Q340,520 300,440 Q280,380 350,350 Z"
-        fill="url(#southGrad)"
-        onclick="showRegionInfo('south')"/>
+        fill="url(#southGrad)" onclick="showRegionInfo('south')"/>
 
-    <!-- WEST FRAGMENT -->
+    <!-- ================= WEST FRAGMENT ================= -->
     <path id="west" class="region metal"
         d="M200,80 Q150,150 160,240 Q180,310 140,360 Q80,420 120,460 Q180,520 260,500 Q280,440 300,380 Q260,300 260,240 Q240,160 200,80 Z"
-        fill="url(#westGrad)"
-        onclick="showRegionInfo('west')"/>
+        fill="url(#westGrad)" onclick="showRegionInfo('west')"/>
 
-    <!-- CENTRAL CORE -->
+    <!-- ================= CENTRAL CORE ================= -->
     <path id="core" class="region metal"
         d="M350,200 Q420,160 500,180 Q580,220 560,280 Q530,330 460,350 Q380,330 340,280 Q320,240 350,200 Z"
-        fill="url(#coreGrad)"
-        onclick="showRegionInfo('core')"/>
+        fill="url(#coreGrad)" onclick="showRegionInfo('core')"/>
 
-    <!-- ======================= METAL GRADIENT DEFINITIONS ======================= -->
+    <!-- ==========================================================
+         GRADIENTS (GLOWING LIQUID METAL COLORS)
+    ============================================================ -->
     <defs>
         <!-- NORTH = Silver-Blue -->
         <linearGradient id="northGrad" x1="0" y1="0" x2="1" y2="1">
@@ -122,13 +129,6 @@ Click any region to view its techno-spiritual composition.
     </defs>
 
 </svg>
-
-</div>
-
-</body>
-</html>
-
-
 
 </div>
 
