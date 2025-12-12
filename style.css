@@ -1,0 +1,308 @@
+/* ==========================================================
+   GLOBAL BASE STYLE · 全站基础样式
+========================================================== */
+body {
+  margin: 0;
+  font-family: "Orbitron", "Montserrat", "微软雅黑", sans-serif;
+  background: #05070d;
+  color: #d0e7ff;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+/* 居中标题 */
+.center-title {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 42px;
+}
+
+/* 隐藏元素（用于进入动画） */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   开场动画 · Opening Screen
+========================================================== */
+.opening-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.opening-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+  animation: zoomIn 8s ease-out forwards;
+}
+
+@keyframes zoomIn {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+.opening-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.1), rgba(0,0,0,0.7));
+}
+
+.opening-title {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 28%;
+  font-size: 64px;
+  color: #a9d6ff;
+  letter-spacing: 6px;
+}
+
+/* 进入按钮 */
+.enter-btn {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 40px;
+  border: 1px solid #4af1ff;
+  border-radius: 8px;
+  font-size: 22px;
+  color: #d0e7ff;
+  cursor: pointer;
+  transition: 0.25s;
+  backdrop-filter: blur(3px);
+}
+
+.enter-btn:hover {
+  background: rgba(74, 241, 255, 0.2);
+  box-shadow: 0 0 14px #4af1ff;
+}
+
+/* ==========================================================
+   GLITCH TITLE · 扭曲噪点标题效果
+========================================================== */
+.glitch {
+  position: relative;
+  color: #8cc7ff;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px #4af1ff;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.glitch::before {
+  color: #ff3df2;
+  clip-path: inset(0 0 50% 0);
+  animation: glitch1 2s infinite;
+}
+
+.glitch::after {
+  color: #4af1ff;
+  clip-path: inset(50% 0 0 0);
+  animation: glitch2 2.2s infinite;
+}
+
+@keyframes glitch1 {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch2 {
+  0% { transform: translate(0); }
+  20% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(-2px, -1px); }
+  100% { transform: translate(0); }
+}
+
+/* ==========================================================
+   NAVIGATION · 导航栏
+========================================================== */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(10,12,18,0.5);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #28344d;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  z-index: 50;
+  transition: 0.6s;
+}
+
+.nav-item {
+  color: #8cc7ff;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.nav-item:hover {
+  text-shadow: 0 0 8px #4af1ff;
+}
+
+/* ==========================================================
+   首页主面板
+========================================================== */
+.home-section {
+  margin-top: 100px;
+  padding: 40px;
+}
+
+.home-panel {
+  width: 70%;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(20, 30, 45, 0.45);
+  border: 1px solid #3c4b69;
+  border-radius: 12px;
+  box-shadow: 0 0 18px #1c2b43 inset;
+  line-height: 1.8;
+}
+
+/* ==========================================================
+   页面通用内容面板
+========================================================== */
+.page-panel {
+  width: 78%;
+  margin: 120px auto;
+  padding: 30px;
+  background: rgba(20, 30, 45, 0.55);
+  border: 1px solid #3c4b69;
+  border-radius: 12px;
+  box-shadow: 0 0 18px #1c2b43 inset;
+  line-height: 1.8;
+}
+
+/* ==========================================================
+   页面开场背景 · 用于各页面头图
+========================================================== */
+.page-opening {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  overflow: hidden;
+}
+
+.page-opening img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: pageZoom 6s ease-out forwards;
+  filter: brightness(0.7);
+}
+
+@keyframes pageZoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+/* 标题覆盖层 */
+.page-title-overlay {
+  position: absolute;
+  width: 100%;
+  top: 40%;
+  text-align: center;
+  color: #a9d6ff;
+  font-size: 48px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 12px #4af1ff;
+}
+
+/* ==========================================================
+   地图区域（PAGE 3）
+========================================================== */
+#mapContainer {
+  width: 80%;
+  margin: 80px auto;
+  height: 550px;
+  background: rgba(15, 20, 30, 0.7);
+  border: 1px solid #3c4b69;
+  border-radius: 12px;
+  position: relative;
+}
+
+.region {
+  fill: rgba(90,110,150,0.4);
+  stroke: #4af1ff88;
+  stroke-width: 1.2;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.region:hover {
+  fill: rgba(74,241,255,0.4);
+  stroke: #4af1ff;
+  stroke-width: 2;
+}
+
+.info-box {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(10,20,35,0.8);
+  border: 1px solid #4af1ff88;
+  padding: 20px;
+  border-radius: 10px;
+  display: none;
+  width: 260px;
+  color: #d0e7ff;
+  box-shadow: 0 0 20px #1c2b43;
+}
+
+/* ==========================================================
+   PAGE 4 - 液态金属模拟 canvas
+========================================================== */
+
+#liquidCanvas {
+  width: 100%;
+  height: 600px;
+  background: #06090f;
+  border-top: 1px solid #28344d;
+}
+
+/* ==========================================================
+   PAGE 5 - 故事展示
+========================================================== */
+.story-text {
+  width: 70%;
+  margin: 60px auto;
+  font-size: 20px;
+  line-height: 1.9;
+  color: #d0e7ff;
+  animation: fadeIn 2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
