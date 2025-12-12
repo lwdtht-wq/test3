@@ -2,25 +2,29 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>New Techno-Faiths · Cyber Religion Evolution</title>
+<title>New Techno-Religions · Cyber Faith Evolution</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script defer src="main.js"></script>
 
 </head>
 <body>
 
-<!-- ======================= PAGE OPENING ======================= -->
+<!-- ==========================================================
+     PAGE OPENING ANIMATION
+=========================================================== -->
 <div class="page-opening">
-    <img src="assets/open2.jpg">
-    <div class="page-title-overlay glitch" data-text="NEW TECHNO-FAITH SYSTEMS">
-        NEW TECHNO-FAITH SYSTEMS
+    <img src="assets/open2.jpg" />
+    <div class="page-title-overlay glitch" data-text="NEW TECHNO-RELIGIONS">
+        NEW TECHNO-RELIGIONS
     </div>
 </div>
 
-<!-- ======================= FLOATING NAV ======================= -->
+<!-- ==========================================================
+     FLOATING LEFT NAV
+=========================================================== -->
 <nav id="sideNav">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
@@ -30,110 +34,29 @@
     <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- ======================= CONTENT ======================= -->
+<!-- ==========================================================
+     CONTENT PANEL
+=========================================================== -->
 <section class="page-panel">
 
-<h2>Rise of Artificial & Techno-Spiritual Belief Systems</h2>
+    <h2>Emerging Religions in a Hyper-Evolved Technological Era</h2>
 
-<p>
-In the cybernetic era, traditional religions split into new technological branches.
-These “Techno-Faiths” do not worship gods in the ancient sense; instead, they seek  
-truth within data streams, machine consciousness, and quantum-predictive prophecy.
-</p>
+    <p>
+        By the mid-22nd century, humanity witnesses the rise of four major
+        techno-spiritual movements. These faiths evolve from advancements in
+        neural engineering, AI cognition, quantum consciousness, and metallic
+        biomaterial research.
+    </p>
 
-<p>
-Below are four major future religions that emerged by the year 2150.
-</p>
+    <p>
+        The chart below illustrates their projected adoption rates worldwide.
+        Click labels to toggle visibility.  
+        Click the chart title to toggle sorting mode.
+    </p>
 
-<h3 style="color:#4af1ff;margin-top:40px;">Major Techno-Faiths</h3>
-
-<ul>
-<li><strong>Cyber Oracle Network</strong> – A belief system that predicts fate using AI-driven probability engines.</li>
-<li><strong>Quantum Throne Sect</strong> – Worships the multiverse as the “true divine structure.”</li>
-<li><strong>Psionic Union</strong> – A spiritual group achieving collective consciousness through neural implants.</li>
-<li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
-</ul>
-
-<h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
-<p>
-This visualization shows estimated follower numbers (in millions) for each major future faith.
-Hover the bars to reveal details.
-</p>
-
-<div id="barChart" style="width:100%;height:440px;margin-top:40px;"></div>
+    <canvas id="newReligionChart" height="160"></canvas>
 
 </section>
-
-<!-- ======================= D3 BAR CHART ======================= -->
-<script>
-
-/* Data (millions of followers) */
-const barData = [
-  { faith: "Cyber Oracle", value: 680 },
-  { faith: "Quantum Throne", value: 540 },
-  { faith: "Psionic Union", value: 420 },
-  { faith: "Echo Memory Cult", value: 310 }
-];
-
-const bw = 900;
-const bh = 420;
-const margin = { top: 40, right: 60, bottom: 60, left: 120 };
-
-const svg2 = d3.select("#barChart")
-  .append("svg")
-  .attr("width", bw)
-  .attr("height", bh);
-
-/* Scales */
-const y2 = d3.scaleBand()
-  .domain(barData.map(d => d.faith))
-  .range([margin.top, bh - margin.bottom])
-  .padding(0.3);
-
-const x2 = d3.scaleLinear()
-  .domain([0, 700])
-  .range([margin.left, bw - margin.right]);
-
-/* Axes */
-svg2.append("g")
-  .attr("transform", `translate(0, ${bh - margin.bottom})`)
-  .call(d3.axisBottom(x2).ticks(7))
-  .attr("color", "#7bc4ff");
-
-svg2.append("g")
-  .attr("transform", `translate(${margin.left}, 0)`)
-  .call(d3.axisLeft(y2))
-  .attr("color", "#7bc4ff");
-
-/* Bars */
-svg2.selectAll(".bar")
-  .data(barData)
-  .enter()
-  .append("rect")
-  .attr("class", "bar")
-  .attr("x", margin.left)
-  .attr("y", d => y2(d.faith))
-  .attr("width", d => x2(d.value) - margin.left)
-  .attr("height", y2.bandwidth())
-  .attr("fill", "#4af1ff99")
-  .attr("stroke", "#4af1ff")
-  .attr("stroke-width", 1.5)
-  .style("cursor", "pointer")
-  .on("mousemove", (event, d) => {
-      const tooltip = document.querySelector(".chart-tooltip");
-      tooltip.style.display = "block";
-      tooltip.style.left = event.pageX + "px";
-      tooltip.style.top = event.pageY - 20 + "px";
-      tooltip.innerHTML = `
-        <strong>${d.faith}</strong><br>
-        Followers: ${d.value} million
-      `;
-  })
-  .on("mouseleave", () => {
-      document.querySelector(".chart-tooltip").style.display = "none";
-  });
-
-</script>
 
 </body>
 </html>
