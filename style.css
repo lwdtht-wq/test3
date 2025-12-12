@@ -385,4 +385,37 @@ canvas {
   background: rgba(50, 100, 140, 0.5);
   box-shadow: 0 0 10px #4af1ff;
 }
+/* ============================================
+   CRITICAL FIX — Ensure navbar is clickable
+============================================= */
+
+/* Opening screen should be highest only at the start */
+.opening-screen {
+  z-index: 500 !important;
+}
+
+/* Navigation toggle button */
+#navToggle {
+  z-index: 400 !important;
+  pointer-events: auto !important;
+}
+
+/* Navigation menu */
+#sideNav {
+  z-index: 350 !important;
+  pointer-events: auto !important;
+}
+
+/* Liquid background MUST NOT block clicks */
+.liquid-bg,
+.ripple {
+  z-index: -10 !important;
+  pointer-events: none !important;
+}
+
+/* Content should be above background, below nav */
+#homeContent, section {
+  position: relative;
+  z-index: 100 !important;
+}
 
