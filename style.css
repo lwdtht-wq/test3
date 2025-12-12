@@ -1,78 +1,291 @@
-/* ==========================================================
-   LIQUID METAL ABSTRACT MAP
-========================================================== */
+/* =======================================================
+   GLOBAL SETTINGS
+======================================================= */
+body {
+  margin: 0;
+  font-family: "Orbitron", sans-serif;
+  background: #05070d;
+  color: #d6e7ff;
+  overflow-x: hidden;
+}
 
-#regionInfo {}
-
-#mapContainer {
+section {
+  padding-top: 80px;
   width: 85%;
-  margin: 80px auto;
-  height: 600px;
-  position: relative;
-  background: rgba(10, 20, 35, 0.4);
-  border: 1px solid #4af1ff55;
-  border-radius: 14px;
-  backdrop-filter: blur(6px);
+  margin: auto;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =======================================================
+   OPENING SCREEN (START ANIMATION)
+======================================================= */
+.opening-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #02030a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 20;
   overflow: hidden;
 }
 
-/* 每一个区域都使用液态金属渲染逻辑 */
+.opening-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.opening-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #4af1ff44, transparent);
+}
+
+.opening-title {
+  font-size: 48px;
+  color: #a9ddff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.enter-btn {
+  padding: 16px 32px;
+  border: 1px solid #4af1ff;
+  border-radius: 10px;
+  color: #a9ddff;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-size: 18px;
+}
+
+.enter-btn:hover {
+  background: rgba(74, 241, 255, 0.15);
+  box-shadow: 0 0 14px #4af1ff;
+}
+
+/* =======================================================
+   GLITCH EFFECT
+======================================================= */
+.glitch {
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: glitchAnim 2s infinite;
+}
+
+.glitch::before {
+  color: #ff61f9;
+  clip-path: inset(0 0 50% 0);
+}
+
+.glitch::after {
+  color: #4af1ff;
+  clip-path: inset(50% 0 0 0);
+}
+
+@keyframes glitchAnim {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 1px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, 2px); }
+  80% { transform: translate(2px, -1px); }
+ 100% { transform: translate(0); }
+}
+
+/* =======================================================
+   LEFT NAVIGATION
+======================================================= */
+#sideNav {
+  position: fixed;
+  top: 50%;
+  left: 25px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 50;
+}
+
+.nav-icon {
+  font-size: 26px;
+  padding: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(15, 20, 35, 0.6);
+  backdrop-filter: blur(6px);
+  border: 1px solid #4af1ff55;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #8fcfff;
+  transition: 0.25s ease;
+  position: relative;
+}
+
+.nav-icon:hover {
+  color: #c8e6ff;
+  background: rgba(40, 60, 90, 0.7);
+  box-shadow: 0 0 12px #4af1ff;
+}
+
+/* Tooltip */
+.nav-icon::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 60px;
+  padding: 6px 12px;
+  color: #c8eaff;
+  background: rgba(10, 20, 35, 0.65);
+  backdrop-filter: blur(6px);
+  border: 1px solid #4af1ff55;
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+.nav-icon:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =======================================================
+   PAGE OPENING ANIMATION
+======================================================= */
+.page-opening {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  border-bottom: 1px solid #4af1ff55;
+}
+
+.page-opening img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.page-title-overlay {
+  position: absolute;
+  bottom: 25px;
+  left: 40px;
+  font-size: 42px;
+  color: #a9ddff;
+  text-shadow: 0 0 10px #4af1ff;
+}
+
+/* =======================================================
+   PANEL
+======================================================= */
+.page-panel, .home-panel {
+  width: 85%;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(10, 18, 30, 0.55);
+  border: 1px solid #4af1ff55;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px #132031 inset;
+}
+
+/* =======================================================
+   CANVAS CHARTS
+======================================================= */
+canvas {
+  width: 100% !important;
+}
+
+/* =======================================================
+   LIQUID METAL MAP
+======================================================= */
+
+#mapContainer {
+  width: 85%;
+  margin: 50px auto;
+  height: 600px;
+  position: relative;
+  background: rgba(10,20,35,0.45);
+  border: 1px solid #4af1ff55;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
 .region.metal {
-  stroke: rgba(255,255,255,0.6);
+  stroke: rgba(255,255,255,0.55);
   stroke-width: 2.2;
   cursor: pointer;
-  transition: 0.3s ease-out;
+  transition: 0.25s ease-out;
   filter: drop-shadow(0 0 6px rgba(120,180,255,0.4));
 }
 
-/* Hover 时呈现金属液态流光边缘 */
 .region.metal:hover {
-  stroke: #ffffff;
-  stroke-width: 3;
-  filter: drop-shadow(0 0 14px rgba(150,210,255,0.9));
+  stroke: #fff;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 14px rgba(150,210,255,1));
   transform: scale(1.02);
 }
 
-/* Click 时区域轻微放大 + 增强发光 */
 .region.active {
-  stroke: #ffffff;
-  stroke-width: 3.2;
-  transform: scale(1.07);
-  filter: drop-shadow(0 0 20px rgba(255,255,255,1));
+  stroke: #fff;
+  stroke-width: 3.4px;
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 20px #fff);
 }
 
-/* 信息面板 */
+/* Info Panel */
 .info-box {
   position: absolute;
   right: 20px;
   top: 20px;
-  width: 280px;
-  padding: 22px;
-  background: rgba(8,18,28,0.7);
+  width: 260px;
+  padding: 20px;
+  background: rgba(8,15,25,0.75);
   border: 1px solid #4af1ff55;
   border-radius: 10px;
-  backdrop-filter: blur(5px);
-  color: #d0e7ff;
+  backdrop-filter: blur(6px);
   display: none;
-  transition: 0.3s ease-out;
-  box-shadow: 0 0 14px rgba(0,0,0,0.4) inset;
+  color: #d6eaff;
 }
 
-.info-box h3 {
-  margin-top: 0;
-  font-size: 22px;
-  color: #a9dfff;
-}
+.dynamic-core { border-color: #75bfff; }
+.dynamic-north { border-color: #5ab4ff; }
+.dynamic-east { border-color: #0077ff; }
+.dynamic-south { border-color: #3bc6d4; }
+.dynamic-west { border-color: #7d4bff; }
 
-/* 用于自动改变 info-box 的边框颜色（根据区域颜色） */
-.info-box.dynamic-core { border-color: #75bfff; }
-.info-box.dynamic-north { border-color: #5ab4ff; }
-.info-box.dynamic-east { border-color: #0077ff; }
-.info-box.dynamic-south { border-color: #3bc6d4; }
-.info-box.dynamic-west { border-color: #7d4bff; }
-
-/* SVG 自动铺满 */
-#metalMap {
+/* =======================================================
+   PARTICLE SIMULATION PAGE (PAGE4)
+======================================================= */
+#liquidMetalCanvas {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  display: block;
+  background: #03060e;
 }
+
