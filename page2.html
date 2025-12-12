@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>新宗教谱系 · Cyber Faith</title>
+<title>New Techno-Faiths · Cyber Religion Evolution</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -15,145 +15,123 @@
 <!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
     <img src="assets/open2.jpg">
-    <div class="page-title-overlay glitch" data-text="EMERGING TECHNO-FAITHS">
-        EMERGING TECHNO-FAITHS
+    <div class="page-title-overlay glitch" data-text="NEW TECHNO-FAITH SYSTEMS">
+        NEW TECHNO-FAITH SYSTEMS
     </div>
 </div>
 
-<!-- ======================= PAGE CONTENT ======================= -->
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+</nav>
+
+<!-- ======================= CONTENT ======================= -->
 <section class="page-panel">
 
-<h2>四大新兴宗教体系（2040–2150）</h2>
+<h2>Rise of Artificial & Techno-Spiritual Belief Systems</h2>
+
 <p>
-随着赛博技术的崛起，“信仰”这一概念被重新定义。
-意识上传、神经植入、量子预言与记忆回响催生了四大新型宗教体系。它们跨越传统宗教界线，
-以算法、金属与意识作为核心，主导了未来社会的精神结构。
+In the cybernetic era, traditional religions split into new technological branches.
+These “Techno-Faiths” do not worship gods in the ancient sense; instead, they seek  
+truth within data streams, machine consciousness, and quantum-predictive prophecy.
 </p>
 
-</section>
+<p>
+Below are four major future religions that emerged by the year 2150.
+</p>
 
-<!-- ======================= RELIGION CARDS ======================= -->
-<section class="page-panel">
+<h3 style="color:#4af1ff;margin-top:40px;">Major Techno-Faiths</h3>
 
-<h2>宗教简介 · Faith Profiles</h2>
+<ul>
+<li><strong>Cyber Oracle Network</strong> – A belief system that predicts fate using AI-driven probability engines.</li>
+<li><strong>Quantum Throne Sect</strong> – Worships the multiverse as the “true divine structure.”</li>
+<li><strong>Psionic Union</strong> – A spiritual group achieving collective consciousness through neural implants.</li>
+<li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
+</ul>
 
-<div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;">
+<h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
+<p>
+This visualization shows estimated follower numbers (in millions) for each major future faith.
+Hover the bars to reveal details.
+</p>
 
-    <!-- 1. Cyber Oracle -->
-    <div class="home-panel" style="width:42%;">
-        <h3>赛博先知教（Cyber Oracle）</h3>
-        <p>
-            信徒使用神经植入与预言算法连接“先知网络（Oracle Net）”，
-            他们相信未来可被计算，命运由量子模型生成。
-        </p>
-    </div>
-
-    <!-- 2. Psionic Union -->
-    <div class="home-panel" style="width:42%;">
-        <h3>灵能融合派（Psionic Union）</h3>
-        <p>
-            该教派主张“精神频率同调”，信徒可通过脑波共振共享情绪，
-            形成真实的集体意识网络。
-        </p>
-    </div>
-
-    <!-- 3. Quantum Throne -->
-    <div class="home-panel" style="width:42%;">
-        <h3>量子圣庭（Quantum Throne）</h3>
-        <p>
-            他们相信意识在多重宇宙中具有永恒回归性，
-            并使用量子服务器与平行世界中的“高维自我”进行对话。
-        </p>
-    </div>
-
-    <!-- 4. Echo Memory Cult -->
-    <div class="home-panel" style="width:42%;">
-        <h3>记忆回响教（Echo Memory Cult）</h3>
-        <p>
-            该教派专注于记忆复制与回响技术，信徒通过植入“回声芯片”复活亡者片段，
-            相信记忆即灵魂本体。
-        </p>
-    </div>
-
-</div>
+<div id="barChart" style="width:100%;height:440px;margin-top:40px;"></div>
 
 </section>
 
-<!-- ======================= DATA VISUALIZATION ======================= -->
-<section class="page-panel">
-
-<h2>宗教人口占比（2150 年）</h2>
-<p>以下图表展示未来世界主要宗教体系的信徒人数占比预测模型。</p>
-
-<div id="barChart" style="width:100%;height:450px;margin-top:40px;"></div>
-
-</section>
-
+<!-- ======================= D3 BAR CHART ======================= -->
 <script>
-/* ==========================================================
-   D3.js 条形图：四大新宗教人口占比
-========================================================== */
 
-const dataset = [
-  { faith: "赛博先知教", value: 38 },
-  { faith: "灵能融合派", value: 24 },
-  { faith: "量子圣庭", value: 21 },
-  { faith: "记忆回响教", value: 17 }
+/* Data (millions of followers) */
+const barData = [
+  { faith: "Cyber Oracle", value: 680 },
+  { faith: "Quantum Throne", value: 540 },
+  { faith: "Psionic Union", value: 420 },
+  { faith: "Echo Memory Cult", value: 310 }
 ];
 
-const w = 900;
-const h = 400;
-const margin2 = { top: 30, right: 40, bottom: 50, left: 120 };
+const bw = 900;
+const bh = 420;
+const margin = { top: 40, right: 60, bottom: 60, left: 120 };
 
 const svg2 = d3.select("#barChart")
   .append("svg")
-  .attr("width", w)
-  .attr("height", h);
+  .attr("width", bw)
+  .attr("height", bh);
 
-// y 轴（宗教）
-const yScale = d3.scaleBand()
-  .domain(dataset.map(d => d.faith))
-  .range([margin2.top, h - margin2.bottom])
-  .padding(0.25);
+/* Scales */
+const y2 = d3.scaleBand()
+  .domain(barData.map(d => d.faith))
+  .range([margin.top, bh - margin.bottom])
+  .padding(0.3);
 
-// x 轴（占比）
-const xScale = d3.scaleLinear()
-  .domain([0, 40])
-  .range([margin2.left, w - margin2.right]);
+const x2 = d3.scaleLinear()
+  .domain([0, 700])
+  .range([margin.left, bw - margin.right]);
 
-// 绘制条形
-svg2.selectAll("rect")
-  .data(dataset)
+/* Axes */
+svg2.append("g")
+  .attr("transform", `translate(0, ${bh - margin.bottom})`)
+  .call(d3.axisBottom(x2).ticks(7))
+  .attr("color", "#7bc4ff");
+
+svg2.append("g")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .call(d3.axisLeft(y2))
+  .attr("color", "#7bc4ff");
+
+/* Bars */
+svg2.selectAll(".bar")
+  .data(barData)
   .enter()
   .append("rect")
-  .attr("x", margin2.left)
-  .attr("y", d => yScale(d.faith))
-  .attr("width", d => xScale(d.value) - margin2.left)
-  .attr("height", yScale.bandwidth())
-  .attr("fill", "#4af1ff88")
-  .attr("stroke", "#4af1ff");
-
-// 绘制文字标签
-svg2.selectAll("text.value")
-  .data(dataset)
-  .enter()
-  .append("text")
-  .attr("class", "value")
-  .attr("x", d => xScale(d.value) + 5)
-  .attr("y", d => yScale(d.faith) + yScale.bandwidth() / 1.6)
-  .attr("fill", "#d0e7ff")
-  .text(d => d.value + "%");
-
-// 坐标轴
-svg2.append("g")
-  .attr("transform", `translate(0, ${h - margin2.bottom})`)
-  .call(d3.axisBottom(xScale))
-  .attr("color", "#7bc4ff");
-
-svg2.append("g")
-  .attr("transform", `translate(${margin2.left}, 0)`)
-  .call(d3.axisLeft(yScale))
-  .attr("color", "#7bc4ff");
+  .attr("class", "bar")
+  .attr("x", margin.left)
+  .attr("y", d => y2(d.faith))
+  .attr("width", d => x2(d.value) - margin.left)
+  .attr("height", y2.bandwidth())
+  .attr("fill", "#4af1ff99")
+  .attr("stroke", "#4af1ff")
+  .attr("stroke-width", 1.5)
+  .style("cursor", "pointer")
+  .on("mousemove", (event, d) => {
+      const tooltip = document.querySelector(".chart-tooltip");
+      tooltip.style.display = "block";
+      tooltip.style.left = event.pageX + "px";
+      tooltip.style.top = event.pageY - 20 + "px";
+      tooltip.innerHTML = `
+        <strong>${d.faith}</strong><br>
+        Followers: ${d.value} million
+      `;
+  })
+  .on("mouseleave", () => {
+      document.querySelector(".chart-tooltip").style.display = "none";
+  });
 
 </script>
 
