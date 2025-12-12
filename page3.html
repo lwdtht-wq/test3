@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Liquid Metal Faith Map · Abstract World</title>
+<title>World Faith Distribution · Cyber Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -11,126 +11,69 @@
 </head>
 <body>
 
-<!-- ==========================================================
-     PAGE OPENING
-=========================================================== -->
+<!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
-    <img src="assets/open3.jpg" />
-    <div class="page-title-overlay glitch" data-text="LIQUID METAL WORLD MAP">
-        LIQUID METAL WORLD MAP
+    <img src="assets/open3.jpg">
+    <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
+        WORLD RELIGION DISTRIBUTION MAP
     </div>
 </div>
 
-<!-- ==========================================================
-     LEFT NAVIGATION (FULL MATCH WITH HOMEPAGE)
-=========================================================== -->
-<!-- COLLAPSIBLE NAVIGATION -->
-<div id="navToggle">≡</div>
-
-<nav id="sideNav" class="closed">
-    <a href="index.html" data-label="Home">🜂</a>
-    <a href="page1.html" data-label="Trends">🜁</a>
-    <a href="page2.html" data-label="New Faiths">⟟</a>
-    <a href="page3.html" data-label="World Map">🜄</a>
-    <a href="page4.html" data-label="Liquid Metal">⟁</a>
-    <a href="page5.html" data-label="Story">⛛</a>
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-
-<!-- ==========================================================
-     CONTENT PANEL
-=========================================================== -->
+<!-- ======================= MAIN CONTENT ======================= -->
 <section class="page-panel">
-    <h2>Abstract Liquid-Metal Map of Global Faith Influence (2150)</h2>
 
-    <p>
-        This abstract map illustrates ideological flows reshaping Earth in a future  
-        where belief systems merge with technology, quantum cognition, and  
-        liquid-metal consciousness structures.
-    </p>
+<h2>Interactive Global Distribution of Future Faiths</h2>
 
-    <p>
-        Hover to reveal metallic glow.  
-        Click a region to view its techno-faith distribution.
-    </p>
+<p>
+This map represents the projected spread of the four major techno-spiritual religions  
+in the year 2150. Each region has developed its own dominant belief system influenced  
+by culture, technology, and political structure.  
+Click a region on the map to reveal its faith composition.
+</p>
+
 </section>
 
-<!-- ==========================================================
-     MAP + INFO PANEL
-=========================================================== -->
+<!-- ======================= MAP AREA ======================= -->
 <div id="mapContainer">
 
-    <!-- Dynamic info panel -->
-    <div id="mapInfo" class="info-box">
-        <h3 id="infoTitle">Click a Region</h3>
-        <div id="infoContent">Hover above a metallic territory.</div>
-    </div>
+<!-- Info box -->
+<div id="mapInfo" class="info-box">
+    <h3 id="infoTitle">Region</h3>
+    <div id="infoContent"></div>
+</div>
 
-<!-- ==========================================================
-     LIQUID METAL ABSTRACT WORLD MAP (SVG)
-=========================================================== -->
-<svg id="metalMap" width="100%" height="100%" viewBox="0 0 900 600">
+<!-- SVG MAP -->
+<svg width="100%" height="100%" viewBox="0 0 800 500">
 
-    <!-- ================= NORTH CROWN ================= -->
-    <path id="north" class="region metal"
-        d="M200,80 Q350,20 520,60 Q680,120 720,200 Q690,240 600,260 Q500,280 400,260 Q280,240 210,200 Q150,150 200,80 Z"
-        fill="url(#northGrad)" onclick="showRegionInfo('north')"/>
+    <!-- NORTH REGION -->
+    <path id="north" class="region"
+        onclick="showRegionInfo('north')"
+        d="M100,60 L700,60 L650,180 L150,180 Z" />
 
-    <!-- ================= EAST SHARD ================= -->
-    <path id="east" class="region metal"
-        d="M720,200 Q780,260 820,360 Q780,420 720,460 Q650,500 580,460 Q600,380 580,320 Q640,280 720,200 Z"
-        fill="url(#eastGrad)" onclick="showRegionInfo('east')"/>
+    <!-- EAST REGION -->
+    <path id="east" class="region"
+        onclick="showRegionInfo('east')"
+        d="M700,60 L760,250 L700,440 L650,180 Z" />
 
-    <!-- ================= SOUTH RIFT ================= -->
-    <path id="south" class="region metal"
-        d="M350,350 Q420,300 520,320 Q600,360 580,460 Q520,540 430,560 Q340,520 300,440 Q280,380 350,350 Z"
-        fill="url(#southGrad)" onclick="showRegionInfo('south')"/>
+    <!-- SOUTH REGION -->
+    <path id="south" class="region"
+        onclick="showRegionInfo('south')"
+        d="M150,180 L650,180 L600,440 L200,440 Z" />
 
-    <!-- ================= WEST FRAGMENT ================= -->
-    <path id="west" class="region metal"
-        d="M200,80 Q150,150 160,240 Q180,310 140,360 Q80,420 120,460 Q180,520 260,500 Q280,440 300,380 Q260,300 260,240 Q240,160 200,80 Z"
-        fill="url(#westGrad)" onclick="showRegionInfo('west')"/>
-
-    <!-- ================= CENTRAL CORE ================= -->
-    <path id="core" class="region metal"
-        d="M350,200 Q420,160 500,180 Q580,220 560,280 Q530,330 460,350 Q380,330 340,280 Q320,240 350,200 Z"
-        fill="url(#coreGrad)" onclick="showRegionInfo('core')"/>
-
-    <!-- ==========================================================
-         GRADIENTS (GLOWING LIQUID METAL COLORS)
-    ============================================================ -->
-    <defs>
-        <!-- NORTH = Silver-Blue -->
-        <linearGradient id="northGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#cbe6ff"/>
-            <stop offset="100%" stop-color="#5ab4ff"/>
-        </linearGradient>
-
-        <!-- EAST = Electric Blue -->
-        <linearGradient id="eastGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#74d4ff"/>
-            <stop offset="100%" stop-color="#0077ff"/>
-        </linearGradient>
-
-        <!-- SOUTH = Aqua Steel -->
-        <linearGradient id="southGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#9bf8ff"/>
-            <stop offset="100%" stop-color="#3bc6d4"/>
-        </linearGradient>
-
-        <!-- WEST = Chrome Purple -->
-        <linearGradient id="westGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#d0baff"/>
-            <stop offset="100%" stop-color="#7d4bff"/>
-        </linearGradient>
-
-        <!-- CORE = Iridescent Alloy -->
-        <linearGradient id="coreGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="50%" stop-color="#b3e0ff"/>
-            <stop offset="100%" stop-color="#75bfff"/>
-        </linearGradient>
-    </defs>
+    <!-- WEST REGION -->
+    <path id="west" class="region"
+        onclick="showRegionInfo('west')"
+        d="M100,60 L150,180 L200,440 L40,250 Z" />
 
 </svg>
 
