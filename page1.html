@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>未来宗教增长趋势 · Cyber Faith</title>
+<title>Future Religious Trends · Cyber Faith</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -15,48 +15,65 @@
 <!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
     <img src="assets/open1.jpg">
-    <div class="page-title-overlay glitch" data-text="FUTURE BELIEF PROJECTION">
-        FUTURE BELIEF PROJECTION
+    <div class="page-title-overlay glitch" data-text="FUTURE RELIGION TRENDS">
+        FUTURE RELIGION TRENDS
     </div>
 </div>
+
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+</nav>
 
 <!-- ======================= PAGE CONTENT ======================= -->
 <section class="page-panel">
 
-<h2>未来宗教信徒增长趋势（2010–2150）</h2>
+<h2>Projected Growth of Religious Groups (2010–2150)</h2>
+
 <p>
-本图表结合部分真实数据与未来预测模型，展示传统宗教逐渐让位于科技宗教的进程。
-从2035年起，新型宗教利用神经接口、算法启示与意识上传系统，使信徒数量出现前所未有的增长。
+This chart combines partial real-world data with speculative future projections.
+It illustrates how traditional religions decline as techno-faith systems rise,
+reshaping the spiritual landscape of the cybernetic world.
 </p>
 
-<div id="chart" style="width:100%;height:450px;margin-top:40px;"></div>
+<div id="chart" style="width:100%;height:460px;margin-top:40px;"></div>
 
 </section>
 
+<!-- ======================= D3 SCRIPT ======================= -->
 <script>
 /* ==========================================================
-   D3.js 折线图：未来宗教信徒趋势
+   DATASET
 ========================================================== */
 
 const data = [
-  { year: 2010, traditional: 83, techfaith: 0, nofaith: 17 },
-  { year: 2020, traditional: 78, techfaith: 0, nofaith: 22 },
-  { year: 2030, traditional: 60, techfaith: 5, nofaith: 35 },
-  { year: 2040, traditional: 48, techfaith: 18, nofaith: 34 },
-  { year: 2050, traditional: 35, techfaith: 32, nofaith: 33 },
-  { year: 2075, traditional: 20, techfaith: 55, nofaith: 25 },
-  { year: 2100, traditional: 12, techfaith: 68, nofaith: 20 },
-  { year: 2150, traditional: 5,  techfaith: 82, nofaith: 13 }
+  { year: 2010, traditional: 83, tech: 0, none: 17 },
+  { year: 2020, traditional: 78, tech: 0, none: 22 },
+  { year: 2030, traditional: 60, tech: 5, none: 35 },
+  { year: 2040, traditional: 48, tech: 18, none: 34 },
+  { year: 2050, traditional: 35, tech: 32, none: 33 },
+  { year: 2075, traditional: 20, tech: 55, none: 25 },
+  { year: 2100, traditional: 12, tech: 68, none: 20 },
+  { year: 2150, traditional: 5,  tech: 82, none: 13 }
 ];
 
 const width = 900;
-const height = 400;
-const margin = { top: 30, right: 80, bottom: 40, left: 60 };
+const height = 420;
+const margin = { top: 40, right: 80, bottom: 40, left: 70 };
 
 const svg = d3.select("#chart")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
+
+/* ==========================================================
+   SCALES
+========================================================== */
 
 const x = d3.scaleLinear()
   .domain(d3.extent(data, d => d.year))
@@ -66,10 +83,13 @@ const y = d3.scaleLinear()
   .domain([0, 100])
   .range([height - margin.bottom, margin.top]);
 
-/* 坐标轴 */
+/* ==========================================================
+   AXES
+========================================================== */
+
 svg.append("g")
   .attr("transform", `translate(0, ${height - margin.bottom})`)
-  .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format("d")))
+  .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
   .attr("color", "#7bc4ff");
 
 svg.append("g")
@@ -77,30 +97,42 @@ svg.append("g")
   .call(d3.axisLeft(y))
   .attr("color", "#7bc4ff");
 
-const line = (key, color) => {
+/* ==========================================================
+   LINE GENERATOR
+========================================================== */
+
+function drawLine(key, color) {
   svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", color)
-    .attr("stroke-width", 2.5)
+    .attr("stroke-width", 2.6)
     .attr("d", d3.line()
       .x(d => x(d.year))
       .y(d => y(d[key]))
     );
 
-  /* 图例 */
+  // Label at the last point
   svg.append("text")
-    .attr("x", width - 100)
+    .attr("x", x(data[data.length - 1].year) + 10)
     .attr("y", y(data[data.length - 1][key]))
     .attr("fill", color)
     .attr("font-size", "14px")
-    .text(key);
-};
+    .text(key === "traditional" ? "Traditional" :
+          key === "tech" ? "Techno-Faith" : "None");
+}
 
-/* 三条线：传统宗教 / 科技宗教 / 无宗教 */
-line("traditional", "#ff3df2");
-line("techfaith", "#4af1ff");
-line("nofaith", "#8cc7ff");
+/* Draw lines */
+drawLine("traditional", "#ff3df2");
+drawLine("tech", "#4af1ff");
+drawLine("none", "#8cc7ff");
+
+/* ==========================================================
+   ENABLE DOT TOOLTIP (from main.js)
+========================================================== */
+enableChartTooltip(svg, data, x, y, "traditional");
+enableChartTooltip(svg, data, x, y, "tech");
+enableChartTooltip(svg, data, x, y, "none");
 
 </script>
 
