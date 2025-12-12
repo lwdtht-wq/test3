@@ -1,5 +1,5 @@
 /* ==========================================================
-   GLOBAL PAGE ENTRY ANIMATION
+   GLOBAL PAGE ENTRY ANIMATION (ONLY FOR INDEX)
 ========================================================== */
 
 function enterWorld() {
@@ -22,12 +22,24 @@ function enterWorld() {
 }
 
 /* ==========================================================
-   GLOBAL FADE IN FOR PANELS
+   PAGE LOAD ANIMATIONS + NAVIGATION FIX
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+    const nav = document.getElementById("sideNav");
     const contentPanels = document.querySelectorAll(".page-panel, .story-text");
 
+    /* ----------------------------------------------
+       AUTO-SHOW NAVIGATION FOR ALL NON-INDEX PAGES
+    ---------------------------------------------- */
+    if (!window.location.pathname.endsWith("index.html") &&
+        !window.location.pathname.endsWith("/") ) 
+    {
+        nav.classList.remove("hidden");
+        nav.style.opacity = "1";
+    }
+
+    /* Fade-in animation for panels */
     contentPanels.forEach(panel => {
         panel.style.opacity = 0;
         panel.style.transform = "translateY(30px)";
@@ -41,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }, 400);
 
-    // Tooltip container for charts
+    /* Tooltip container for charts */
     const tooltip = document.createElement("div");
     tooltip.className = "chart-tooltip";
     document.body.appendChild(tooltip);
@@ -141,8 +153,9 @@ function showRegionInfo(regionName) {
 }
 
 /* ==========================================================
-   LIQUID METAL MOUSE LIGHT (OPTIONAL)
+   GLOBAL MOUSE LIQUID RIPPLE (OPTIONAL)
 ========================================================== */
+
 document.addEventListener("mousemove", (e) => {
     const ripple = document.querySelector(".ripple");
     if (ripple) {
