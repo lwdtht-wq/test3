@@ -1,55 +1,64 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>CYBER FAITH · 未来宗教世界</title>
+<meta charset="UTF-8">
+<title>CYBER FAITH · Future Religion System</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Orbitron Font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- CSS + JS -->
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
 
 </head>
 <body>
 
-<!-- ======================== 开场动画背景 ======================== -->
+<!-- ===================== OPENING SCREEN ===================== -->
 <div class="opening-screen">
     <img src="assets/bg_main.jpg" class="opening-bg">
+
     <div class="opening-overlay"></div>
 
-    <div class="opening-title glitch" data-text="CYBER FAITH">
-        CYBER FAITH
+    <div class="opening-title glitch" data-text="CYBER FAITH SYSTEM">
+        CYBER FAITH SYSTEM
     </div>
 
     <div class="enter-btn" onclick="enterWorld()">
-        进入世界
+        ENTER THE WORLD
     </div>
 </div>
 
-<!-- ======================== 主导航 ======================== -->
-<nav id="mainNav" class="hidden">
-    <a href="index.html" class="nav-item">首页</a>
-    <a href="page1.html" class="nav-item">未来信徒增长趋势</a>
-    <a href="page2.html" class="nav-item">新宗教谱系</a>
-    <a href="page3.html" class="nav-item">世界宗教版图</a>
-    <a href="page4.html" class="nav-item">液态金属互动模拟</a>
-    <a href="page5.html" class="nav-item">未来科技社会</a>
+<!-- ===================== FLOATING ICON NAV ===================== -->
+<nav id="sideNav" class="hidden">
+
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+
 </nav>
 
-<!-- ======================== 首页内容 ======================== -->
-<section class="home-section hidden">
+<!-- ===================== HOME CONTENT ===================== -->
+<section id="homeContent" class="hidden">
 
-    <h1 class="glitch center-title" data-text="WELCOME TO CYBER FAITH">
-        WELCOME TO CYBER FAITH
+    <h1 class="center-title glitch" data-text="WELCOME TO THE FUTURE OF BELIEF">
+        WELCOME TO THE FUTURE OF BELIEF
     </h1>
 
     <div class="home-panel">
-        <h2>赛博纪元 · 宗教新生</h2>
+        <h2>The Cyber Age of Faith</h2>
         <p>
-            进入 2150 年，人类的信仰从传统宗教延伸到数据、科技与意识形态的深空。
-            赛博宗教的讯号在虚构世界中扩散，每个区域都有不同的信仰体系。
+            In the year 2150, belief is no longer limited to ancient traditions.  
+            Humanity has merged faith with technology, forging new systems built on memory,  
+            quantum predictions, neural rituals, and liquid-metal consciousness.
         </p>
         <p>
-            这是一个由液态金属、精神网络与仿生信徒组成的未来。
+            You are entering a world where religion evolves alongside machines—  
+            where algorithms, rituals, and metallic entities form a new spiritual order.
         </p>
     </div>
 
