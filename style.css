@@ -134,3 +134,33 @@ section {
   align-items: center;
   text-decoration: none;
   color: #9fd5ff;
+/* ============================================================
+   🔥 FIX: Ensure navbar is always clickable
+============================================================ */
+
+#sideNav {
+  z-index: 3000 !important;
+  pointer-events: auto !important;
+}
+
+#navToggle {
+  z-index: 3100 !important;
+  pointer-events: auto !important;
+}
+
+/* Background must NEVER block click */
+.liquid-bg,
+.ripple {
+  pointer-events: none !important;
+  z-index: -1000 !important;
+}
+
+.opening-screen {
+  z-index: 5000 !important;
+}
+
+/* make sure content does not cover nav */
+body, section {
+  position: relative;
+  z-index: 1;
+}
