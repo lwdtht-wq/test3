@@ -200,3 +200,12 @@ function showRegionInfo(regionName) {
 /* ==========================================================
    END OF FILE
 ========================================================== */
+/* COLLAPSIBLE NAVIGATION */
+const navToggle = document.getElementById("navToggle");
+const sideNav = document.getElementById("sideNav");
+
+if (navToggle && sideNav) {
+    navToggle.addEventListener("click", () => {
+        sideNav.classList.toggle("closed");
+    });
+}
