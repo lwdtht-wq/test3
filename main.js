@@ -2,32 +2,48 @@
    OPENING SCREEN HANDLER
 ========================================================== */
 function enterWorld() {
+    console.log("enterWorld() triggered");
+
     const screen = document.querySelector(".opening-screen");
     const nav = document.getElementById("sideNav");
     const home = document.getElementById("homeContent");
 
-    // Fade-out animation
+    if (!screen) {
+        console.error("ERROR: .opening-screen not found");
+        return;
+    }
+
     screen.style.transition = "opacity 0.8s ease";
     screen.style.opacity = "0";
 
-    // Fully remove overlay so it no longer blocks clicks
     setTimeout(() => {
         screen.style.display = "none";
 
-        // Show main UI elements
         if (nav) nav.classList.remove("hidden");
         if (home) home.classList.remove("hidden");
-    }, 800);
+
+        console.log("World Entered.");
+    }, 900);
 }
 
 /* ==========================================================
-   PAGE1 — FUTURE FAITH LINE CHART
+   FIX: Prevent ripple & background blocking clicks
+========================================================== */
+document.addEventListener("mousemove", (e) => {
+    const ripple = document.querySelector(".ripple");
+    if (!ripple) return;
+    ripple.style.left = e.clientX + "px";
+    ripple.style.top = e.clientY + "px";
+});
+
+/* ==========================================================
+   PAGE 1 — FAITH LINE CHART
 ========================================================== */
 if (document.getElementById("futureFaithChart")) {
     const ctx = document.getElementById("futureFaithChart").getContext("2d");
 
     new Chart(ctx, {
-        type: 'line',
+        type: "line",
         data: {
             labels: ["2010", "2030", "2050", "2080", "2120", "2150"],
             datasets: [
@@ -60,152 +76,32 @@ if (document.getElementById("futureFaithChart")) {
                     borderColor: "#ffc1fa",
                     tension: 0.35,
                     borderWidth: 3
-                },
-                {
-                    label: "Traditional Faiths",
-                    data: [85, 75, 60, 49, 40, 32],
-                    borderColor: "#ffaa55",
-                    tension: 0.35,
-                    borderWidth: 3
                 }
             ]
         },
         options: {
             responsive: true,
-            interaction: { mode: 'index', intersect: false },
+            interaction: { mode: "index", intersect: false },
             plugins: {
-                legend: { labels: { color: "#d6eaff" }}
+                legend: { labels: { color: "#d6eaff" } }
             },
             scales: {
-                x: { ticks: { color: "#a9ddff" }},
-                y: { ticks: { color: "#a9ddff" }}
+                x: { ticks: { color: "#a9ddff" } },
+                y: { ticks: { color: "#a9ddff" } }
             }
         }
     });
 }
 
 /* ==========================================================
-   PAGE2 — NEW RELIGION BAR CHART
+   PAGE 2 — NEW RELIGION BAR CHART
 ========================================================== */
 if (document.getElementById("newReligionChart")) {
     const ctx2 = document.getElementById("newReligionChart").getContext("2d");
 
     new Chart(ctx2, {
-        type: 'bar',
+        type: "bar",
         data: {
             labels: ["Cyber Oracle", "Quantum Throne", "Psionic Union", "Echo Memory Cult"],
             datasets: [{
-                label: "Global Followers (Millions)",
-                backgroundColor: ["#4af1ff", "#7d4bff", "#48ffa8", "#ffc1fa"],
-                data: [320, 280, 240, 110]
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { labels: { color: "#d6eaff" }}
-            },
-            scales: {
-                x: { ticks: { color: "#a9ddff" }},
-                y: { ticks: { color: "#a9ddff" }}
-            }
-        }
-    });
-}
-
-/* ==========================================================
-   PAGE3 — LIQUID METAL MAP INTERACTION
-========================================================== */
-const regionColors = {
-    north:  "#5ab4ff",
-    east:   "#0077ff",
-    south:  "#3bc6d4",
-    west:   "#7d4bff",
-    core:   "#75bfff"
-};
-
-function clearActiveRegions() {
-    document.querySelectorAll(".region").forEach(r => r.classList.remove("active"));
-}
-
-function showRegionInfo(regionName) {
-    const info = document.getElementById("mapInfo");
-    const title = document.getElementById("infoTitle");
-    const content = document.getElementById("infoContent");
-
-    clearActiveRegions();
-    document.getElementById(regionName).classList.add("active");
-
-    info.classList.remove("dynamic-core", "dynamic-north", "dynamic-east", "dynamic-south", "dynamic-west");
-    info.classList.add("dynamic-" + regionName);
-
-    const data = {
-        north: {
-            name: "North Crown",
-            values: {
-                "Cyber Oracle": "42%",
-                "Psionic Union": "27%",
-                "Quantum Throne": "18%",
-                "Echo Memory Cult": "13%"
-            }
-        },
-        east: {
-            name: "East Shard",
-            values: {
-                "Quantum Throne": "49%",
-                "Cyber Oracle": "31%",
-                "Psionic Union": "14%",
-                "Echo Memory Cult": "6%"
-            }
-        },
-        south: {
-            name: "South Rift",
-            values: {
-                "Psionic Union": "53%",
-                "Echo Memory Cult": "22%",
-                "Cyber Oracle": "15%",
-                "Quantum Throne": "10%"
-            }
-        },
-        west: {
-            name: "West Fragment",
-            values: {
-                "Echo Memory Cult": "47%",
-                "Cyber Oracle": "26%",
-                "Quantum Throne": "19%",
-                "Psionic Union": "8%"
-            }
-        },
-        core: {
-            name: "Central Core",
-            values: {
-                "Cyber Oracle": "35%",
-                "Quantum Throne": "35%",
-                "Psionic Union": "20%",
-                "Echo Memory Cult": "10%"
-            }
-        }
-    };
-
-    title.textContent = data[regionName].name;
-
-    let html = "";
-    for (let key in data[regionName].values) {
-        html += `<p><strong>${key}</strong>: ${data[regionName].values[key]}</p>`;
-    }
-
-    content.innerHTML = html;
-    info.style.display = "block";
-}
-
-/* ==========================================================
-   END OF FILE
-========================================================== */
-/* COLLAPSIBLE NAVIGATION */
-const navToggle = document.getElementById("navToggle");
-const sideNav = document.getElementById("sideNav");
-
-if (navToggle && sideNav) {
-    navToggle.addEventListener("click", () => {
-        sideNav.classList.toggle("closed");
-    });
-}
+                label:
