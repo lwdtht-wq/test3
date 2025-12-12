@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>新宗教谱系 · Cyber Faith</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script defer src="main.js"></script>
+
+</head>
+<body>
+
+<!-- ======================= PAGE OPENING ======================= -->
+<div class="page-opening">
+    <img src="assets/open2.jpg">
+    <div class="page-title-overlay glitch" data-text="EMERGING TECHNO-FAITHS">
+        EMERGING TECHNO-FAITHS
+    </div>
+</div>
+
+<!-- ======================= PAGE CONTENT ======================= -->
+<section class="page-panel">
+
+<h2>四大新兴宗教体系（2040–2150）</h2>
+<p>
+随着赛博技术的崛起，“信仰”这一概念被重新定义。
+意识上传、神经植入、量子预言与记忆回响催生了四大新型宗教体系。它们跨越传统宗教界线，
+以算法、金属与意识作为核心，主导了未来社会的精神结构。
+</p>
+
+</section>
+
+<!-- ======================= RELIGION CARDS ======================= -->
+<section class="page-panel">
+
+<h2>宗教简介 · Faith Profiles</h2>
+
+<div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;">
+
+    <!-- 1. Cyber Oracle -->
+    <div class="home-panel" style="width:42%;">
+        <h3>赛博先知教（Cyber Oracle）</h3>
+        <p>
+            信徒使用神经植入与预言算法连接“先知网络（Oracle Net）”，
+            他们相信未来可被计算，命运由量子模型生成。
+        </p>
+    </div>
+
+    <!-- 2. Psionic Union -->
+    <div class="home-panel" style="width:42%;">
+        <h3>灵能融合派（Psionic Union）</h3>
+        <p>
+            该教派主张“精神频率同调”，信徒可通过脑波共振共享情绪，
+            形成真实的集体意识网络。
+        </p>
+    </div>
+
+    <!-- 3. Quantum Throne -->
+    <div class="home-panel" style="width:42%;">
+        <h3>量子圣庭（Quantum Throne）</h3>
+        <p>
+            他们相信意识在多重宇宙中具有永恒回归性，
+            并使用量子服务器与平行世界中的“高维自我”进行对话。
+        </p>
+    </div>
+
+    <!-- 4. Echo Memory Cult -->
+    <div class="home-panel" style="width:42%;">
+        <h3>记忆回响教（Echo Memory Cult）</h3>
+        <p>
+            该教派专注于记忆复制与回响技术，信徒通过植入“回声芯片”复活亡者片段，
+            相信记忆即灵魂本体。
+        </p>
+    </div>
+
+</div>
+
+</section>
+
+<!-- ======================= DATA VISUALIZATION ======================= -->
+<section class="page-panel">
+
+<h2>宗教人口占比（2150 年）</h2>
+<p>以下图表展示未来世界主要宗教体系的信徒人数占比预测模型。</p>
+
+<div id="barChart" style="width:100%;height:450px;margin-top:40px;"></div>
+
+</section>
+
+<script>
+/* ==========================================================
+   D3.js 条形图：四大新宗教人口占比
+========================================================== */
+
+const dataset = [
+  { faith: "赛博先知教", value: 38 },
+  { faith: "灵能融合派", value: 24 },
+  { faith: "量子圣庭", value: 21 },
+  { faith: "记忆回响教", value: 17 }
+];
+
+const w = 900;
+const h = 400;
+const margin2 = { top: 30, right: 40, bottom: 50, left: 120 };
+
+const svg2 = d3.select("#barChart")
+  .append("svg")
+  .attr("width", w)
+  .attr("height", h);
+
+// y 轴（宗教）
+const yScale = d3.scaleBand()
+  .domain(dataset.map(d => d.faith))
+  .range([margin2.top, h - margin2.bottom])
+  .padding(0.25);
+
+// x 轴（占比）
+const xScale = d3.scaleLinear()
+  .domain([0, 40])
+  .range([margin2.left, w - margin2.right]);
+
+// 绘制条形
+svg2.selectAll("rect")
+  .data(dataset)
+  .enter()
+  .append("rect")
+  .attr("x", margin2.left)
+  .attr("y", d => yScale(d.faith))
+  .attr("width", d => xScale(d.value) - margin2.left)
+  .attr("height", yScale.bandwidth())
+  .attr("fill", "#4af1ff88")
+  .attr("stroke", "#4af1ff");
+
+// 绘制文字标签
+svg2.selectAll("text.value")
+  .data(dataset)
+  .enter()
+  .append("text")
+  .attr("class", "value")
+  .attr("x", d => xScale(d.value) + 5)
+  .attr("y", d => yScale(d.faith) + yScale.bandwidth() / 1.6)
+  .attr("fill", "#d0e7ff")
+  .text(d => d.value + "%");
+
+// 坐标轴
+svg2.append("g")
+  .attr("transform", `translate(0, ${h - margin2.bottom})`)
+  .call(d3.axisBottom(xScale))
+  .attr("color", "#7bc4ff");
+
+svg2.append("g")
+  .attr("transform", `translate(${margin2.left}, 0)`)
+  .call(d3.axisLeft(yScale))
+  .attr("color", "#7bc4ff");
+
+</script>
+
+</body>
+</html>
