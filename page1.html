@@ -1,50 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Future Religious Trends · Cyber Faith</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script defer src="main.js"></script>
-
-</head>
-<body>
-
-<!-- ======================= PAGE OPENING ======================= -->
-<div class="page-opening">
-    <img src="assets/open1.jpg">
-    <div class="page-title-overlay glitch" data-text="FUTURE RELIGION TRENDS">
-        FUTURE RELIGION TRENDS
-    </div>
-</div>
-
-<!-- ======================= FLOATING NAV ======================= -->
-<nav id="sideNav" class="hidden">
-    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
-    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
-    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
-    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
-    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
-    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
-</nav>
-<!-- ======================= PAGE CONTENT ======================= -->
-<section class="page-panel">
-
-<h2>Projected Growth of Religious Groups (2010–2150)</h2>
-
-<p>
-This chart combines partial real-world data with speculative future projections.
-It illustrates how traditional religions decline as techno-faith systems rise,
-reshaping the spiritual landscape of the cybernetic world.
-</p>
-
-<div id="chart" style="width:100%;height:460px;margin-top:40px;"></div>
-
-</section>
-
-<!-- ======================= D3 SCRIPT ======================= -->
 <script>
 /* ==========================================================
    DATASET
@@ -68,7 +21,8 @@ const margin = { top: 40, right: 80, bottom: 40, left: 70 };
 const svg = d3.select("#chart")
   .append("svg")
   .attr("width", width)
-  .attr("height", height);
+  .attr("height", height)
+  .style("cursor", "crosshair");
 
 /* ==========================================================
    SCALES
@@ -97,21 +51,43 @@ svg.append("g")
   .attr("color", "#7bc4ff");
 
 /* ==========================================================
-   LINE GENERATOR
+   NICE COLORS
+========================================================== */
+const colors = {
+  traditional: "#ff3df2",
+  tech: "#4af1ff",
+  none: "#8cc7ff"
+};
+
+/* ==========================================================
+   DRAW LINES WITH ANIMATION
 ========================================================== */
 
-function drawLine(key, color) {
-  svg.append("path")
+function drawAnimatedLine(key, color) {
+  const lineGen = d3.line()
+    .x(d => x(d.year))
+    .y(d => y(d[key]))
+    .curve(d3.curveCatmullRom.alpha(0.5));
+
+  const path = svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", color)
     .attr("stroke-width", 2.6)
-    .attr("d", d3.line()
-      .x(d => x(d.year))
-      .y(d => y(d[key]))
-    );
+    .attr("d", lineGen)
+    .style("filter", "drop-shadow(0 0 6px " + color + ")");
 
-  // Label at the last point
+  // -> Animation: draw from left to right
+  const totalLength = path.node().getTotalLength();
+  path
+    .attr("stroke-dasharray", totalLength + " " + totalLength)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+    .duration(1600)
+    .ease(d3.easeCubicOut)
+    .attr("stroke-dashoffset", 0);
+
+  // -> Add label
   svg.append("text")
     .attr("x", x(data[data.length - 1].year) + 10)
     .attr("y", y(data[data.length - 1][key]))
@@ -119,21 +95,87 @@ function drawLine(key, color) {
     .attr("font-size", "14px")
     .text(key === "traditional" ? "Traditional" :
           key === "tech" ? "Techno-Faith" : "None");
+
+  return path;
 }
 
-/* Draw lines */
-drawLine("traditional", "#ff3df2");
-drawLine("tech", "#4af1ff");
-drawLine("none", "#8cc7ff");
+const paths = {
+  traditional: drawAnimatedLine("traditional", colors.traditional),
+  tech:         drawAnimatedLine("tech", colors.tech),
+  none:         drawAnimatedLine("none", colors.none)
+};
 
 /* ==========================================================
-   ENABLE DOT TOOLTIP (from main.js)
+   GLOW PARTICLES ON LINES
 ========================================================== */
-enableChartTooltip(svg, data, x, y, "traditional");
-enableChartTooltip(svg, data, x, y, "tech");
-enableChartTooltip(svg, data, x, y, "none");
+function createMovingDot(path, color) {
+  const length = path.node().getTotalLength();
+  const dot = svg.append("circle")
+    .attr("r", 5)
+    .attr("fill", color)
+    .style("filter", "drop-shadow(0 0 8px " + color + ")");
+
+  function animateDot() {
+    dot.transition()
+      .duration(3500)
+      .ease(d3.easeLinear)
+      .attrTween("transform", function () {
+        return function (t) {
+          const p = path.node().getPointAtLength(t * length);
+          return `translate(${p.x},${p.y})`;
+        };
+      })
+      .on("end", animateDot);
+  }
+
+  animateDot();
+}
+
+createMovingDot(paths.traditional, colors.traditional);
+createMovingDot(paths.tech, colors.tech);
+createMovingDot(paths.none, colors.none);
+
+/* ==========================================================
+   HIGHLIGHT LINE WHEN MOUSE NEAR
+========================================================== */
+svg.on("mousemove", function (event) {
+  const [mx, my] = d3.pointer(event);
+
+  Object.keys(paths).forEach(key => {
+    const path = paths[key];
+    const dist = Math.abs(my - path.node().getPointAtLength(path.node().getTotalLength() / 2).y);
+
+    // If Y distance is close → highlight
+    if (dist < 80) {
+      path.attr("stroke-width", 4).style("filter", "drop-shadow(0 0 10px " + colors[key] + ")");
+    } else {
+      path.attr("stroke-width", 2.6).style("filter", "drop-shadow(0 0 5px " + colors[key] + ")");
+    }
+  });
+});
+
+/* ==========================================================
+   VERTICAL YEAR FOLLOWER LINE
+========================================================== */
+const vLine = svg.append("line")
+  .attr("stroke", "#4af1ff55")
+  .attr("stroke-width", 2)
+  .style("pointer-events", "none")
+  .style("display", "none");
+
+svg.on("mousemove", function (event) {
+  const [mx] = d3.pointer(event);
+
+  vLine
+    .style("display", "block")
+    .attr("x1", mx)
+    .attr("x2", mx)
+    .attr("y1", margin.top)
+    .attr("y2", height - margin.bottom);
+});
+
+svg.on("mouseleave", function () {
+  vLine.style("display", "none");
+});
 
 </script>
-
-</body>
-</html>
