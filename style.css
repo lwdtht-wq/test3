@@ -1,341 +1,78 @@
 /* ==========================================================
-   GLOBAL SETTINGS
+   LIQUID METAL ABSTRACT MAP
 ========================================================== */
-body {
-  margin: 0;
-  font-family: 'Orbitron', sans-serif;
-  background: #05070d;
-  color: #d0e7ff;
-  overflow-x: hidden;
-}
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+#regionInfo {}
 
-/* Fade hidden elements */
-.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ==========================================================
-   OPENING SCREEN
-========================================================== */
-.opening-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-}
-
-.opening-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: zoomIn 8s ease-out forwards;
-  filter: brightness(0.7);
-}
-
-@keyframes zoomIn {
-  from { transform: scale(1); }
-  to { transform: scale(1.15); }
-}
-
-.opening-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(0,0,0,0.2), rgba(0,0,0,0.75));
-}
-
-.opening-title {
-  position: absolute;
-  top: 27%;
-  width: 100%;
-  text-align: center;
-  font-size: 58px;
-  color: #a9d6ff;
-  letter-spacing: 6px;
-}
-
-/* Enter button */
-.enter-btn {
-  position: absolute;
-  top: 65%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 15px 45px;
-  font-size: 20px;
-  border: 1px solid #4af1ff;
-  color: #d0e7ff;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.25s;
-  backdrop-filter: blur(4px);
-}
-
-.enter-btn:hover {
-  background: rgba(74, 241, 255, 0.25);
-  box-shadow: 0 0 15px #4af1ff;
-}
-
-/* ==========================================================
-   GLITCH TEXT
-========================================================== */
-.glitch {
+#mapContainer {
+  width: 85%;
+  margin: 80px auto;
+  height: 600px;
   position: relative;
-  color: #7bc4ff;
-  text-transform: uppercase;
-  text-shadow: 0 0 8px #4af1ff;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.glitch::before {
-  color: #ff3df2;
-  clip-path: inset(0 0 50% 0);
-  animation: glitch1 2s infinite;
-}
-
-.glitch::after {
-  color: #4af1ff;
-  clip-path: inset(50% 0 0 0);
-  animation: glitch2 2.2s infinite;
-}
-
-@keyframes glitch1 {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 1px); }
-  40% { transform: translate(2px, -1px); }
-  60% { transform: translate(-1px, 2px); }
-  80% { transform: translate(1px, -2px); }
-  100% { transform: translate(0); }
-}
-
-@keyframes glitch2 {
-  0% { transform: translate(0); }
-  20% { transform: translate(1px, -1px); }
-  40% { transform: translate(-1px, 1px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(-2px, -1px); }
-  100% { transform: translate(0); }
-}
-
-/* ==========================================================
-   FLOATING ICON NAVIGATION (Nav = C)
-========================================================== */
-#sideNav {
-  position: fixed;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  z-index: 50;
-  opacity: 0;
-  transition: opacity 1s;
-}
-
-.nav-icon {
-  font-size: 32px;
-  color: #7bc4ff;
-  cursor: pointer;
-  position: relative;
-  transition: 0.25s;
-}
-
-.nav-icon:hover {
-  text-shadow: 0 0 12px #4af1ff;
-  transform: scale(1.2);
-}
-
-/* Tooltip */
-.nav-icon::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 45px;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 6px 10px;
-  background: rgba(20,30,40,0.85);
+  background: rgba(10, 20, 35, 0.4);
   border: 1px solid #4af1ff55;
-  color: #d0e7ff;
-  white-space: nowrap;
-  font-size: 13px;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.25s;
-}
-
-.nav-icon:hover::after {
-  opacity: 1;
-  left: 50px;
-}
-
-/* ==========================================================
-   UNIVERSAL PAGE STRUCTURE
-========================================================== */
-.page-opening {
-  position: relative;
-  width: 100%;
-  height: 55vh;
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
   overflow: hidden;
 }
 
-.page-opening img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.7);
-  animation: zoom2 7s ease-out forwards;
-}
-
-@keyframes zoom2 {
-  from { transform: scale(1); }
-  to { transform: scale(1.12); }
-}
-
-.page-title-overlay {
-  position: absolute;
-  top: 40%;
-  width: 100%;
-  text-align: center;
-  color: #a9d6ff;
-  font-size: 48px;
-  letter-spacing: 4px;
-  text-shadow: 0 0 12px #4af1ff;
-}
-
-.center-title {
-  text-align: center;
-  margin-top: 50px;
-  font-size: 40px;
-}
-
-/* Content Panel */
-.home-panel,
-.page-panel {
-  width: 70%;
-  margin: 60px auto;
-  padding: 30px;
-  background: rgba(20, 30, 45, 0.55);
-  border: 1px solid #3c4b69;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #1c2b43 inset;
-  line-height: 1.8;
-}
-
-/* ==========================================================
-   CHART AREAS
-========================================================== */
-#chart,
-#barChart {
-  border: 1px solid #3c4b69;
-  border-radius: 10px;
-  background: rgba(10, 15, 25, 0.5);
-  backdrop-filter: blur(4px);
-  padding: 10px;
-}
-
-/* Tooltip for charts */
-.chart-tooltip {
-  position: absolute;
-  background: rgba(10,20,35,0.95);
-  border: 1px solid #4af1ff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  pointer-events: none;
-  font-size: 13px;
-  color: #d0e7ff;
-  z-index: 1000;
-  transform: translate(-50%, -120%);
-  display: none;
-}
-
-/* ==========================================================
-   INTERACTIVE MAP
-========================================================== */
-#regionInfo {
-  position: absolute;
-}
-
-#mapContainer {
-  width: 80%;
-  margin: 80px auto;
-  height: 520px;
-  background: rgba(10, 20, 35, 0.6);
-  border: 1px solid #4af1ff55;
-  border-radius: 12px;
-  position: relative;
-}
-
-.region {
-  fill: rgba(90, 110, 150, 0.4);
-  stroke: #4af1ff88;
-  stroke-width: 1.2;
+/* 每一个区域都使用液态金属渲染逻辑 */
+.region.metal {
+  stroke: rgba(255,255,255,0.6);
+  stroke-width: 2.2;
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.3s ease-out;
+  filter: drop-shadow(0 0 6px rgba(120,180,255,0.4));
 }
 
-.region:hover {
-  fill: rgba(74, 241, 255, 0.45);
-  stroke: #4af1ff;
-  stroke-width: 2;
+/* Hover 时呈现金属液态流光边缘 */
+.region.metal:hover {
+  stroke: #ffffff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 14px rgba(150,210,255,0.9));
+  transform: scale(1.02);
 }
 
+/* Click 时区域轻微放大 + 增强发光 */
+.region.active {
+  stroke: #ffffff;
+  stroke-width: 3.2;
+  transform: scale(1.07);
+  filter: drop-shadow(0 0 20px rgba(255,255,255,1));
+}
+
+/* 信息面板 */
 .info-box {
   position: absolute;
   right: 20px;
   top: 20px;
-  width: 260px;
-  padding: 20px;
-  background: rgba(10,20,35,0.75);
+  width: 280px;
+  padding: 22px;
+  background: rgba(8,18,28,0.7);
   border: 1px solid #4af1ff55;
   border-radius: 10px;
+  backdrop-filter: blur(5px);
+  color: #d0e7ff;
   display: none;
+  transition: 0.3s ease-out;
+  box-shadow: 0 0 14px rgba(0,0,0,0.4) inset;
 }
 
-/* ==========================================================
-   LIQUID METAL SIMULATION
-========================================================== */
-#liquidCanvas {
-  width: 100%;
-  height: 620px;
-  background: #03070d;
-  border-top: 1px solid #28344d;
-}
-
-/* Label on Liquid Metal Page */
-.liquid-label {
-  position: absolute;
-  top: 62%;
-  width: 100%;
-  text-align: center;
-  color: #7bc4ff;
+.info-box h3 {
+  margin-top: 0;
   font-size: 22px;
-  text-shadow: 0 0 8px #4af1ff;
+  color: #a9dfff;
 }
 
-/* ==========================================================
-   STORY PAGE
-========================================================== */
-.story-text {
-  width: 70%;
-  margin: 80px auto;
-  font-size: 18px;
-  line-height: 2;
-  animation: fadeIn 2s ease-out forwards;
-  opacity: 0;
-}
+/* 用于自动改变 info-box 的边框颜色（根据区域颜色） */
+.info-box.dynamic-core { border-color: #75bfff; }
+.info-box.dynamic-north { border-color: #5ab4ff; }
+.info-box.dynamic-east { border-color: #0077ff; }
+.info-box.dynamic-south { border-color: #3bc6d4; }
+.info-box.dynamic-west { border-color: #7d4bff; }
 
-@keyframes fadeIn {
-  to { opacity: 1; }
+/* SVG 自动铺满 */
+#metalMap {
+  width: 100%;
+  height: 100%;
 }
