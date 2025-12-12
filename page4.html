@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>液态金属互动模拟 · Cyber Faith</title>
+<title>Liquid Metal Simulation · Cyber Faith</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -14,140 +14,43 @@
 <!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
     <img src="assets/open4.jpg">
-    <div class="page-title-overlay glitch" data-text="LIQUID METAL SIMULATION">
-        LIQUID METAL SIMULATION
+    <div class="page-title-overlay glitch" data-text="ABSTRACT VISUALIZATION OF THE WORLD">
+        ABSTRACT VISUALIZATION OF THE WORLD
     </div>
 </div>
 
-<!-- ======================= CANVAS 区域 ======================= -->
-<canvas id="liquidCanvas"></canvas>
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+</nav>
 
-<script>
-/* ==========================================================
-   LIQUID METAL SIMULATION
-   先进版粒子+力场模拟：吸引 / 排斥 / 散开 / 群聚行为
-========================================================== */
+<!-- ======================= PANEL TEXT ======================= -->
+<section class="page-panel">
+    <h2>Liquid Metal Consciousness Field</h2>
+    <p>
+        This simulation visualizes the fragmented collective consciousness of the cybernetic world.
+        The particles represent belief clusters, drifting, merging, and dispersing according to unseen
+        forces—just like future religions reshaped by technology, memory, and quantum behavior.
+    </p>
+    <p>
+        Move your cursor across the canvas to attract and disturb the particles.
+        This abstract model symbolizes how individual actions can ripple through a global belief system.
+    </p>
+</section>
 
-const canvas = document.getElementById("liquidCanvas");
-const ctx = canvas.getContext("2d");
+<!-- ======================= LIQUID METAL CANVAS ======================= -->
+<div style="width:100%;height:650px;position:relative;">
+    <canvas id="liquidCanvas"></canvas>
+    <div class="liquid-label">Liquid Metal Particle Simulation</div>
+</div>
 
-canvas.width = window.innerWidth;
-canvas.height = 600;
-
-let mouse = { x: null, y: null };
-
-// 监听鼠标
-canvas.addEventListener("mousemove", e => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY - 100;
-});
-
-canvas.addEventListener("mouseleave", () => {
-  mouse.x = null;
-  mouse.y = null;
-});
-
-// 粒子类
-class Particle {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 1;
-    this.vy = (Math.random() - 0.5) * 1;
-    this.size = 6;
-  }
-
-  update() {
-    // 群聚行为（趋近中心）
-    let centerX = canvas.width / 2;
-    let centerY = canvas.height / 2;
-    let dx = centerX - this.x;
-    let dy = centerY - this.y;
-    let dist = Math.hypot(dx, dy);
-    let force = dist * 0.0005;
-
-    this.vx += dx * force;
-    this.vy += dy * force;
-
-    // 鼠标排斥力
-    if (mouse.x !== null) {
-      let mdx = this.x - mouse.x;
-      let mdy = this.y - mouse.y;
-      let mDist = Math.hypot(mdx, mdy);
-
-      if (mDist < 120) {
-        this.vx += mdx * 0.03;
-        this.vy += mdy * 0.03;
-      }
-
-      if (mDist < 60) {
-        this.vx += mdx * 0.08;
-        this.vy += mdy * 0.08;
-      }
-    }
-
-    // 阻尼（让运动更像液体）
-    this.vx *= 0.94;
-    this.vy *= 0.94;
-
-    this.x += this.vx;
-    this.y += this.vy;
-
-    // 边界反弹
-    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.fillStyle = "rgba(74,241,255,0.85)";
-    ctx.shadowColor = "#4af1ff";
-    ctx.shadowBlur = 12;
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-// 生成粒子
-const particles = [];
-for (let i = 0; i < 110; i++) {
-  particles.push(new Particle());
-}
-
-// 渲染循环
-function animate() {
-  ctx.fillStyle = "rgba(5, 10, 18, 0.25)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  particles.forEach(p => {
-    p.update();
-    p.draw();
-  });
-
-  // 粒子连线（增加“液态”视觉）
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i+1; j < particles.length; j++) {
-      let dx = particles[i].x - particles[j].x;
-      let dy = particles[i].y - particles[j].y;
-      let dist = Math.hypot(dx, dy);
-
-      if (dist < 110) {
-        ctx.strokeStyle = "rgba(74,241,255, 0.15)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.stroke();
-      }
-    }
-  }
-
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-</script>
+<!-- ======================= LIQUID JS ======================= -->
+<script src="liquidMetal.js"></script>
 
 </body>
 </html>
