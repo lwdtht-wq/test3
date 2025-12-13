@@ -38,7 +38,7 @@ a {
 
 @keyframes zoomIn {
   from { transform: scale(1); }
-  to { transform: scale(1.15); }
+  to   { transform: scale(1.15); }
 }
 
 .opening-overlay {
@@ -107,24 +107,6 @@ a {
   animation: glitch2 2.2s infinite;
 }
 
-@keyframes glitch1 {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 1px); }
-  40% { transform: translate(2px, -1px); }
-  60% { transform: translate(-1px, 2px); }
-  80% { transform: translate(1px, -2px); }
-  100% { transform: translate(0); }
-}
-
-@keyframes glitch2 {
-  0% { transform: translate(0); }
-  20% { transform: translate(1px, -1px); }
-  40% { transform: translate(-1px, 1px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(-2px, -1px); }
-  100% { transform: translate(0); }
-}
-
 /* ==========================================================
    FLOATING ICON NAVIGATION
 ========================================================== */
@@ -136,7 +118,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  z-index: 9999;
+  z-index: 99999; /* 保证永远在最上层 */
   opacity: 0;
   transition: opacity 1s;
 }
@@ -197,7 +179,7 @@ a {
 
 @keyframes zoom2 {
   from { transform: scale(1); }
-  to { transform: scale(1.12); }
+  to   { transform: scale(1.12); }
 }
 
 .page-title-overlay {
@@ -243,12 +225,12 @@ a {
   pointer-events: none;
   font-size: 13px;
   color: #d0e7ff;
-  z-index: 9999;
+  z-index: 99999;
   display: none;
 }
 
 /* ==========================================================
-   MAP PAGE — REAL EARTH MAP + GRATICULE SUPPORT
+   MAP PAGE — FIXED EARTH MAP + HOVER + CLICK INFO
 ========================================================== */
 #mapWrapper {
   width: 80%;
@@ -269,29 +251,33 @@ a {
   position: relative;
 }
 
+/* SVG map */
 #worldMap {
   filter: drop-shadow(0 0 12px #4af1ff55);
 }
 
+/* Country style */
 .country {
   cursor: pointer;
   transition: 0.25s;
-  fill: rgba(90,110,150,0.4);
+  fill: rgba(90,110,150,0.45);
   stroke: #4af1ff88;
   stroke-width: 1;
 }
 
 .country:hover {
-  fill: rgba(74,241,255,0.45);
+  fill: rgba(74,241,255,0.55);
   stroke-width: 2;
 }
 
+/* Graticule lines */
 .graticule {
   fill: none;
   stroke: rgba(120,160,200,0.25);
   stroke-width: 0.7;
 }
 
+/* FIXED INFO BOX (click) */
 #mapInfo {
   position: absolute;
   top: 20px;
@@ -302,10 +288,12 @@ a {
   border: 1px solid #4af1ff55;
   border-radius: 10px;
   color: #fff;
-  z-index: 9999;
+  z-index: 99999;
   display: none;
+  pointer-events: auto !important; /* ⭐ FIXED */
 }
 
+/* Hover tooltip (country name) */
 .map-tooltip {
   position: absolute;
   background: rgba(10,20,35,0.95);
@@ -316,7 +304,7 @@ a {
   font-size: 14px;
   pointer-events: none;
   display: none;
-  z-index: 9999;
+  z-index: 99999;
 }
 
 /* ==========================================================
@@ -351,6 +339,4 @@ a {
   animation: fadeIn 2s ease-out forwards;
 }
 
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
+@keyframes fadeIn { to { opacity: 1; } }
