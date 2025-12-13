@@ -10,10 +10,37 @@
 <script defer src="main.js"></script>
 
 <style>
-/* make chart responsive */
-#chart svg {
-    width: 100% !important;
-    height: 420px !important;
+/* ------- Extra Cyberpunk Chart Styles ------- */
+.chart-tooltip {
+  position: absolute;
+  padding: 10px 14px;
+  background: rgba(10,20,30,0.8);
+  backdrop-filter: blur(6px);
+  border: 1px solid #4af1ff;
+  border-radius: 8px;
+  color: #dff6ff;
+  pointer-events: none;
+  font-size: 13px;
+  display: none;
+}
+
+.legend-btn {
+  padding: 6px 12px;
+  background: rgba(10,20,30,0.6);
+  border: 1px solid #4af1ff88;
+  color: #9bddff;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: 0.2s;
+}
+
+.legend-btn:hover {
+  box-shadow: 0 0 10px #4af1ff;
+}
+.legend-btn.active {
+  background: #4af1ff22;
+  box-shadow: 0 0 12px #4af1ff;
 }
 </style>
 
@@ -28,7 +55,7 @@
     </div>
 </div>
 
-<!-- ======================= FLOATING NAV ======================= -->
+<!-- ======================= NAV ======================= -->
 <nav id="sideNav" class="hidden">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
@@ -38,24 +65,29 @@
     <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- ======================= PAGE CONTENT ======================= -->
+<!-- ======================= CONTENT ======================= -->
 <section class="page-panel">
 
 <h2>Projected Growth of Religious Groups (2010–2150)</h2>
 
 <p>
 This chart combines partial real-world data with speculative future projections.
-It illustrates how traditional religions decline as techno-faith systems rise,
-reshaping the spiritual landscape of the cybernetic world.
+It shows traditional religions declining while techno-faith rises.
 </p>
 
-<div id="chart" style="width:100%;height:460px;margin-top:40px;"></div>
+<!-- Legend -->
+<div style="margin-bottom:20px;">
+  <button class="legend-btn active" data-key="traditional">Traditional</button>
+  <button class="legend-btn active" data-key="tech">Techno-Faith</button>
+  <button class="legend-btn active" data-key="none">Unaffiliated</button>
+</div>
+
+<div id="chart" style="width:100%;height:460px;margin-top:20px;"></div>
 
 </section>
 
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
-/* DATA */
 const data = [
   { year: 2010, traditional: 83, tech: 0, none: 17 },
   { year: 2020, traditional: 78, tech: 0, none: 22 },
@@ -64,34 +96,27 @@ const data = [
   { year: 2050, traditional: 35, tech: 32, none: 33 },
   { year: 2075, traditional: 20, tech: 55, none: 25 },
   { year: 2100, traditional: 12, tech: 68, none: 20 },
-  { year: 2150, traditional: 5, tech: 82, none: 13 }
+  { year: 2150, traditional: 5,  tech: 82, none: 13 }
 ];
 
-/* responsive width */
-const containerWidth = document.getElementById("chart").offsetWidth;
-
-const width = containerWidth;
-const height = 420;
+const w = 900, h = 420;
 const margin = { top: 40, right: 80, bottom: 40, left: 70 };
 
-/* SVG */
 const svg = d3.select("#chart")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height);
+  .attr("width", w)
+  .attr("height", h);
 
-/* SCALES */
 const x = d3.scaleLinear()
   .domain(d3.extent(data, d => d.year))
-  .range([margin.left, width - margin.right]);
+  .range([margin.left, w - margin.right]);
 
 const y = d3.scaleLinear()
   .domain([0, 100])
-  .range([height - margin.bottom, margin.top]);
+  .range([h - margin.bottom, margin.top]);
 
-/* AXES */
 svg.append("g")
-  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .attr("transform", `translate(0, ${h - margin.bottom})`)
   .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
   .attr("color", "#7bc4ff");
 
@@ -100,36 +125,93 @@ svg.append("g")
   .call(d3.axisLeft(y))
   .attr("color", "#7bc4ff");
 
-/* LINES */
-function drawLine(key, color) {
-  svg.append("path")
+const colors = {
+  traditional: "#ff3df2",
+  tech: "#4af1ff",
+  none: "#8cc7ff"
+};
+
+/* ---------------- DRAW LINES WITH ANIMATION ---------------- */
+function drawLine(key) {
+  const line = d3.line()
+    .x(d => x(d.year))
+    .y(d => y(d[key]));
+
+  // Path
+  const p = svg.append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", color)
-    .attr("stroke-width", 2.6)
-    .attr("d", d3.line()
-      .x(d => x(d.year))
-      .y(d => y(d[key]))
-    );
+    .attr("stroke", colors[key])
+    .attr("stroke-width", 3)
+    .attr("opacity", 0.9)
+    .attr("d", line)
+    .style("filter", "drop-shadow(0px 0px 6px " + colors[key] + ")");
 
-  svg.append("text")
-    .attr("x", x(data[data.length - 1].year) + 10)
-    .attr("y", y(data[data.length - 1][key]))
-    .attr("fill", color)
-    .attr("font-size", "14px")
-    .text(key === "traditional" ? "Traditional" :
-          key === "tech" ? "Techno-Faith" : "None");
+  // Animate drawing
+  const length = p.node().getTotalLength();
+  p.attr("stroke-dasharray", length)
+   .attr("stroke-dashoffset", length)
+   .transition()
+   .duration(2000)
+   .ease(d3.easeCubic)
+   .attr("stroke-dashoffset", 0);
+
+  return p;
 }
 
-drawLine("traditional", "#ff3df2");
-drawLine("tech", "#4af1ff");
-drawLine("none", "#8cc7ff");
+let paths = {
+  traditional: drawLine("traditional"),
+  tech: drawLine("tech"),
+  none: drawLine("none")
+};
 
-/* DOTS + TOOLTIP */
-enableChartTooltip(svg, data, x, y, "traditional");
-enableChartTooltip(svg, data, x, y, "tech");
-enableChartTooltip(svg, data, x, y, "none");
+/* ---------------- Hover Interaction: vertical line + glowing point ---------------- */
+const tooltip = document.querySelector(".chart-tooltip");
+const hoverLine = svg.append("line")
+  .attr("stroke", "#4af1ff88")
+  .attr("stroke-width", 2)
+  .attr("y1", margin.top)
+  .attr("y2", h - margin.bottom)
+  .style("display", "none");
 
+svg.on("mousemove", function (event) {
+  const [mx] = d3.pointer(event);
+  const year = Math.round(x.invert(mx));
+  const d = data.find(v => v.year === year);
+  if (!d) return;
+
+  hoverLine.attr("x1", x(year)).attr("x2", x(year)).style("display", "block");
+
+  tooltip.style.display = "block";
+  tooltip.style.left = event.pageX + "px";
+  tooltip.style.top = event.pageY - 30 + "px";
+
+  tooltip.innerHTML =
+    `<strong>${year}</strong><br>
+     Traditional: ${d.traditional}%<br>
+     Techno-Faith: ${d.tech}%<br>
+     None: ${d.none}%`;
+});
+
+svg.on("mouseleave", () => {
+  hoverLine.style("display", "none");
+  tooltip.style.display = "none";
+});
+
+/* ---------------- Legend toggle ---------------- */
+document.querySelectorAll(".legend-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.key;
+
+    if (btn.classList.contains("active")) {
+      btn.classList.remove("active");
+      paths[key].style("display", "none");
+    } else {
+      btn.classList.add("active");
+      paths[key].style("display", "block");
+    }
+  });
+});
 </script>
 
 </body>
