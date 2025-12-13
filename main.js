@@ -24,13 +24,13 @@ function enterWorld() {
 
 
 /* ==========================================================
-   SHOW NAV ON NORMAL PAGES
+   SHOW NAV ON ALL NORMAL PAGES
 ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
     const nav = document.getElementById("sideNav");
 
-    // ⬅ 新增安全检查
-    if (nav && nav.classList.contains("hidden")) {
+    // ⬅ 安全检查，避免首页隐藏状态残留
+    if (nav) {
         nav.classList.remove("hidden");
         nav.style.opacity = "1";
     }
@@ -55,6 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const tooltip = document.createElement("div");
     tooltip.className = "chart-tooltip";
     document.body.appendChild(tooltip);
+
+    /* =====================================================
+       INIT PAGE 3 MAP — FIXED (no errors if file missing)
+    ====================================================== */
+    if (typeof worldMapInit === "function") {
+        worldMapInit();
+    }
 });
 
 
@@ -93,7 +100,7 @@ function enableChartTooltip(svg, data, xScale, yScale, keyName) {
 
 
 /* ==========================================================
-   PAGE 3 MAP INTERACTION
+   PAGE 3 MAP INTERACTION (USED BY worldMapInit)
 ========================================================== */
 function showRegionInfo(regionName) {
     const box = document.getElementById("mapInfo");
