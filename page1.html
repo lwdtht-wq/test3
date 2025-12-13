@@ -10,20 +10,23 @@
 <script defer src="main.js"></script>
 
 <style>
-/* ------- Extra Cyberpunk Chart Styles ------- */
+/* ---------------- Tooltip (Cyberpunk style) ---------------- */
 .chart-tooltip {
   position: absolute;
-  padding: 10px 14px;
-  background: rgba(10,20,30,0.8);
-  backdrop-filter: blur(6px);
+  padding: 14px 18px;
+  background: rgba(8, 18, 30, 0.85);
   border: 1px solid #4af1ff;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #dff6ff;
   pointer-events: none;
-  font-size: 13px;
+  font-size: 14px;
   display: none;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 12px #4af1ff99;
+  transform: translateY(-10px);
 }
 
+/* Legend */
 .legend-btn {
   padding: 6px 12px;
   background: rgba(10,20,30,0.6);
@@ -34,7 +37,6 @@
   margin-right: 10px;
   transition: 0.2s;
 }
-
 .legend-btn:hover {
   box-shadow: 0 0 10px #4af1ff;
 }
@@ -72,7 +74,7 @@
 
 <p>
 This chart combines partial real-world data with speculative future projections.
-It shows traditional religions declining while techno-faith rises.
+Hover to explore interpolated values in cyber space.
 </p>
 
 <!-- Legend -->
@@ -88,6 +90,7 @@ It shows traditional religions declining while techno-faith rises.
 
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
+/* ---------------- DATA ---------------- */
 const data = [
   { year: 2010, traditional: 83, tech: 0, none: 17 },
   { year: 2020, traditional: 78, tech: 0, none: 22 },
@@ -108,7 +111,7 @@ const svg = d3.select("#chart")
   .attr("height", h);
 
 const x = d3.scaleLinear()
-  .domain(d3.extent(data, d => d.year))
+  .domain([2010, 2150])
   .range([margin.left, w - margin.right]);
 
 const y = d3.scaleLinear()
@@ -117,7 +120,7 @@ const y = d3.scaleLinear()
 
 svg.append("g")
   .attr("transform", `translate(0, ${h - margin.bottom})`)
-  .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
+  .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d")))
   .attr("color", "#7bc4ff");
 
 svg.append("g")
@@ -125,36 +128,27 @@ svg.append("g")
   .call(d3.axisLeft(y))
   .attr("color", "#7bc4ff");
 
+/* ---------------- COLORS ---------------- */
 const colors = {
   traditional: "#ff3df2",
   tech: "#4af1ff",
   none: "#8cc7ff"
 };
 
-/* ---------------- DRAW LINES WITH ANIMATION ---------------- */
+/* ---------------- LINE GENERATOR ---------------- */
 function drawLine(key) {
   const line = d3.line()
     .x(d => x(d.year))
-    .y(d => y(d[key]));
+    .y(d => y(d[key]))
+    .curve(d3.curveMonotoneX);
 
-  // Path
   const p = svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colors[key])
     .attr("stroke-width", 3)
-    .attr("opacity", 0.9)
     .attr("d", line)
-    .style("filter", "drop-shadow(0px 0px 6px " + colors[key] + ")");
-
-  // Animate drawing
-  const length = p.node().getTotalLength();
-  p.attr("stroke-dasharray", length)
-   .attr("stroke-dashoffset", length)
-   .transition()
-   .duration(2000)
-   .ease(d3.easeCubic)
-   .attr("stroke-dashoffset", 0);
+    .style("filter", "drop-shadow(0 0 8px " + colors[key] + ")");
 
   return p;
 }
@@ -165,51 +159,101 @@ let paths = {
   none: drawLine("none")
 };
 
-/* ---------------- Hover Interaction: vertical line + glowing point ---------------- */
-const tooltip = document.querySelector(".chart-tooltip");
+/* ---------------- INTERPOLATION FUNCTION ---------------- */
+function interpolateValue(year, key) {
+  for (let i = 0; i < data.length - 1; i++) {
+    let a = data[i];
+    let b = data[i + 1];
+    if (year >= a.year && year <= b.year) {
+      const t = (year - a.year) / (b.year - a.year);
+      return a[key] + t * (b[key] - a[key]);
+    }
+  }
+  return null;
+}
+
+/* ---------------- FOLLOW POINTS ---------------- */
+let followDots = {
+  traditional: svg.append("circle")
+    .attr("r", 7)
+    .attr("fill", colors.traditional)
+    .style("filter", "drop-shadow(0 0 8px " + colors.traditional + ")")
+    .style("display", "none"),
+
+  tech: svg.append("circle")
+    .attr("r", 7)
+    .attr("fill", colors.tech)
+    .style("filter", "drop-shadow(0 0 8px " + colors.tech + ")")
+    .style("display", "none"),
+
+  none: svg.append("circle")
+    .attr("r", 7)
+    .attr("fill", colors.none)
+    .style("filter", "drop-shadow(0 0 8px " + colors.none + ")")
+    .style("display", "none")
+};
+
+/* ---------------- HOVER LINE + TOOLTIP ---------------- */
+const tooltip = document.createElement("div");
+tooltip.className = "chart-tooltip";
+document.body.appendChild(tooltip);
+
 const hoverLine = svg.append("line")
-  .attr("stroke", "#4af1ff88")
+  .attr("stroke", "#4af1ff99")
   .attr("stroke-width", 2)
+  .style("display", "none")
   .attr("y1", margin.top)
-  .attr("y2", h - margin.bottom)
-  .style("display", "none");
+  .attr("y2", h - margin.bottom);
 
-svg.on("mousemove", function (event) {
+/* ---------------- MOUSE MOVE ---------------- */
+svg.on("mousemove", function(event) {
   const [mx] = d3.pointer(event);
-  const year = Math.round(x.invert(mx));
-  const d = data.find(v => v.year === year);
-  if (!d) return;
+  let year = x.invert(mx);
+  year = Math.min(2150, Math.max(2010, year));
 
-  hoverLine.attr("x1", x(year)).attr("x2", x(year)).style("display", "block");
+  hoverLine
+    .attr("x1", x(year))
+    .attr("x2", x(year))
+    .style("display", "block");
+
+  const values = {
+    traditional: interpolateValue(year, "traditional"),
+    tech: interpolateValue(year, "tech"),
+    none: interpolateValue(year, "none")
+  };
+
+  Object.keys(values).forEach(key => {
+    followDots[key]
+      .attr("cx", x(year))
+      .attr("cy", y(values[key]))
+      .style("display", "block");
+  });
 
   tooltip.style.display = "block";
-  tooltip.style.left = event.pageX + "px";
-  tooltip.style.top = event.pageY - 30 + "px";
-
-  tooltip.innerHTML =
-    `<strong>${year}</strong><br>
-     Traditional: ${d.traditional}%<br>
-     Techno-Faith: ${d.tech}%<br>
-     None: ${d.none}%`;
+  tooltip.style.left = event.pageX + 15 + "px";
+  tooltip.style.top = event.pageY - 40 + "px";
+  tooltip.innerHTML = `
+    <strong>${Math.round(year)}</strong><br>
+    Traditional: ${values.traditional.toFixed(1)}%<br>
+    Techno-Faith: ${values.tech.toFixed(1)}%<br>
+    None: ${values.none.toFixed(1)}%
+  `;
 });
 
 svg.on("mouseleave", () => {
   hoverLine.style("display", "none");
   tooltip.style.display = "none";
+  Object.values(followDots).forEach(dot => dot.style("display", "none"));
 });
 
-/* ---------------- Legend toggle ---------------- */
+/* ---------------- LEGEND TOGGLE ---------------- */
 document.querySelectorAll(".legend-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const key = btn.dataset.key;
+    const active = btn.classList.toggle("active");
 
-    if (btn.classList.contains("active")) {
-      btn.classList.remove("active");
-      paths[key].style("display", "none");
-    } else {
-      btn.classList.add("active");
-      paths[key].style("display", "block");
-    }
+    paths[key].style("display", active ? "block" : "none");
+    followDots[key].style("display", active ? "block" : "none");
   });
 });
 </script>
