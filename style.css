@@ -345,3 +345,9 @@ a {
     align-items: center !important;
     position: relative;
 }
+/* ====== Make Map Tooltip Always On Top ====== */
+#mapInfo {
+    z-index: 9999 !important;
+    position: absolute;
+    pointer-events: none;
+}
