@@ -7,102 +7,12 @@
 
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
-
-<style>
-/* =========================================================
-   MAP CONTAINER (CENTERED + FIXED HEIGHT)
-   ========================================================= */
-#mapContainer {
-    width: 85%;
-    margin: 70px auto;
-    height: 560px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(74, 241, 255, 0.25);
-    border-radius: 12px;
-    background: rgba(10, 20, 35, 0.45);
-    box-shadow: 0 0 25px rgba(74, 241, 255, 0.15) inset;
-}
-
-/* =========================================================
-   MAP SVG
-   ========================================================= */
-#mapContainer svg {
-    width: 95%;
-    height: 100%;
-}
-
-/* =========================================================
-   REGION STYLING + HOVER EFFECT
-   ========================================================= */
-.region {
-    fill: rgba(90, 110, 150, 0.45);
-    stroke: #4af1ff99;
-    stroke-width: 1.6;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.region:hover {
-    fill: rgba(74, 241, 255, 0.5);
-    stroke: #4af1ff;
-    filter: drop-shadow(0 0 10px #4af1ff);
-}
-
-/* =========================================================
-   LIQUID OUTLINE PULSE (ANIMATED EDGE)
-   ========================================================= */
-@keyframes liquidPulse {
-    0% { stroke-width: 1.6; stroke: rgba(74,241,255,0.45); }
-    50% { stroke-width: 3.2; stroke: rgba(74,241,255,0.9); }
-    100% { stroke-width: 1.6; stroke: rgba(74,241,255,0.45); }
-}
-
-.region {
-    animation: liquidPulse 4s infinite ease-in-out;
-}
-
-/* =========================================================
-   INFO BOX (UPGRADED)
-   ========================================================= */
-.info-box {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    width: 260px;
-    padding: 18px;
-    background: rgba(10,20,35,0.82);
-    border: 1px solid #4af1ff55;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(74,241,255,0.3);
-    color: #d0e7ff;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.6s ease-out;
-}
-
-/* Info appears smoothly */
-.info-box.show {
-    display: block;
-    opacity: 1;
-}
-
-/* =========================================================
-   GRID LINES (LAT / LON)
-   ========================================================= */
-.grid-line {
-    stroke: rgba(74, 241, 255, 0.18);
-    stroke-width: 1;
-    shape-rendering: crispEdges;
-}
-</style>
+<script defer src="worldMap.js"></script>
 
 </head>
 <body>
 
-<!-- PAGE OPENING -->
+<!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
     <img src="assets/open3.jpg">
     <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
@@ -110,7 +20,7 @@
     </div>
 </div>
 
-<!-- FLOATING NAV -->
+<!-- ======================= FLOATING NAV ======================= -->
 <nav id="sideNav">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
@@ -120,127 +30,21 @@
     <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- CONTENT -->
+<!-- ======================= PANEL TEXT ======================= -->
 <section class="page-panel">
-    <h2>Interactive Global Distribution of Future Faiths</h2>
-    <p>
-        This map presents the projected spread of major techno-spiritual belief systems in 2150.
-        Each region has been shaped by unique cultural, technological, and geopolitical influences.
-        Click any region to reveal its religious composition.
-    </p>
+<h2>Interactive Map of Future Global Faiths in 2150</h2>
+<p>
+This world map shows five major continental regions, each developing its own dominant techno-spiritual belief system.
+Hover over a region to reveal its projected faith composition in the year 2150.
+</p>
 </section>
 
-<!-- MAP -->
-<div id="mapContainer">
+<!-- ======================= MAP AREA ======================= -->
+<div id="mapWrapper">
+    <svg id="worldMap" viewBox="0 0 1000 520"></svg>
 
-    <!-- INFO BOX -->
-    <div id="mapInfo" class="info-box">
-        <h3 id="infoTitle">Region</h3>
-        <div id="infoContent"></div>
-    </div>
-
-    <!-- SVG MAP -->
-    <svg viewBox="0 0 800 500">
-
-        <!-- ============================================
-             GRID LINES (LAT / LON)
-        ============================================ -->
-        <!-- Vertical lines -->
-        <line x1="160" y1="0" x2="160" y2="500" class="grid-line" />
-        <line x1="320" y1="0" x2="320" y2="500" class="grid-line" />
-        <line x1="480" y1="0" x2="480" y2="500" class="grid-line" />
-        <line x1="640" y1="0" x2="640" y2="500" class="grid-line" />
-
-        <!-- Horizontal lines -->
-        <line x1="0" y1="120" x2="800" y2="120" class="grid-line" />
-        <line x1="0" y1="240" x2="800" y2="240" class="grid-line" />
-        <line x1="0" y1="360" x2="800" y2="360" class="grid-line" />
-
-        <!-- ============================================
-             REGIONS
-        ============================================ -->
-
-        <!-- NORTH -->
-        <path id="north" class="region"
-              onclick="showRegionInfo('north')"
-              d="M100,60 L700,60 L650,180 L150,180 Z" />
-
-        <!-- EAST -->
-        <path id="east" class="region"
-              onclick="showRegionInfo('east')"
-              d="M700,60 L760,250 L700,440 L650,180 Z" />
-
-        <!-- SOUTH -->
-        <path id="south" class="region"
-              onclick="showRegionInfo('south')"
-              d="M150,180 L650,180 L600,440 L200,440 Z" />
-
-        <!-- WEST -->
-        <path id="west" class="region"
-              onclick="showRegionInfo('west')"
-              d="M100,60 L150,180 L200,440 L40,250 Z" />
-
-    </svg>
+    <div id="mapTooltip" class="map-tooltip"></div>
 </div>
-
-<script>
-/* Override showRegionInfo to include fade-in animation */
-function showRegionInfo(regionName) {
-    const box = document.getElementById("mapInfo");
-    const title = document.getElementById("infoTitle");
-    const content = document.getElementById("infoContent");
-
-    const regionData = {
-        "north": {
-            name: "North Dominion",
-            faiths: {
-                "Cyber Oracle": "42%",
-                "Psionic Union": "27%",
-                "Quantum Throne": "18%",
-                "Echo Memory Cult": "13%"
-            }
-        },
-        "east": {
-            name: "East Luminance",
-            faiths: {
-                "Quantum Throne": "46%",
-                "Cyber Oracle": "30%",
-                "Psionic Union": "19%",
-                "Echo Memory Cult": "5%"
-            }
-        },
-        "south": {
-            name: "South Alloy Basin",
-            faiths: {
-                "Psionic Union": "51%",
-                "Echo Memory Cult": "29%",
-                "Quantum Throne": "14%",
-                "Cyber Oracle": "6%"
-            }
-        },
-        "west": {
-            name: "West Iron Frontier",
-            faiths: {
-                "Echo Memory Cult": "43%",
-                "Cyber Oracle": "28%",
-                "Quantum Throne": "21%",
-                "Psionic Union": "8%"
-            }
-        }
-    };
-
-    const data = regionData[regionName];
-    title.textContent = data.name;
-
-    let html = "";
-    for (let f in data.faiths) {
-        html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
-    }
-
-    content.innerHTML = html;
-    box.classList.add("show");
-}
-</script>
 
 </body>
 </html>
