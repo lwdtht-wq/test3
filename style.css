@@ -14,7 +14,6 @@ a {
   color: inherit;
 }
 
-/* Fade hidden elements */
 .hidden {
   opacity: 0;
   pointer-events: none;
@@ -58,7 +57,6 @@ a {
   letter-spacing: 6px;
 }
 
-/* Enter button */
 .enter-btn {
   position: absolute;
   top: 65%;
@@ -128,7 +126,7 @@ a {
 }
 
 /* ==========================================================
-   FLOATING ICON NAVIGATION (Nav = C)
+   FLOATING ICON NAVIGATION
 ========================================================== */
 #sideNav {
   position: fixed;
@@ -138,7 +136,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  z-index: 50;
+  z-index: 9999;
   opacity: 0;
   transition: opacity 1s;
 }
@@ -156,7 +154,6 @@ a {
   transform: scale(1.2);
 }
 
-/* Tooltip */
 .nav-icon::after {
   content: attr(data-label);
   position: absolute;
@@ -214,15 +211,8 @@ a {
   text-shadow: 0 0 12px #4af1ff;
 }
 
-.center-title {
-  text-align: center;
-  margin-top: 50px;
-  font-size: 40px;
-}
-
-/* Content Panel */
-.home-panel,
-.page-panel {
+.page-panel,
+.home-panel {
   width: 70%;
   margin: 60px auto;
   padding: 30px;
@@ -241,11 +231,9 @@ a {
   border: 1px solid #3c4b69;
   border-radius: 10px;
   background: rgba(10, 15, 25, 0.5);
-  backdrop-filter: blur(4px);
   padding: 10px;
 }
 
-/* Tooltip for charts */
 .chart-tooltip {
   position: absolute;
   background: rgba(10,20,35,0.95);
@@ -255,52 +243,80 @@ a {
   pointer-events: none;
   font-size: 13px;
   color: #d0e7ff;
-  z-index: 1000;
-  transform: translate(-50%, -120%);
+  z-index: 9999;
   display: none;
 }
 
 /* ==========================================================
-   INTERACTIVE MAP
+   MAP PAGE — REAL EARTH MAP + GRATICULE SUPPORT
 ========================================================== */
-#regionInfo {
-  position: absolute;
+#mapWrapper {
+  width: 80%;
+  margin: 60px auto;
+  position: relative;
+  text-align: center;
 }
 
 #mapContainer {
-  width: 80%;
-  margin: 80px auto;
+  width: 100%;
   height: 520px;
-  background: rgba(10, 20, 35, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(10,20,35,0.6);
   border: 1px solid #4af1ff55;
   border-radius: 12px;
   position: relative;
 }
 
-.region {
-  fill: rgba(90, 110, 150, 0.4);
-  stroke: #4af1ff88;
-  stroke-width: 1.2;
-  cursor: pointer;
-  transition: 0.25s;
+#worldMap {
+  filter: drop-shadow(0 0 12px #4af1ff55);
 }
 
-.region:hover {
-  fill: rgba(74, 241, 255, 0.45);
-  stroke: #4af1ff;
+.country {
+  cursor: pointer;
+  transition: 0.25s;
+  fill: rgba(90,110,150,0.4);
+  stroke: #4af1ff88;
+  stroke-width: 1;
+}
+
+.country:hover {
+  fill: rgba(74,241,255,0.45);
   stroke-width: 2;
 }
 
-.info-box {
+.graticule {
+  fill: none;
+  stroke: rgba(120,160,200,0.25);
+  stroke-width: 0.7;
+}
+
+#mapInfo {
   position: absolute;
-  right: 20px;
   top: 20px;
+  right: 20px;
   width: 260px;
   padding: 20px;
-  background: rgba(10,20,35,0.75);
+  background: rgba(10,20,35,0.85);
   border: 1px solid #4af1ff55;
   border-radius: 10px;
+  color: #fff;
+  z-index: 9999;
   display: none;
+}
+
+.map-tooltip {
+  position: absolute;
+  background: rgba(10,20,35,0.95);
+  border: 1px solid #4af1ff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #d0e7ff;
+  font-size: 14px;
+  pointer-events: none;
+  display: none;
+  z-index: 9999;
 }
 
 /* ==========================================================
@@ -313,7 +329,6 @@ a {
   border-top: 1px solid #28344d;
 }
 
-/* Label on Liquid Metal Page */
 .liquid-label {
   position: absolute;
   top: 62%;
@@ -332,61 +347,10 @@ a {
   margin: 80px auto;
   font-size: 18px;
   line-height: 2;
-  animation: fadeIn 2s ease-out forwards;
   opacity: 0;
+  animation: fadeIn 2s ease-out forwards;
 }
 
 @keyframes fadeIn {
   to { opacity: 1; }
-}
-#mapContainer {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    position: relative;
-}
-/* ====== Make Map Tooltip Always On Top ====== */
-#mapInfo {
-    z-index: 9999 !important;
-    position: absolute;
-    pointer-events: none;
-}
-#mapWrapper {
-    width: 80%;
-    margin: 60px auto;
-    position: relative;
-    text-align: center;
-}
-
-#worldMap {
-    filter: drop-shadow(0 0 12px #4af1ff55);
-}
-
-.country {
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.country:hover {
-    filter: brightness(1.4);
-    stroke-width: 2.2 !important;
-}
-
-.graticule {
-    fill: none;
-    stroke: rgba(120,160,200,0.25);
-    stroke-width: 0.7;
-}
-
-.map-tooltip {
-    position: absolute;
-    background: rgba(10,20,35,0.95);
-    border: 1px solid #4af1ff;
-    padding: 10px 14px;
-    border-radius: 8px;
-    color: #d0e7ff;
-    font-size: 14px;
-    pointer-events: none;
-    display: none;
-    z-index: 9999;
 }
