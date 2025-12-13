@@ -10,7 +10,7 @@
 <script defer src="main.js"></script>
 
 <style>
-/* IMPORTANT: make chart responsive */
+/* make chart responsive */
 #chart svg {
     width: 100% !important;
     height: 420px !important;
@@ -55,9 +55,7 @@ reshaping the spiritual landscape of the cybernetic world.
 
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
-/* ----------------------------------------------------------
-   DATA
----------------------------------------------------------- */
+/* DATA */
 const data = [
   { year: 2010, traditional: 83, tech: 0, none: 17 },
   { year: 2020, traditional: 78, tech: 0, none: 22 },
@@ -66,24 +64,23 @@ const data = [
   { year: 2050, traditional: 35, tech: 32, none: 33 },
   { year: 2075, traditional: 20, tech: 55, none: 25 },
   { year: 2100, traditional: 12, tech: 68, none: 20 },
-  { year: 2150, traditional: 5,  tech: 82, none: 13 }
+  { year: 2150, traditional: 5, tech: 82, none: 13 }
 ];
 
-/* Responsive width */
+/* responsive width */
 const containerWidth = document.getElementById("chart").offsetWidth;
 
 const width = containerWidth;
 const height = 420;
 const margin = { top: 40, right: 80, bottom: 40, left: 70 };
 
+/* SVG */
 const svg = d3.select("#chart")
   .append("svg")
-  .attr("width", "100%")
+  .attr("width", width)
   .attr("height", height);
 
-/* ----------------------------------------------------------
-   SCALES
----------------------------------------------------------- */
+/* SCALES */
 const x = d3.scaleLinear()
   .domain(d3.extent(data, d => d.year))
   .range([margin.left, width - margin.right]);
@@ -92,9 +89,7 @@ const y = d3.scaleLinear()
   .domain([0, 100])
   .range([height - margin.bottom, margin.top]);
 
-/* ----------------------------------------------------------
-   AXES
----------------------------------------------------------- */
+/* AXES */
 svg.append("g")
   .attr("transform", `translate(0, ${height - margin.bottom})`)
   .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
@@ -105,34 +100,9 @@ svg.append("g")
   .call(d3.axisLeft(y))
   .attr("color", "#7bc4ff");
 
-/* ----------------------------------------------------------
-   VERTICAL LINE + LABEL
----------------------------------------------------------- */
-const vLine = svg.append("line")
-  .attr("stroke", "#4af1ff88")
-  .attr("stroke-width", 1.5)
-  .attr("y1", margin.top)
-  .attr("y2", height - margin.bottom)
-  .style("display", "none");
-
-const yearLabel = svg.append("text")
-  .attr("fill", "#a9ddff")
-  .attr("font-size", "14px")
-  .style("display", "none");
-
-/* ----------------------------------------------------------
-   LINES
----------------------------------------------------------- */
-const colors = {
-  traditional: "#ff3df2",
-  tech: "#4af1ff",
-  none: "#8cc7ff"
-};
-
+/* LINES */
 function drawLine(key, color) {
-  const group = svg.append("g");
-
-  group.append("path")
+  svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", color)
@@ -142,7 +112,7 @@ function drawLine(key, color) {
       .y(d => y(d[key]))
     );
 
-  group.append("text")
+  svg.append("text")
     .attr("x", x(data[data.length - 1].year) + 10)
     .attr("y", y(data[data.length - 1][key]))
     .attr("fill", color)
@@ -151,54 +121,15 @@ function drawLine(key, color) {
           key === "tech" ? "Techno-Faith" : "None");
 }
 
-drawLine("traditional", colors.traditional);
-drawLine("tech", colors.tech);
-drawLine("none", colors.none);
+drawLine("traditional", "#ff3df2");
+drawLine("tech", "#4af1ff");
+drawLine("none", "#8cc7ff");
 
-/* ----------------------------------------------------------
-   DOTS + TOOLTIP SUPPORT
----------------------------------------------------------- */
-["traditional","tech","none"].forEach(key => {
-  const dots = svg.append("g")
-    .selectAll(".dot")
-    .data(data)
-    .enter()
-    .append("circle")
-      .attr("class", "dot")
-      .attr("cx", d => x(d.year))
-      .attr("cy", d => y(d[key]))
-      .attr("r", 6)
-      .attr("fill", colors[key])
-      .attr("stroke", "#fff");
+/* DOTS + TOOLTIP */
+enableChartTooltip(svg, data, x, y, "traditional");
+enableChartTooltip(svg, data, x, y, "tech");
+enableChartTooltip(svg, data, x, y, "none");
 
-  enableChartTooltip(svg, data, x, y, key);
-});
-
-/* ----------------------------------------------------------
-   MAIN INTERACTION
----------------------------------------------------------- */
-svg.on("mousemove", function (event) {
-  const mouseX = d3.pointer(event)[0];
-
-  if (mouseX < margin.left || mouseX > width - margin.right) return;
-
-  vLine.attr("x1", mouseX).attr("x2", mouseX).style("display", "block");
-
-  const closest = data.reduce((a,b) =>
-    Math.abs(x(b.year)-mouseX) < Math.abs(x(a.year)-mouseX) ? b : a
-  );
-
-  yearLabel
-    .attr("x", mouseX + 10)
-    .attr("y", margin.top + 10)
-    .text(closest.year)
-    .style("display", "block");
-});
-
-svg.on("mouseleave", () => {
-  vLine.style("display", "none");
-  yearLabel.style("display", "none");
-});
 </script>
 
 </body>
