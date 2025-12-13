@@ -4,13 +4,37 @@
 <meta charset="UTF-8">
 <title>World Faith Distribution · Cyber Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
-</head>
 
+<style>
+/* ---- TEMP FIX TO FORCE MAP APPEAR ---- */
+#mapContainer {
+    width: 80%;
+    margin: 60px auto;
+    height: 520px;                 /* ensure map has height */
+    position: relative;
+    display: flex;
+    justify-content: center;       /* center SVG */
+    align-items: center;
+}
+
+#mapContainer svg {
+    width: 90%;
+    height: 100%;
+}
+
+.info-box {
+    z-index: 20 !important;        /* ensure on top */
+    position: absolute;
+}
+</style>
+
+</head>
 <body>
 
-<!-- ======================= PAGE OPENING ======================= -->
+<!-- PAGE OPENING -->
 <div class="page-opening">
     <img src="assets/open3.jpg">
     <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
@@ -18,8 +42,8 @@
     </div>
 </div>
 
-<!-- ======================= FLOATING NAV ======================= -->
-<nav id="sideNav" class="hidden">
+<!-- FLOATING NAV -->
+<nav id="sideNav">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
     <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
@@ -28,34 +52,45 @@
     <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
 </nav>
 
-<!-- ======================= PAGE TEXT ======================= -->
+<!-- CONTENT -->
 <section class="page-panel">
-    <h2>Global Composition of Future Faith Regions</h2>
+    <h2>Interactive Global Distribution of Future Faiths</h2>
     <p>
-        The map below illustrates five major cultural territories shaped by future belief systems. 
-        Each region forms a fluid, living mass whose boundaries shift and breathe. 
-        Hover over any area to reveal its defining spiritual characteristics.
+        This map shows how major future belief systems spread across the world.
+        Each region reflects differing cultural, technological, and political influences.
+        Click a region to reveal its faith composition.
     </p>
 </section>
 
-<!-- ======================= MAP + INFO ======================= -->
+<!-- MAP -->
 <div id="mapContainer">
 
-    <!-- Floating Info Panel (must be inside mapContainer for highest z-index) -->
+    <!-- INFO BOX -->
     <div id="mapInfo" class="info-box">
-        <h3 id="infoTitle"></h3>
-        <p id="infoDetails"></p>
+        <h3 id="infoTitle">Region</h3>
+        <div id="infoContent"></div>
     </div>
 
-    <!-- Wrapper that centers the canvas -->
-    <div id="fluidMapWrapper">
-        <canvas id="liquidMap"></canvas>
-    </div>
+    <!-- SVG MAP -->
+    <svg viewBox="0 0 800 500">
 
+        <!-- NORTH -->
+        <path id="north" class="region" onclick="showRegionInfo('north')"
+            d="M100,60 L700,60 L650,180 L150,180 Z" />
+
+        <!-- EAST -->
+        <path id="east" class="region" onclick="showRegionInfo('east')"
+            d="M700,60 L760,250 L700,440 L650,180 Z" />
+
+        <!-- SOUTH -->
+        <path id="south" class="region" onclick="showRegionInfo('south')"
+            d="M150,180 L650,180 L600,440 L200,440 Z" />
+
+        <!-- WEST -->
+        <path id="west" class="region" onclick="showRegionInfo('west')"
+            d="M100,60 L150,180 L200,440 L40,250 Z" />
+    </svg>
 </div>
-
-<!-- ======================= JS ======================= -->
-<script src="liquidBlobMap.js"></script>
 
 </body>
 </html>
