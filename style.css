@@ -345,35 +345,3 @@ a {
     align-items: center !important;
     position: relative;
 }
-/* ====== Make Map Tooltip Always On Top ====== */
-#mapInfo {
-    z-index: 9999 !important;
-    position: absolute;
-    pointer-events: none;
-}
-#fluidMapWrapper {
-    position: relative;
-    width: 100%;
-    height: 650px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#liquidMap {
-    width: 80%;
-    height: 620px;
-}
-
-#mapInfo {
-    position: absolute;
-    background: rgba(10,15,25,0.85);
-    padding: 12px 18px;
-    border: 1px solid #4af1ff66;
-    border-radius: 10px;
-    color: #d0e7ff;
-    pointer-events: none;
-    opacity: 0;
-    transition: 0.2s ease;
-    z-index: 9999;
-}
