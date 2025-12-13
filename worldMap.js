@@ -1,5 +1,6 @@
 /* ==========================================================
-   REAL EARTH MAP WITH HOVER + CLICK RELIGION DATA
+   WORLD MAP SCRIPT — WITH COUNTRY DATA
+   Now supports hover country name + click to show religion stats
 ========================================================== */
 
 const svg = d3.select("#worldMap");
@@ -8,105 +9,125 @@ const infoBox = document.getElementById("mapInfo");
 const infoTitle = document.getElementById("infoTitle");
 const infoContent = document.getElementById("infoContent");
 
-const width = 900;
-const height = 520;
-
-// Centered map projection
-const projection = d3.geoNaturalEarth1()
-    .scale(170)
-    .translate([width / 2, height / 2]);
-
-const path = d3.geoPath(projection);
-
-// Create SVG size
-svg.attr("viewBox", `0 0 ${width} ${height}`);
-
 /* ==========================================================
-   LOAD WORLD MAP
+   FAKE RELIGION DATA FOR SELECTED COUNTRIES
 ========================================================== */
 
-d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-    .then(worldData => {
-        const countries = topojson.feature(worldData, worldData.objects.countries).features;
-
-        // Draw graticule (经纬线)
-        const graticule = d3.geoGraticule();
-
-        svg.append("path")
-            .attr("class", "graticule")
-            .attr("d", path(graticule()));
-
-        // Draw countries
-        svg.selectAll("path.country")
-            .data(countries)
-            .enter()
-            .append("path")
-            .attr("class", "country")
-            .attr("d", path)
-            .on("mousemove", function (event, d) {
-                const [x, y] = d3.pointer(event);
-
-                tooltip.style("display", "block")
-                    .style("left", x + 15 + "px")
-                    .style("top", y + "px")
-                    .html(getCountryName(d));
-
-                d3.select(this).style("stroke-width", "2.2");
-            })
-            .on("mouseleave", function () {
-                tooltip.style("display", "none");
-                d3.select(this).style("stroke-width", "1");
-            })
-            .on("click", function (event, d) {
-                const country = getCountryName(d);
-                const data = getFaithData(country);
-
-                infoTitle.textContent = country;
-                infoContent.innerHTML = data;
-                infoBox.style.display = "block";
-            });
-    });
-
-
-/* ==========================================================
-   COUNTRY NAME HELPERS
-========================================================== */
-
-function getCountryName(feature) {
-    return feature.properties.name || "Unknown";
-}
-
-/* ==========================================================
-   RELIGION DATA PER COUNTRY (YOU CAN EDIT FREELY)
-========================================================== */
-
-function getFaithData(country) {
-    const sample = {
-        "China": {
-            "Cyber Oracle": "40%",
-            "Quantum Throne": "35%",
-            "Psionic Union": "20%",
-            "Echo Memory Cult": "5%"
-        },
-        "United States": {
-            "Cyber Oracle": "55%",
-            "Quantum Throne": "22%",
-            "Psionic Union": "18%",
-            "Echo Memory Cult": "5%"
-        },
-        "India": {
-            "Cyber Oracle": "20%",
-            "Quantum Throne": "30%",
-            "Psionic Union": "40%",
-            "Echo Memory Cult": "10%"
+const religionData = {
+    "China": {
+        name: "China",
+        faiths: {
+            "Cyber Oracle Network": "38%",
+            "Quantum Throne Sect": "26%",
+            "Psionic Union": "22%",
+            "Echo Memory Cult": "14%"
         }
-    };
-
-    if (sample[country]) {
-        return Object.entries(sample[country])
-            .map(([key, val]) => `<p><strong>${key}</strong>: ${val}</p>`)
-            .join("");
+    },
+    "United States": {
+        name: "United States",
+        faiths: {
+            "Cyber Oracle Network": "31%",
+            "Quantum Throne Sect": "29%",
+            "Psionic Union": "25%",
+            "Echo Memory Cult": "15%"
+        }
+    },
+    "Brazil": {
+        name: "Brazil",
+        faiths: {
+            "Cyber Oracle Network": "22%",
+            "Quantum Throne Sect": "33%",
+            "Psionic Union": "28%",
+            "Echo Memory Cult": "17%"
+        }
+    },
+    "India": {
+        name: "India",
+        faiths: {
+            "Cyber Oracle Network": "28%",
+            "Quantum Throne Sect": "21%",
+            "Psionic Union": "34%",
+            "Echo Memory Cult": "17%"
+        }
+    },
+    "Australia": {
+        name: "Australia",
+        faiths: {
+            "Cyber Oracle Network": "35%",
+            "Quantum Throne Sect": "24%",
+            "Psionic Union": "20%",
+            "Echo Memory Cult": "21%"
+        }
     }
+};
 
-    return "No recorded data for this country.";
-}
+/* ==========================================================
+   LOAD WORLD MAP WITH D3
+========================================================== */
+Promise.all([
+    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+]).then(([world]) => {
+
+    const projection = d3.geoMercator()
+        .scale(120)
+        .translate([400, 250]);
+
+    const path = d3.geoPath().projection(projection);
+
+    const graticule = d3.geoGraticule();
+
+    // Draw graticule (latitude/longitude lines)
+    svg.append("path")
+        .datum(graticule())
+        .attr("class", "graticule")
+        .attr("d", path);
+
+    // Draw countries
+    const countries = topojson.feature(world, world.objects.countries).features;
+
+    svg.selectAll(".country")
+        .data(countries)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("d", path)
+        .on("mousemove", function (event, d) {
+
+            const countryName = d.properties.name || "Unknown";
+
+            tooltip.style("display", "block")
+                .style("left", event.pageX + 10 + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(countryName);
+
+        })
+        .on("mouseleave", () => {
+            tooltip.style("display", "none");
+        })
+        .on("click", function (event, d) {
+
+            const countryName = d.properties.name;
+
+            if (religionData[countryName]) {
+
+                const data = religionData[countryName];
+                infoTitle.textContent = data.name;
+
+                let html = "";
+                for (let f in data.faiths) {
+                    html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
+                }
+                infoContent.innerHTML = html;
+
+                infoBox.style.display = "block";
+
+            } else {
+
+                infoTitle.textContent = countryName;
+                infoContent.innerHTML = `
+                    <p>No techno-spiritual data available.</p>
+                `;
+                infoBox.style.display = "block";
+            }
+        });
+});
