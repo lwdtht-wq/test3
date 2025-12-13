@@ -5,8 +5,8 @@ canvas.style.width = "100%";
 canvas.style.height = "100%";
 canvas.style.display = "block";
 canvas.style.position = "relative";
+canvas.style.zIndex = 1;  // keep canvas below tooltip
 
-// match internal resolution for sharpness
 canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
 
@@ -18,8 +18,33 @@ let regions = [
     { name: "Core Nexus", color: "rgba(200,160,255,0.55)", x: 0.48, y: 0.50, r: 95 }
 ];
 
+// Draw longitude & latitude lines
+function drawGrid() {
+    const stepX = canvas.width / 10;
+    const stepY = canvas.height / 8;
+
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x <= canvas.width; x += stepX) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y <= canvas.height; y += stepY) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid(); // ← add grid first
 
     regions.forEach(r => {
         ctx.beginPath();
@@ -35,6 +60,7 @@ function draw() {
 
 draw();
 
+// Hover detection
 canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
@@ -59,7 +85,7 @@ canvas.addEventListener("mousemove", (e) => {
 
         document.getElementById("infoTitle").textContent = hit.name;
         document.getElementById("infoContent").innerHTML =
-            `<p>Projected dominant belief clusters in this region by 2150.</p>`;
+            `<p>This region shows dominant belief patterns projected for 2150.</p>`;
     } else {
         info.style.display = "none";
     }
