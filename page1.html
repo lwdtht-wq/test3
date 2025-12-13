@@ -46,9 +46,10 @@ reshaping the spiritual landscape of the cybernetic world.
 </section>
 
 <!-- ======================= D3 SCRIPT ======================= -->
-<!-- ======================= D3 SCRIPT ======================= -->
 <script>
-/* Dataset */
+/* ----------------------------------------------------------
+   DATA
+---------------------------------------------------------- */
 const data = [
   { year: 2010, traditional: 83, tech: 0, none: 17 },
   { year: 2020, traditional: 78, tech: 0, none: 22 },
@@ -69,7 +70,9 @@ const svg = d3.select("#chart")
   .attr("width", width)
   .attr("height", height);
 
-/* Scales */
+/* ----------------------------------------------------------
+   SCALES
+---------------------------------------------------------- */
 const x = d3.scaleLinear()
   .domain(d3.extent(data, d => d.year))
   .range([margin.left, width - margin.right]);
@@ -78,7 +81,9 @@ const y = d3.scaleLinear()
   .domain([0, 100])
   .range([height - margin.bottom, margin.top]);
 
-/* Axes */
+/* ----------------------------------------------------------
+   AXES
+---------------------------------------------------------- */
 svg.append("g")
   .attr("transform", `translate(0, ${height - margin.bottom})`)
   .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
@@ -87,11 +92,11 @@ svg.append("g")
 svg.append("g")
   .attr("transform", `translate(${margin.left}, 0)`)
   .call(d3.axisLeft(y))
-  .attr("color", "#7bc4ff`);
+  .attr("color", "#7bc4ff");
 
-/* --------------------------
-   1. ADD VERTICAL HOVER LINE
---------------------------- */
+/* ----------------------------------------------------------
+   VERTICAL INTERACTION LINE + YEAR LABEL
+---------------------------------------------------------- */
 const vLine = svg.append("line")
   .attr("stroke", "#4af1ff88")
   .attr("stroke-width", 1.5)
@@ -99,28 +104,24 @@ const vLine = svg.append("line")
   .attr("y2", height - margin.bottom)
   .style("display", "none");
 
-/* --------------------------
-   2. ADD YEAR HOVER LABEL
---------------------------- */
 const yearLabel = svg.append("text")
   .attr("fill", "#a9ddff")
   .attr("font-size", "14px")
   .style("display", "none");
 
-/* --------------------------
-   3. DRAW LINES
---------------------------- */
+/* ----------------------------------------------------------
+   DRAW LINES
+---------------------------------------------------------- */
 const colors = {
   traditional: "#ff3df2",
   tech: "#4af1ff",
   none: "#8cc7ff"
 };
 
-/* Draw each line with grouping */
 function drawLine(key, color) {
-  const lineGroup = svg.append("g").attr("class", `line-group ${key}`);
+  const group = svg.append("g").attr("class", `line-${key}`);
 
-  lineGroup.append("path")
+  group.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", color)
@@ -130,23 +131,21 @@ function drawLine(key, color) {
       .y(d => y(d[key]))
     );
 
-  // Label at end
-  lineGroup.append("text")
+  group.append("text")
     .attr("x", x(data[data.length - 1].year) + 10)
     .attr("y", y(data[data.length - 1][key]))
     .attr("fill", color)
     .attr("font-size", "14px")
-    .text(key === "traditional" ? "Traditional" :
-          key === "tech" ? "Techno-Faith" : "None");
+    .text(key === "traditional" ? "Traditional" : key === "tech" ? "Techno-Faith" : "None");
 }
 
 drawLine("traditional", colors.traditional);
 drawLine("tech", colors.tech);
 drawLine("none", colors.none);
 
-/* --------------------------
-   4. PULSE DOTS + TOOLTIP
---------------------------- */
+/* ----------------------------------------------------------
+   DOTS + PULSE HOVER + EXISTING TOOLTIP SUPPORT
+---------------------------------------------------------- */
 ["traditional","tech","none"].forEach(key => {
   const dots = svg.append("g").selectAll(".dot")
     .data(data)
@@ -157,47 +156,37 @@ drawLine("none", colors.none);
       .attr("cy", d => y(d[key]))
       .attr("r", 6)
       .attr("fill", colors[key])
-      .attr("stroke", "#fff")
-      .style("cursor", "pointer");
+      .attr("stroke", "#fff");
 
-  // Hover pulse animation
   dots.on("mouseenter", function () {
     d3.select(this)
-      .transition()
-      .duration(180)
+      .transition().duration(180)
       .attr("r", 10)
       .attr("stroke-width", 2);
   });
 
   dots.on("mouseleave", function () {
     d3.select(this)
-      .transition()
-      .duration(180)
+      .transition().duration(180)
       .attr("r", 6)
       .attr("stroke-width", 1);
   });
 
-  // Connect to your tooltip system
+  // keep your original tooltip working
   enableChartTooltip(svg, data, x, y, key);
 });
 
-/* --------------------------
-   5. HOVER MOVEMENT INTERACTION
---------------------------- */
-
+/* ----------------------------------------------------------
+   MAIN INTERACTION
+---------------------------------------------------------- */
 svg.on("mousemove", function (event) {
   const mouseX = d3.pointer(event)[0];
-
   if (mouseX < margin.left || mouseX > width - margin.right) return;
 
-  vLine
-    .attr("x1", mouseX)
-    .attr("x2", mouseX)
-    .style("display", "block");
+  vLine.attr("x1", mouseX).attr("x2", mouseX).style("display", "block");
 
-  // Find closest year
-  const closest = data.reduce((a, b) =>
-    Math.abs(x(b.year) - mouseX) < Math.abs(x(a.year) - mouseX) ? b : a
+  const closest = data.reduce((a,b) => 
+    Math.abs(x(b.year)-mouseX) < Math.abs(x(a.year)-mouseX) ? b : a
   );
 
   yearLabel
@@ -206,29 +195,23 @@ svg.on("mousemove", function (event) {
     .text(closest.year)
     .style("display", "block");
 
-  // Dim all lines
-  svg.selectAll(".line-group").attr("opacity", 0.25);
+  svg.selectAll("path").attr("opacity", 0.25);
+  svg.selectAll(".dot").attr("opacity", 0.3);
 
-  // Highlight nearest year’s point
-  svg.selectAll(".dot")
-    .attr("opacity", 0.35);
-
-  // Highlight corresponding points
-  svg.selectAll(`.dot-traditional, .dot-tech, .dot-none`)
+  svg.selectAll(`.dot-traditional,.dot-tech,.dot-none`)
     .filter(d => d.year === closest.year)
     .attr("opacity", 1)
     .attr("r", 9);
 });
 
-/* Hide hover UI */
-svg.on("mouseleave", function () {
+svg.on("mouseleave", () => {
   vLine.style("display", "none");
   yearLabel.style("display", "none");
 
-  svg.selectAll(".line-group").attr("opacity", 1);
-  svg.selectAll(".dot")
-    .attr("opacity", 1)
-    .attr("r", 6);
+  svg.selectAll("path").attr("opacity", 1);
+  svg.selectAll(".dot").attr("opacity", 1).attr("r", 6);
 });
-
 </script>
+
+</body>
+</html>
