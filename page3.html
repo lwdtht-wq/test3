@@ -41,7 +41,16 @@
 </section>
 
 <!-- ======================= LIQUID WORLD MAP ======================= -->
-<div id="mapContainer" style="position:relative;width:80%;height:520px;margin:50px auto;">
+<div id="mapContainer" 
+     style="
+        position:relative;
+        width:80%;
+        height:520px;
+        margin:50px auto;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+     ">
 
     <!-- Info Box -->
     <div id="mapInfo" class="info-box" style="display:none; position:absolute;">
@@ -49,10 +58,11 @@
         <div id="infoContent"></div>
     </div>
 
-    <!-- Canvas for Liquid Regions -->
-    <canvas id="fluidMap" style="width:100%;height:100%;"></canvas>
+    <!-- Canvas -->
+    <canvas id="fluidMap" style="width:100%; height:100%;"></canvas>
 
 </div>
+
 
 <!-- ======================= LIQUID MAP SCRIPT ======================= -->
 <script src="liquidBlobMap.js"></script>
