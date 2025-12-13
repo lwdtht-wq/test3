@@ -1,270 +1,23 @@
 /* ==========================================================
-   GLOBAL SETTINGS
-========================================================== */
-
-body {
-    margin: 0;
-    font-family: 'Orbitron', sans-serif;
-    background: #05070d;
-    color: #d0e7ff;
-    overflow-x: hidden;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* ==========================================================
-   OPENING SCREEN
-========================================================== */
-
-.opening-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-}
-
-.opening-bg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    animation: zoomIn 8s ease-out forwards;
-    filter: brightness(0.7);
-}
-
-@keyframes zoomIn {
-    from { transform: scale(1); }
-    to { transform: scale(1.15); }
-}
-
-.opening-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle, rgba(0,0,0,0.2), rgba(0,0,0,0.75));
-}
-
-.opening-title {
-    position: absolute;
-    top: 27%;
-    width: 100%;
-    text-align: center;
-    font-size: 58px;
-    color: #a9d6ff;
-    letter-spacing: 6px;
-}
-
-.enter-btn {
-    position: absolute;
-    top: 65%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 15px 45px;
-    font-size: 20px;
-    border: 1px solid #4af1ff;
-    color: #d0e7ff;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.25s;
-    backdrop-filter: blur(4px);
-}
-
-.enter-btn:hover {
-    background: rgba(74, 241, 255, 0.25);
-    box-shadow: 0 0 15px #4af1ff;
-}
-
-/* ==========================================================
-   GLITCH TEXT
-========================================================== */
-
-.glitch {
-    position: relative;
-    color: #7bc4ff;
-    text-transform: uppercase;
-    text-shadow: 0 0 8px #4af1ff;
-}
-
-.glitch::before,
-.glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-.glitch::before {
-    color: #ff3df2;
-    clip-path: inset(0 0 50% 0);
-    animation: glitch1 2s infinite;
-}
-
-.glitch::after {
-    color: #4af1ff;
-    clip-path: inset(50% 0 0 0);
-    animation: glitch2 2.2s infinite;
-}
-
-@keyframes glitch1 {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 1px); }
-    40% { transform: translate(2px, -1px); }
-    60% { transform: translate(-1px, 2px); }
-    80% { transform: translate(1px, -2px); }
-    100% { transform: translate(0); }
-}
-
-@keyframes glitch2 {
-    0% { transform: translate(0); }
-    20% { transform: translate(1px, -1px); }
-    40% { transform: translate(-1px, 1px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(-2px, -1px); }
-    100% { transform: translate(0); }
-}
-
-/* ==========================================================
-   FLOATING NAVIGATION
-========================================================== */
-
-#sideNav {
-    position: fixed;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    z-index: 500;
-    opacity: 0;
-    transition: opacity 1s;
-}
-
-.nav-icon {
-    font-size: 32px;
-    color: #7bc4ff;
-    cursor: pointer;
-    position: relative;
-    transition: 0.25s;
-}
-
-.nav-icon:hover {
-    text-shadow: 0 0 12px #4af1ff;
-    transform: scale(1.2);
-}
-
-.nav-icon::after {
-    content: attr(data-label);
-    position: absolute;
-    left: 45px;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 6px 10px;
-    background: rgba(20,30,40,0.85);
-    border: 1px solid #4af1ff55;
-    color: #d0e7ff;
-    white-space: nowrap;
-    font-size: 13px;
-    border-radius: 6px;
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.25s;
-}
-
-.nav-icon:hover::after {
-    opacity: 1;
-    left: 50px;
-}
-
-/* ==========================================================
-   UNIVERSAL PAGE STRUCTURE
-========================================================== */
-
-.page-opening {
-    position: relative;
-    width: 100%;
-    height: 55vh;
-    overflow: hidden;
-}
-
-.page-opening img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
-}
-
-.page-title-overlay {
-    position: absolute;
-    top: 40%;
-    width: 100%;
-    text-align: center;
-    color: #a9d6ff;
-    font-size: 48px;
-    letter-spacing: 4px;
-    text-shadow: 0 0 12px #4af1ff;
-}
-
-.page-panel {
-    width: 70%;
-    margin: 60px auto;
-    padding: 30px;
-    background: rgba(20, 30, 45, 0.55);
-    border: 1px solid #3c4b69;
-    border-radius: 12px;
-    box-shadow: 0 0 20px #1c2b43 inset;
-    line-height: 1.8;
-}
-
-/* ==========================================================
-   CHART TOOLTIP
-========================================================== */
-
-.chart-tooltip {
-    position: absolute;
-    background: rgba(10,20,35,0.95);
-    border: 1px solid #4af1ff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    pointer-events: none;
-    font-size: 13px;
-    color: #d0e7ff;
-    z-index: 9999;
-    display: none;
-}
-
-/* ==========================================================
-   WORLD MAP — LIQUID BLOBS
+   WORLD MAP — LIQUID BLOBS (SAFE VERSION)
 ========================================================== */
 
 #mapContainer {
     width: 100%;
-    margin: 0 auto;
-    height: 700px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-}
-
-#fluidMapWrapper {
-    width: 90%;
     height: 650px;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 40px;
+    z-index: 10;
+    overflow: visible;  /* 防止 blob 溢出被剪切 */
 }
 
 #liquidMap {
-    width: 80%;
-    height: 620px;
+    width: 70%;
+    max-width: 900px;
+    height: auto;
     z-index: 11;
 }
 
@@ -272,29 +25,24 @@ a {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(10,15,25,0.85);
-    padding: 14px 20px;
-    border-radius: 10px;
-    border: 1px solid #4af1ff66;
-    pointer-events: none;
+    background: rgba(10,15,25,0.88);
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #4af1ff88;
+    pointer-events: none;  /* 不阻挡鼠标 */
     opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 9999;  /* 始终在最上面 */
     color: #d0e7ff;
     font-size: 14px;
-    z-index: 9999;
+}
+
+/* 让 blob 看起来更像流动区域 */
+.blob-region {
     transition: 0.25s ease;
+    cursor: pointer;
 }
 
-/* ==========================================================
-   STORY PAGE
-========================================================== */
-
-.story-text {
-    width: 70%;
-    margin: 80px auto;
-    font-size: 18px;
-    line-height: 2;
-    animation: fadeIn 2s ease-out forwards;
-    opacity: 0;
+.blob-region:hover {
+    filter: brightness(1.3);
 }
-
-@keyframes fadeIn { to { opacity: 1; } }
