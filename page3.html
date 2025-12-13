@@ -1,71 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>World Faith Distribution · Cyber Map</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Liquid World Map · Cyber Faith</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet" href="style.css">
-<script defer src="main.js"></script>
-
+    <!-- Liquid Map Script -->
+    <script defer src="liquidBlobMap.js"></script>
 </head>
+
 <body>
 
-<!-- ======================= PAGE OPENING ======================= -->
-<div class="page-opening">
-    <img src="assets/open3.jpg">
-    <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
-        WORLD RELIGION DISTRIBUTION MAP
-    </div>
-</div>
-
-<!-- ======================= FLOATING NAV ======================= -->
-<nav id="sideNav" class="hidden">
-    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
-    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
-    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
-    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
-    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
-    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
-</nav>
-
-<!-- ======================= CONTENT ======================= -->
-<section class="page-panel">
-    <h2>Interactive Global Distribution of Future Faiths</h2>
-  <p>
-    This map presents the projected distribution of emerging belief systems across major global regions in the late 21st to mid-22nd century.
-    Each area reflects how social, technological, and cultural forces gradually reshape spiritual identities over time.
-    The five regions illustrate different patterns of adaptation—some preserving traditional structures, others developing hybrid or highly system-driven forms of faith.
-    Hover over each zone to view its key characteristics and the dominant belief compositions shaping its future trajectory.
-</p>
-</section>
-
-<!-- ======================= LIQUID WORLD MAP ======================= -->
-<div id="mapContainer" 
-     style="
-        position:relative;
-        width:80%;
-        height:520px;
-        margin:50px auto;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-     ">
-
-    <!-- Info Box -->
-    <div id="mapInfo" class="info-box" style="display:none; position:absolute;">
-        <h3 id="infoTitle">Region</h3>
-        <div id="infoContent"></div>
+    <!-- ======================= PAGE OPENING ======================= -->
+    <div class="page-opening">
+        <img src="assets/open3.jpg">
+        <div class="page-title-overlay glitch" data-text="WORLD FLUID MAP">
+            WORLD FLUID MAP
+        </div>
     </div>
 
-    <!-- Canvas -->
-    <canvas id="fluidMap" style="width:100%; height:100%;"></canvas>
+    <!-- ======================= FLOATING NAV ======================= -->
+    <nav id="sideNav" class="hidden">
+        <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+        <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+        <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+        <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+        <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+        <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+    </nav>
 
-</div>
+    <!-- ======================= CONTENT ======================= -->
+    <section class="page-panel">
+        <h2>Fluid Territories of Future Faith (2150)</h2>
 
+        <p>
+            By 2150, cultural regions behave like living organisms — expanding, contracting,
+            and shifting in response to emerging belief systems.  
+            This map visualizes the five major territories that shape the world’s future faith dynamics.
+            Hover to explore how each region evolves into fluid identities influenced by technology,
+            memory, and collective consciousness.
+        </p>
+    </section>
 
-<!-- ======================= LIQUID MAP SCRIPT ======================= -->
-<script src="liquidBlobMap.js"></script>
+    <!-- ======================= LIQUID MAP CANVAS ======================= -->
+    <div id="fluidMapWrapper">
+        <canvas id="liquidMap"></canvas>
+
+        <!-- Info panel -->
+        <div id="mapInfo">
+            <h3 id="infoTitle">Region Name</h3>
+            <p id="infoDetails">Hover a region to learn more.</p>
+        </div>
+    </div>
 
 </body>
 </html>
