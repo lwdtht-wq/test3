@@ -339,3 +339,9 @@ a {
 @keyframes fadeIn {
   to { opacity: 1; }
 }
+#mapContainer {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative;
+}
