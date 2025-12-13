@@ -5,8 +5,12 @@
 const canvas = document.getElementById("fluidMap");
 const ctx = canvas.getContext("2d");
 
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
+function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
 let time = 0;
 
@@ -97,18 +101,20 @@ const regionData = {
 };
 
 /* ==========================================================
-   DRAW FLUID BLOB (Via Simplex Noise Simulation)
+   DRAW FLUID BLOB
 ========================================================== */
 
 function drawBlob(region, t) {
     ctx.beginPath();
-    const steps = 80;
+    const steps = 90;
 
     for (let i = 0; i <= steps; i++) {
         const angle = (Math.PI * 2 / steps) * i;
 
-        const noise = Math.sin(i * 0.3 + t * 0.02) * 15 +
-                      Math.cos(i * 0.5 + t * 0.03) * 10;
+        // Noise for fluid effect
+        const noise =
+            Math.sin(i * 0.25 + t * 0.03) * 18 +
+            Math.cos(i * 0.45 + t * 0.02) * 12;
 
         const r = region.r + noise;
 
@@ -134,26 +140,25 @@ function checkHover(mx, my) {
         const dy = my - r.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < r.r * 1.1) return r; // approx hit area
+        if (dist < r.r * 1.1) return r;
     }
     return null;
 }
 
 canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const target = checkHover(mouseX, mouseY);
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
 
     const box = document.getElementById("mapInfo");
+    const target = checkHover(mx, my);
 
     if (target) {
         const data = regionData[target.id];
 
         box.style.display = "block";
-        box.style.left = (mouseX + 20) + "px";
-        box.style.top = (mouseY + 20) + "px";
+        box.style.left = (mx + 20) + "px";
+        box.style.top = (my + 20) + "px";
 
         document.getElementById("infoTitle").textContent = data.name;
 
@@ -168,12 +173,11 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 /* ==========================================================
-   ANIMATION LOOP
+   ANIMATION
 ========================================================== */
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     time++;
 
     regions.forEach(r => drawBlob(r, time));
