@@ -1,59 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Liquid World Map · Cyber Faith</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Liquid Map Script -->
-    <script defer src="liquidBlobMap.js"></script>
+<meta charset="UTF-8">
+<title>World Faith Distribution · Cyber Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script defer src="main.js"></script>
 </head>
 
 <body>
 
-    <!-- ======================= PAGE OPENING ======================= -->
-    <div class="page-opening">
-        <img src="assets/open3.jpg">
-        <div class="page-title-overlay glitch" data-text="WORLD FLUID MAP">
-            WORLD FLUID MAP
-        </div>
+<!-- ======================= PAGE OPENING ======================= -->
+<div class="page-opening">
+    <img src="assets/open3.jpg">
+    <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
+        WORLD RELIGION DISTRIBUTION MAP
+    </div>
+</div>
+
+<!-- ======================= FLOATING NAV ======================= -->
+<nav id="sideNav" class="hidden">
+    <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
+    <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
+    <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
+    <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
+    <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
+    <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
+</nav>
+
+<!-- ======================= PAGE TEXT ======================= -->
+<section class="page-panel">
+    <h2>Global Composition of Future Faith Regions</h2>
+    <p>
+        The map below illustrates five major cultural territories shaped by future belief systems. 
+        Each region forms a fluid, living mass whose boundaries shift and breathe. 
+        Hover over any area to reveal its defining spiritual characteristics.
+    </p>
+</section>
+
+<!-- ======================= MAP + INFO ======================= -->
+<div id="mapContainer">
+
+    <!-- Floating Info Panel (must be inside mapContainer for highest z-index) -->
+    <div id="mapInfo" class="info-box">
+        <h3 id="infoTitle"></h3>
+        <p id="infoDetails"></p>
     </div>
 
-    <!-- ======================= FLOATING NAV ======================= -->
-    <nav id="sideNav" class="hidden">
-        <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
-        <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
-        <a href="page2.html" class="nav-icon" data-label="New Faiths">⟟</a>
-        <a href="page3.html" class="nav-icon" data-label="World Map">🜄</a>
-        <a href="page4.html" class="nav-icon" data-label="Liquid Metal">⟁</a>
-        <a href="page5.html" class="nav-icon" data-label="Story">⛛</a>
-    </nav>
-
-    <!-- ======================= CONTENT ======================= -->
-    <section class="page-panel">
-        <h2>Fluid Territories of Future Faith (2150)</h2>
-
-        <p>
-            By 2150, cultural regions behave like living organisms — expanding, contracting,
-            and shifting in response to emerging belief systems.  
-            This map visualizes the five major territories that shape the world’s future faith dynamics.
-            Hover to explore how each region evolves into fluid identities influenced by technology,
-            memory, and collective consciousness.
-        </p>
-    </section>
-
-    <!-- ======================= LIQUID MAP CANVAS ======================= -->
+    <!-- Wrapper that centers the canvas -->
     <div id="fluidMapWrapper">
         <canvas id="liquidMap"></canvas>
-
-        <!-- Info panel -->
-        <div id="mapInfo">
-            <h3 id="infoTitle">Region Name</h3>
-            <p id="infoDetails">Hover a region to learn more.</p>
-        </div>
     </div>
+
+</div>
+
+<!-- ======================= JS ======================= -->
+<script src="liquidBlobMap.js"></script>
 
 </body>
 </html>
