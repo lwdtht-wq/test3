@@ -1,5 +1,6 @@
 /* ==========================================================
    WORLD MAP SCRIPT — AUTO-GENERATE RELIGION DATA FOR ALL COUNTRIES
+   Using ISO_A3 country codes (because your map uses iso_a3)
 ========================================================== */
 
 const svg = d3.select("#worldMap");
@@ -9,10 +10,10 @@ const infoTitle = document.getElementById("infoTitle");
 const infoContent = document.getElementById("infoContent");
 
 /* ==========================================================
-   EXPLICIT DATA FOR CHINA (WILL NOT BE RANDOMIZED)
+   FIXED DATA FOR CHINA (ISO3: CHN)
 ========================================================== */
 const religionData = {
-    "China": {
+    "CHN": {
         name: "China",
         faiths: {
             "Cyber Oracle Network": "38%",
@@ -24,34 +25,28 @@ const religionData = {
 };
 
 /* ==========================================================
-   RANDOM GENERATOR FOR ALL OTHER COUNTRIES
+   RANDOM GENERATION FOR ALL OTHER COUNTRIES
 ========================================================== */
+function generateRandomFaiths(iso3, countryName) {
+    if (religionData[iso3]) return religionData[iso3];
 
-function generateRandomFaiths(countryName) {
-    // Avoid regenerating if already created
-    if (religionData[countryName]) return religionData[countryName];
+    let r1 = Math.random();
+    let r2 = Math.random();
+    let r3 = Math.random();
+    let r4 = Math.random();
+    let total = r1 + r2 + r3 + r4;
 
-    // Create 4 random numbers
-    let a = Math.random();
-    let b = Math.random();
-    let c = Math.random();
-    let d = Math.random();
-
-    let total = a + b + c + d;
-
-    const faiths = {
-        "Cyber Oracle Network": Math.round((a / total) * 100) + "%",
-        "Quantum Throne Sect": Math.round((b / total) * 100) + "%",
-        "Psionic Union": Math.round((c / total) * 100) + "%",
-        "Echo Memory Cult": Math.round((d / total) * 100) + "%"
-    };
-
-    religionData[countryName] = {
+    religionData[iso3] = {
         name: countryName,
-        faiths: faiths
+        faiths: {
+            "Cyber Oracle Network": Math.round((r1 / total) * 100) + "%",
+            "Quantum Throne Sect": Math.round((r2 / total) * 100) + "%",
+            "Psionic Union": Math.round((r3 / total) * 100) + "%",
+            "Echo Memory Cult": Math.round((r4 / total) * 100) + "%"
+        }
     };
 
-    return religionData[countryName];
+    return religionData[iso3];
 }
 
 /* ==========================================================
@@ -61,23 +56,23 @@ Promise.all([
     d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
 ]).then(([world]) => {
 
+    const countries = topojson.feature(world, world.objects.countries).features;
+
+    // Mercator projection
     const projection = d3.geoMercator()
-        .scale(120)
+        .scale(125)
         .translate([400, 250]);
 
     const path = d3.geoPath().projection(projection);
 
-    const graticule = d3.geoGraticule();
-
     // Draw graticule
+    const graticule = d3.geoGraticule();
     svg.append("path")
         .datum(graticule())
         .attr("class", "graticule")
         .attr("d", path);
 
-    const countries = topojson.feature(world, world.objects.countries).features;
-
-    // Draw countries
+    // Draw all countries
     svg.selectAll(".country")
         .data(countries)
         .enter()
@@ -85,21 +80,20 @@ Promise.all([
         .attr("class", "country")
         .attr("d", path)
         .on("mousemove", function (event, d) {
-            const name = d.properties.name || "Unknown";
-
+            const name = d.properties.name;
             tooltip.style("display", "block")
                 .style("left", event.pageX + 10 + "px")
-                .style("top", event.pageY - 20 + "px")
+                .style("top", event.pageY - 25 + "px")
                 .html(name);
         })
         .on("mouseleave", () => {
             tooltip.style("display", "none");
         })
         .on("click", function (event, d) {
+            const iso3 = d.properties.iso_a3;  // key fix
             const name = d.properties.name;
 
-            // Get existing or generate new random data
-            const data = religionData[name] || generateRandomFaiths(name);
+            const data = religionData[iso3] || generateRandomFaiths(iso3, name);
 
             infoTitle.textContent = data.name;
 
