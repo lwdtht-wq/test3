@@ -1,11 +1,12 @@
 /* ==========================================================
-   GLOBAL PAGE ENTRY ANIMATION (ONLY FOR INDEX)
+   GLOBAL PAGE ENTRY ANIMATION – Index Page Only
 ========================================================== */
-
 function enterWorld() {
     const opening = document.querySelector(".opening-screen");
     const nav = document.getElementById("sideNav");
     const homeContent = document.getElementById("homeContent");
+
+    if (!opening || !nav || !homeContent) return;
 
     opening.style.transition = "1.2s";
     opening.style.opacity = "0";
@@ -21,25 +22,22 @@ function enterWorld() {
     }, 1200);
 }
 
-/* ==========================================================
-   PAGE LOAD ANIMATIONS + NAVIGATION FIX
-========================================================== */
 
+/* ==========================================================
+   SHOW NAV ON NORMAL PAGES
+========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
     const nav = document.getElementById("sideNav");
-    const contentPanels = document.querySelectorAll(".page-panel, .story-text");
 
-    /* ----------------------------------------------
-       AUTO-SHOW NAVIGATION FOR ALL NON-INDEX PAGES
-    ---------------------------------------------- */
-    if (!window.location.pathname.endsWith("index.html") &&
-        !window.location.pathname.endsWith("/") ) 
-    {
+    // ⬅ 新增安全检查
+    if (nav && nav.classList.contains("hidden")) {
         nav.classList.remove("hidden");
         nav.style.opacity = "1";
     }
 
-    /* Fade-in animation for panels */
+    /* Page fade-in */
+    const contentPanels = document.querySelectorAll(".page-panel, .story-text");
+
     contentPanels.forEach(panel => {
         panel.style.opacity = 0;
         panel.style.transform = "translateY(30px)";
@@ -51,26 +49,27 @@ document.addEventListener("DOMContentLoaded", () => {
             panel.style.opacity = 1;
             panel.style.transform = "translateY(0)";
         });
-    }, 400);
+    }, 300);
 
-    /* Tooltip container for charts */
+    /* Tooltip container */
     const tooltip = document.createElement("div");
     tooltip.className = "chart-tooltip";
     document.body.appendChild(tooltip);
 });
 
-/* ==========================================================
-   INTERACTIVE CHART TOOLTIP ENGINE
-========================================================== */
 
+/* ==========================================================
+   D3 TOOLTIP DOTS
+========================================================== */
 function enableChartTooltip(svg, data, xScale, yScale, keyName) {
     const tooltip = document.querySelector(".chart-tooltip");
+    if (!tooltip) return;
 
-    svg.selectAll(".dot")
+    svg.selectAll(".dot-" + keyName)
         .data(data)
         .enter()
         .append("circle")
-        .attr("class", "dot")
+        .attr("class", "dot-" + keyName)
         .attr("cx", d => xScale(d.year))
         .attr("cy", d => yScale(d[keyName]))
         .attr("r", 6)
@@ -92,17 +91,19 @@ function enableChartTooltip(svg, data, xScale, yScale, keyName) {
         });
 }
 
-/* ==========================================================
-   WORLD MAP INTERACTION (PAGE 3)
-========================================================== */
 
+/* ==========================================================
+   PAGE 3 MAP INTERACTION
+========================================================== */
 function showRegionInfo(regionName) {
     const box = document.getElementById("mapInfo");
     const title = document.getElementById("infoTitle");
     const content = document.getElementById("infoContent");
 
+    if (!box || !title || !content) return;
+
     const regionData = {
-        "north": {
+        north: {
             name: "North Dominion",
             faiths: {
                 "Cyber Oracle": "42%",
@@ -111,7 +112,7 @@ function showRegionInfo(regionName) {
                 "Echo Memory Cult": "13%"
             }
         },
-        "east": {
+        east: {
             name: "East Luminance",
             faiths: {
                 "Quantum Throne": "46%",
@@ -120,7 +121,7 @@ function showRegionInfo(regionName) {
                 "Echo Memory Cult": "5%"
             }
         },
-        "south": {
+        south: {
             name: "South Alloy Basin",
             faiths: {
                 "Psionic Union": "51%",
@@ -129,7 +130,7 @@ function showRegionInfo(regionName) {
                 "Cyber Oracle": "6%"
             }
         },
-        "west": {
+        west: {
             name: "West Iron Frontier",
             faiths: {
                 "Echo Memory Cult": "43%",
@@ -141,6 +142,8 @@ function showRegionInfo(regionName) {
     };
 
     const data = regionData[regionName];
+    if (!data) return;
+
     title.textContent = data.name;
 
     let html = "";
@@ -152,10 +155,10 @@ function showRegionInfo(regionName) {
     box.style.display = "block";
 }
 
-/* ==========================================================
-   GLOBAL MOUSE LIQUID RIPPLE (OPTIONAL)
-========================================================== */
 
+/* ==========================================================
+   OPTIONAL MOUSE LIGHT EFFECT
+========================================================== */
 document.addEventListener("mousemove", (e) => {
     const ripple = document.querySelector(".ripple");
     if (ripple) {
