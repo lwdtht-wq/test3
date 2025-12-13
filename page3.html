@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <title>World Religion Distribution · Cyber Faith</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- D3 -->
+    <!-- D3 + TopoJSON -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
 
+    <!-- Main site scripts -->
     <script defer src="main.js"></script>
     <script defer src="worldMap.js"></script>
 </head>
@@ -45,17 +48,21 @@
 
 <!-- ======================= MAP AREA ======================= -->
 <div id="mapWrapper">
+
     <div id="mapContainer">
+        
+        <!-- World Map SVG -->
         <svg id="worldMap" width="100%" height="100%"></svg>
 
-        <!-- Country info box -->
-        <div id="mapInfo">
+        <!-- Country info box (FIXED ID!) -->
+        <div id="mapInfo" class="info-box">
             <h3 id="infoTitle">Select a Country</h3>
             <div id="infoContent">Click a country on the map.</div>
         </div>
 
         <!-- Hover tooltip -->
         <div id="mapTooltip" class="map-tooltip"></div>
+
     </div>
 </div>
 
