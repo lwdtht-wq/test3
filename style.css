@@ -1,360 +1,262 @@
 /* ==========================================================
    GLOBAL SETTINGS
 ========================================================== */
+
 body {
-  margin: 0;
-  font-family: 'Orbitron', sans-serif;
-  background: #05070d;
-  color: #d0e7ff;
-  overflow-x: hidden;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: #05070d;
+    color: #d0e7ff;
+    overflow-x: hidden;
 }
 
 a {
-  text-decoration: none;
-  color: inherit;
+    text-decoration: none;
+    color: inherit;
 }
 
-/* Fade hidden elements */
 .hidden {
-  opacity: 0;
-  pointer-events: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ==========================================================
    OPENING SCREEN
 ========================================================== */
+
 .opening-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
 }
 
 .opening-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: zoomIn 8s ease-out forwards;
-  filter: brightness(0.7);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: zoomIn 8s ease-out forwards;
+    filter: brightness(0.7);
 }
 
 @keyframes zoomIn {
-  from { transform: scale(1); }
-  to { transform: scale(1.15); }
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
 }
 
 .opening-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(0,0,0,0.2), rgba(0,0,0,0.75));
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0,0,0,0.2), rgba(0,0,0,0.75));
 }
 
 .opening-title {
-  position: absolute;
-  top: 27%;
-  width: 100%;
-  text-align: center;
-  font-size: 58px;
-  color: #a9d6ff;
-  letter-spacing: 6px;
+    position: absolute;
+    top: 27%;
+    width: 100%;
+    text-align: center;
+    font-size: 58px;
+    color: #a9d6ff;
+    letter-spacing: 6px;
 }
 
-/* Enter button */
 .enter-btn {
-  position: absolute;
-  top: 65%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 15px 45px;
-  font-size: 20px;
-  border: 1px solid #4af1ff;
-  color: #d0e7ff;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.25s;
-  backdrop-filter: blur(4px);
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 45px;
+    font-size: 20px;
+    border: 1px solid #4af1ff;
+    color: #d0e7ff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+    backdrop-filter: blur(4px);
 }
 
 .enter-btn:hover {
-  background: rgba(74, 241, 255, 0.25);
-  box-shadow: 0 0 15px #4af1ff;
+    background: rgba(74, 241, 255, 0.25);
+    box-shadow: 0 0 15px #4af1ff;
 }
 
 /* ==========================================================
    GLITCH TEXT
 ========================================================== */
+
 .glitch {
-  position: relative;
-  color: #7bc4ff;
-  text-transform: uppercase;
-  text-shadow: 0 0 8px #4af1ff;
+    position: relative;
+    color: #7bc4ff;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px #4af1ff;
 }
 
 .glitch::before,
 .glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .glitch::before {
-  color: #ff3df2;
-  clip-path: inset(0 0 50% 0);
-  animation: glitch1 2s infinite;
+    color: #ff3df2;
+    clip-path: inset(0 0 50% 0);
+    animation: glitch1 2s infinite;
 }
 
 .glitch::after {
-  color: #4af1ff;
-  clip-path: inset(50% 0 0 0);
-  animation: glitch2 2.2s infinite;
+    color: #4af1ff;
+    clip-path: inset(50% 0 0 0);
+    animation: glitch2 2.2s infinite;
 }
 
 @keyframes glitch1 {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 1px); }
-  40% { transform: translate(2px, -1px); }
-  60% { transform: translate(-1px, 2px); }
-  80% { transform: translate(1px, -2px); }
-  100% { transform: translate(0); }
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 1px); }
+    40% { transform: translate(2px, -1px); }
+    60% { transform: translate(-1px, 2px); }
+    80% { transform: translate(1px, -2px); }
+    100% { transform: translate(0); }
 }
 
 @keyframes glitch2 {
-  0% { transform: translate(0); }
-  20% { transform: translate(1px, -1px); }
-  40% { transform: translate(-1px, 1px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(-2px, -1px); }
-  100% { transform: translate(0); }
+    0% { transform: translate(0); }
+    20% { transform: translate(1px, -1px); }
+    40% { transform: translate(-1px, 1px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(-2px, -1px); }
+    100% { transform: translate(0); }
 }
 
 /* ==========================================================
-   FLOATING ICON NAVIGATION (Nav = C)
+   FLOATING NAVIGATION
 ========================================================== */
+
 #sideNav {
-  position: fixed;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  z-index: 50;
-  opacity: 0;
-  transition: opacity 1s;
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    z-index: 500;
+    opacity: 0;
+    transition: opacity 1s;
 }
 
 .nav-icon {
-  font-size: 32px;
-  color: #7bc4ff;
-  cursor: pointer;
-  position: relative;
-  transition: 0.25s;
+    font-size: 32px;
+    color: #7bc4ff;
+    cursor: pointer;
+    position: relative;
+    transition: 0.25s;
 }
 
 .nav-icon:hover {
-  text-shadow: 0 0 12px #4af1ff;
-  transform: scale(1.2);
+    text-shadow: 0 0 12px #4af1ff;
+    transform: scale(1.2);
 }
 
-/* Tooltip */
 .nav-icon::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 45px;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 6px 10px;
-  background: rgba(20,30,40,0.85);
-  border: 1px solid #4af1ff55;
-  color: #d0e7ff;
-  white-space: nowrap;
-  font-size: 13px;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.25s;
+    content: attr(data-label);
+    position: absolute;
+    left: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    background: rgba(20,30,40,0.85);
+    border: 1px solid #4af1ff55;
+    color: #d0e7ff;
+    white-space: nowrap;
+    font-size: 13px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s;
 }
 
 .nav-icon:hover::after {
-  opacity: 1;
-  left: 50px;
+    opacity: 1;
+    left: 50px;
 }
 
 /* ==========================================================
    UNIVERSAL PAGE STRUCTURE
 ========================================================== */
+
 .page-opening {
-  position: relative;
-  width: 100%;
-  height: 55vh;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 55vh;
+    overflow: hidden;
 }
 
 .page-opening img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.7);
-  animation: zoom2 7s ease-out forwards;
-}
-
-@keyframes zoom2 {
-  from { transform: scale(1); }
-  to { transform: scale(1.12); }
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
 }
 
 .page-title-overlay {
-  position: absolute;
-  top: 40%;
-  width: 100%;
-  text-align: center;
-  color: #a9d6ff;
-  font-size: 48px;
-  letter-spacing: 4px;
-  text-shadow: 0 0 12px #4af1ff;
-}
-
-.center-title {
-  text-align: center;
-  margin-top: 50px;
-  font-size: 40px;
-}
-
-/* Content Panel */
-.home-panel,
-.page-panel {
-  width: 70%;
-  margin: 60px auto;
-  padding: 30px;
-  background: rgba(20, 30, 45, 0.55);
-  border: 1px solid #3c4b69;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #1c2b43 inset;
-  line-height: 1.8;
-}
-
-/* ==========================================================
-   CHART AREAS
-========================================================== */
-#chart,
-#barChart {
-  border: 1px solid #3c4b69;
-  border-radius: 10px;
-  background: rgba(10, 15, 25, 0.5);
-  backdrop-filter: blur(4px);
-  padding: 10px;
-}
-
-/* Tooltip for charts */
-.chart-tooltip {
-  position: absolute;
-  background: rgba(10,20,35,0.95);
-  border: 1px solid #4af1ff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  pointer-events: none;
-  font-size: 13px;
-  color: #d0e7ff;
-  z-index: 1000;
-  transform: translate(-50%, -120%);
-  display: none;
-}
-
-/* ==========================================================
-   INTERACTIVE MAP
-========================================================== */
-#regionInfo {
-  position: absolute;
-}
-
-#mapContainer {
-  width: 80%;
-  margin: 80px auto;
-  height: 520px;
-  background: rgba(10, 20, 35, 0.6);
-  border: 1px solid #4af1ff55;
-  border-radius: 12px;
-  position: relative;
-}
-
-.region {
-  fill: rgba(90, 110, 150, 0.4);
-  stroke: #4af1ff88;
-  stroke-width: 1.2;
-  cursor: pointer;
-  transition: 0.25s;
-}
-
-.region:hover {
-  fill: rgba(74, 241, 255, 0.45);
-  stroke: #4af1ff;
-  stroke-width: 2;
-}
-
-.info-box {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  width: 260px;
-  padding: 20px;
-  background: rgba(10,20,35,0.75);
-  border: 1px solid #4af1ff55;
-  border-radius: 10px;
-  display: none;
-}
-
-/* ==========================================================
-   LIQUID METAL SIMULATION
-========================================================== */
-#liquidCanvas {
-  width: 100%;
-  height: 620px;
-  background: #03070d;
-  border-top: 1px solid #28344d;
-}
-
-/* Label on Liquid Metal Page */
-.liquid-label {
-  position: absolute;
-  top: 62%;
-  width: 100%;
-  text-align: center;
-  color: #7bc4ff;
-  font-size: 22px;
-  text-shadow: 0 0 8px #4af1ff;
-}
-
-/* ==========================================================
-   STORY PAGE
-========================================================== */
-.story-text {
-  width: 70%;
-  margin: 80px auto;
-  font-size: 18px;
-  line-height: 2;
-  animation: fadeIn 2s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-#mapContainer {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    position: relative;
-}
-/* ====== Make Map Tooltip Always On Top ====== */
-#mapInfo {
-    z-index: 9999 !important;
     position: absolute;
-    pointer-events: none;
-}
-#fluidMapWrapper {
-    position: relative;
+    top: 40%;
     width: 100%;
+    text-align: center;
+    color: #a9d6ff;
+    font-size: 48px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 12px #4af1ff;
+}
+
+.page-panel {
+    width: 70%;
+    margin: 60px auto;
+    padding: 30px;
+    background: rgba(20, 30, 45, 0.55);
+    border: 1px solid #3c4b69;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #1c2b43 inset;
+    line-height: 1.8;
+}
+
+/* ==========================================================
+   CHART TOOLTIP
+========================================================== */
+
+.chart-tooltip {
+    position: absolute;
+    background: rgba(10,20,35,0.95);
+    border: 1px solid #4af1ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    pointer-events: none;
+    font-size: 13px;
+    color: #d0e7ff;
+    z-index: 9999;
+    display: none;
+}
+
+/* ==========================================================
+   WORLD MAP — LIQUID BLOBS
+========================================================== */
+
+#mapContainer {
+    width: 100%;
+    margin: 0 auto;
+    height: 700px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#fluidMapWrapper {
+    width: 90%;
     height: 650px;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -363,17 +265,36 @@ a {
 #liquidMap {
     width: 80%;
     height: 620px;
+    z-index: 11;
 }
 
 #mapInfo {
     position: absolute;
+    top: 20px;
+    right: 20px;
     background: rgba(10,15,25,0.85);
-    padding: 12px 18px;
-    border: 1px solid #4af1ff66;
+    padding: 14px 20px;
     border-radius: 10px;
-    color: #d0e7ff;
+    border: 1px solid #4af1ff66;
     pointer-events: none;
     opacity: 0;
-    transition: 0.2s ease;
+    color: #d0e7ff;
+    font-size: 14px;
     z-index: 9999;
+    transition: 0.25s ease;
 }
+
+/* ==========================================================
+   STORY PAGE
+========================================================== */
+
+.story-text {
+    width: 70%;
+    margin: 80px auto;
+    font-size: 18px;
+    line-height: 2;
+    animation: fadeIn 2s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn { to { opacity: 1; } }
