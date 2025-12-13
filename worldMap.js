@@ -1,6 +1,5 @@
 /* ==========================================================
-   WORLD MAP SCRIPT — WITH COUNTRY DATA
-   Now supports hover country name + click to show religion stats
+   WORLD MAP SCRIPT — AUTO-GENERATE RELIGION DATA FOR ALL COUNTRIES
 ========================================================== */
 
 const svg = d3.select("#worldMap");
@@ -10,9 +9,8 @@ const infoTitle = document.getElementById("infoTitle");
 const infoContent = document.getElementById("infoContent");
 
 /* ==========================================================
-   FAKE RELIGION DATA FOR SELECTED COUNTRIES
+   EXPLICIT DATA FOR CHINA (WILL NOT BE RANDOMIZED)
 ========================================================== */
-
 const religionData = {
     "China": {
         name: "China",
@@ -22,47 +20,42 @@ const religionData = {
             "Psionic Union": "22%",
             "Echo Memory Cult": "14%"
         }
-    },
-    "United States": {
-        name: "United States",
-        faiths: {
-            "Cyber Oracle Network": "31%",
-            "Quantum Throne Sect": "29%",
-            "Psionic Union": "25%",
-            "Echo Memory Cult": "15%"
-        }
-    },
-    "Brazil": {
-        name: "Brazil",
-        faiths: {
-            "Cyber Oracle Network": "22%",
-            "Quantum Throne Sect": "33%",
-            "Psionic Union": "28%",
-            "Echo Memory Cult": "17%"
-        }
-    },
-    "India": {
-        name: "India",
-        faiths: {
-            "Cyber Oracle Network": "28%",
-            "Quantum Throne Sect": "21%",
-            "Psionic Union": "34%",
-            "Echo Memory Cult": "17%"
-        }
-    },
-    "Australia": {
-        name: "Australia",
-        faiths: {
-            "Cyber Oracle Network": "35%",
-            "Quantum Throne Sect": "24%",
-            "Psionic Union": "20%",
-            "Echo Memory Cult": "21%"
-        }
     }
 };
 
 /* ==========================================================
-   LOAD WORLD MAP WITH D3
+   RANDOM GENERATOR FOR ALL OTHER COUNTRIES
+========================================================== */
+
+function generateRandomFaiths(countryName) {
+    // Avoid regenerating if already created
+    if (religionData[countryName]) return religionData[countryName];
+
+    // Create 4 random numbers
+    let a = Math.random();
+    let b = Math.random();
+    let c = Math.random();
+    let d = Math.random();
+
+    let total = a + b + c + d;
+
+    const faiths = {
+        "Cyber Oracle Network": Math.round((a / total) * 100) + "%",
+        "Quantum Throne Sect": Math.round((b / total) * 100) + "%",
+        "Psionic Union": Math.round((c / total) * 100) + "%",
+        "Echo Memory Cult": Math.round((d / total) * 100) + "%"
+    };
+
+    religionData[countryName] = {
+        name: countryName,
+        faiths: faiths
+    };
+
+    return religionData[countryName];
+}
+
+/* ==========================================================
+   LOAD WORLD MAP
 ========================================================== */
 Promise.all([
     d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
@@ -76,15 +69,15 @@ Promise.all([
 
     const graticule = d3.geoGraticule();
 
-    // Draw graticule (latitude/longitude lines)
+    // Draw graticule
     svg.append("path")
         .datum(graticule())
         .attr("class", "graticule")
         .attr("d", path);
 
-    // Draw countries
     const countries = topojson.feature(world, world.objects.countries).features;
 
+    // Draw countries
     svg.selectAll(".country")
         .data(countries)
         .enter()
@@ -92,42 +85,30 @@ Promise.all([
         .attr("class", "country")
         .attr("d", path)
         .on("mousemove", function (event, d) {
-
-            const countryName = d.properties.name || "Unknown";
+            const name = d.properties.name || "Unknown";
 
             tooltip.style("display", "block")
                 .style("left", event.pageX + 10 + "px")
                 .style("top", event.pageY - 20 + "px")
-                .html(countryName);
-
+                .html(name);
         })
         .on("mouseleave", () => {
             tooltip.style("display", "none");
         })
         .on("click", function (event, d) {
+            const name = d.properties.name;
 
-            const countryName = d.properties.name;
+            // Get existing or generate new random data
+            const data = religionData[name] || generateRandomFaiths(name);
 
-            if (religionData[countryName]) {
+            infoTitle.textContent = data.name;
 
-                const data = religionData[countryName];
-                infoTitle.textContent = data.name;
-
-                let html = "";
-                for (let f in data.faiths) {
-                    html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
-                }
-                infoContent.innerHTML = html;
-
-                infoBox.style.display = "block";
-
-            } else {
-
-                infoTitle.textContent = countryName;
-                infoContent.innerHTML = `
-                    <p>No techno-spiritual data available.</p>
-                `;
-                infoBox.style.display = "block";
+            let html = "";
+            for (let f in data.faiths) {
+                html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
             }
+
+            infoContent.innerHTML = html;
+            infoBox.style.display = "block";
         });
 });
