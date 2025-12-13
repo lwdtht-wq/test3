@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>World Fluid Map · Cyber Faith</title>
+<title>World Faith Distribution · Cyber Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
@@ -14,8 +14,8 @@
 <!-- ======================= PAGE OPENING ======================= -->
 <div class="page-opening">
     <img src="assets/open3.jpg">
-    <div class="page-title-overlay glitch" data-text="WORLD FLUID FAITH MAP">
-        WORLD FLUID FAITH MAP
+    <div class="page-title-overlay glitch" data-text="WORLD RELIGION DISTRIBUTION MAP">
+        WORLD RELIGION DISTRIBUTION MAP
     </div>
 </div>
 
@@ -33,23 +33,28 @@
 <section class="page-panel">
     <h2>Interactive Global Distribution of Future Faiths</h2>
     <p>
-        This fluid world map divides the planet into five dynamically shifting liquid regions.
-        Hover over each region to reveal its dominant techno-faith composition.
+        This map visualizes the speculative cultural territories of the cybernetic world in 2150.
+        Each region behaves like a living fluid organism—shifting, vibrating, and reacting to the user.
+        Hover across the map to reveal each area's belief composition.
     </p>
 </section>
 
-<!-- ======================= FLUID MAP CANVAS ======================= -->
-<div id="fluidMapContainer" style="width:100%; height:600px; position:relative;">
-    <canvas id="fluidMap"></canvas>
+<!-- ======================= LIQUID WORLD MAP ======================= -->
+<div id="mapContainer" style="position:relative;width:80%;height:520px;margin:50px auto;">
 
-    <div id="mapInfo" class="info-box" style="display:none;">
+    <!-- Info Box -->
+    <div id="mapInfo" class="info-box" style="display:none; position:absolute;">
         <h3 id="infoTitle">Region</h3>
         <div id="infoContent"></div>
     </div>
+
+    <!-- Canvas for Liquid Regions -->
+    <canvas id="fluidMap" style="width:100%;height:100%;"></canvas>
+
 </div>
 
+<!-- ======================= LIQUID MAP SCRIPT ======================= -->
 <script src="liquidBlobMap.js"></script>
-
 
 </body>
 </html>
