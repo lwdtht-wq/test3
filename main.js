@@ -1,8 +1,24 @@
-/* Hide nav ONLY on index page */
-if (window.location.pathname.includes("index.html") || window.location.pathname === "/test3/") {
+/* ==========================================================
+   HIDE NAV ONLY ON INDEX PAGE (GitHub Pages Safe Version)
+========================================================== */
+document.addEventListener("DOMContentLoaded", () => {
     const nav = document.getElementById("sideNav");
-    if (nav) nav.classList.add("hidden");
-}
+    if (!nav) return;
+
+    const path = window.location.pathname;
+
+    // GitHub Pages index may resolve as "/", "/test3/", "/index.html", "/test3/index.html"
+    const isIndex =
+        path === "/" ||
+        path.endsWith("/index.html") ||
+        path.endsWith("/test3/") ||
+        path.endsWith("/test3/index.html");
+
+    if (isIndex) {
+        nav.classList.add("hidden");
+    }
+});
+
 /* ==========================================================
    GLOBAL PAGE ENTRY ANIMATION – Index Page Only
 ========================================================== */
@@ -27,17 +43,26 @@ function enterWorld() {
     }, 1200);
 }
 
-
 /* ==========================================================
-   SHOW NAV ON ALL NORMAL PAGES
+   SHOW NAV ON ALL NORMAL PAGES (SAFE)
 ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
     const nav = document.getElementById("sideNav");
 
-    // ⬅ 安全检查，避免首页隐藏状态残留
     if (nav) {
-        nav.classList.remove("hidden");
-        nav.style.opacity = "1";
+        const path = window.location.pathname;
+
+        // 首页以外强制显示
+        const isIndex =
+            path === "/" ||
+            path.endsWith("/index.html") ||
+            path.endsWith("/test3/") ||
+            path.endsWith("/test3/index.html");
+
+        if (!isIndex) {
+            nav.classList.remove("hidden");
+            nav.style.opacity = "1";
+        }
     }
 
     /* Page fade-in */
@@ -61,14 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
     tooltip.className = "chart-tooltip";
     document.body.appendChild(tooltip);
 
-    /* =====================================================
-       INIT PAGE 3 MAP — FIXED (no errors if file missing)
-    ====================================================== */
+    /* Initialize World Map (Page3) */
     if (typeof worldMapInit === "function") {
         worldMapInit();
     }
 });
-
 
 /* ==========================================================
    D3 TOOLTIP DOTS
@@ -103,9 +125,8 @@ function enableChartTooltip(svg, data, xScale, yScale, keyName) {
         });
 }
 
-
 /* ==========================================================
-   PAGE 3 MAP INTERACTION (USED BY worldMapInit)
+   PAGE 3 MAP INTERACTION
 ========================================================== */
 function showRegionInfo(regionName) {
     const box = document.getElementById("mapInfo");
@@ -166,7 +187,6 @@ function showRegionInfo(regionName) {
 
     box.style.display = "block";
 }
-
 
 /* ==========================================================
    OPTIONAL MOUSE LIGHT EFFECT
