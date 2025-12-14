@@ -1,3 +1,8 @@
+/* Hide nav ONLY on index page */
+if (window.location.pathname.includes("index.html") || window.location.pathname === "/test3/") {
+    const nav = document.getElementById("sideNav");
+    if (nav) nav.classList.add("hidden");
+}
 /* ==========================================================
    GLOBAL PAGE ENTRY ANIMATION – Index Page Only
 ========================================================== */
