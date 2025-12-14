@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname;
 
-    // GitHub Pages index may resolve as "/", "/test3/", "/index.html", "/test3/index.html"
     const isIndex =
         path === "/" ||
         path.endsWith("/index.html") ||
@@ -44,15 +43,14 @@ function enterWorld() {
 }
 
 /* ==========================================================
-   SHOW NAV ON ALL NORMAL PAGES (SAFE)
+   SHOW NAV ON ALL NORMAL PAGES
 ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-    const nav = document.getElementById("sideNav");
 
+    const nav = document.getElementById("sideNav");
     if (nav) {
         const path = window.location.pathname;
 
-        // 首页以外强制显示
         const isIndex =
             path === "/" ||
             path.endsWith("/index.html") ||
@@ -65,9 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    /* Page fade-in */
+    /* Page fade-in animation */
     const contentPanels = document.querySelectorAll(".page-panel, .story-text");
-
     contentPanels.forEach(panel => {
         panel.style.opacity = 0;
         panel.style.transform = "translateY(30px)";
@@ -81,19 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }, 300);
 
-    /* Tooltip container */
+    /* Tooltip preparation */
     const tooltip = document.createElement("div");
     tooltip.className = "chart-tooltip";
     document.body.appendChild(tooltip);
 
-    /* Initialize World Map (Page3) */
+    /* Initialize Page3 World Map (if JS file loaded) */
     if (typeof worldMapInit === "function") {
         worldMapInit();
     }
 });
 
 /* ==========================================================
-   D3 TOOLTIP DOTS
+   D3 LINE/BAR TOOLTIP (Used in Page1 & Page2)
 ========================================================== */
 function enableChartTooltip(svg, data, xScale, yScale, keyName) {
     const tooltip = document.querySelector(".chart-tooltip");
@@ -126,67 +123,9 @@ function enableChartTooltip(svg, data, xScale, yScale, keyName) {
 }
 
 /* ==========================================================
-   PAGE 3 MAP INTERACTION
+   ❌ REMOVED: showRegionInfo() — no longer used
+   (This function caused the map to update only once)
 ========================================================== */
-function showRegionInfo(regionName) {
-    const box = document.getElementById("mapInfo");
-    const title = document.getElementById("infoTitle");
-    const content = document.getElementById("infoContent");
-
-    if (!box || !title || !content) return;
-
-    const regionData = {
-        north: {
-            name: "North Dominion",
-            faiths: {
-                "Cyber Oracle": "42%",
-                "Psionic Union": "27%",
-                "Quantum Throne": "18%",
-                "Echo Memory Cult": "13%"
-            }
-        },
-        east: {
-            name: "East Luminance",
-            faiths: {
-                "Quantum Throne": "46%",
-                "Cyber Oracle": "30%",
-                "Psionic Union": "19%",
-                "Echo Memory Cult": "5%"
-            }
-        },
-        south: {
-            name: "South Alloy Basin",
-            faiths: {
-                "Psionic Union": "51%",
-                "Echo Memory Cult": "29%",
-                "Quantum Throne": "14%",
-                "Cyber Oracle": "6%"
-            }
-        },
-        west: {
-            name: "West Iron Frontier",
-            faiths: {
-                "Echo Memory Cult": "43%",
-                "Cyber Oracle": "28%",
-                "Quantum Throne": "21%",
-                "Psionic Union": "8%"
-            }
-        }
-    };
-
-    const data = regionData[regionName];
-    if (!data) return;
-
-    title.textContent = data.name;
-
-    let html = "";
-    for (let f in data.faiths) {
-        html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
-    }
-    content.innerHTML = html;
-
-    box.style.display = "block";
-}
 
 /* ==========================================================
    OPTIONAL MOUSE LIGHT EFFECT
