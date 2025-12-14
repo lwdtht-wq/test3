@@ -1,108 +1,127 @@
-/* ==========================================================
-   WORLD MAP SCRIPT — AUTO-GENERATE RELIGION DATA FOR ALL COUNTRIES
-   Using ISO_A3 country codes (because your map uses iso_a3)
-========================================================== */
+function worldMapInit() {
+    const width = 900;
+    const height = 520;
 
-const svg = d3.select("#worldMap");
-const tooltip = d3.select("#mapTooltip");
-const infoBox = document.getElementById("mapInfo");
-const infoTitle = document.getElementById("infoTitle");
-const infoContent = document.getElementById("infoContent");
+    const svg = d3.select("#worldMap")
+        .attr("width", width)
+        .attr("height", height);
 
-/* ==========================================================
-   FIXED DATA FOR CHINA (ISO3: CHN)
-========================================================== */
-const religionData = {
-    "CHN": {
-        name: "China",
-        faiths: {
-            "Cyber Oracle Network": "38%",
-            "Quantum Throne Sect": "26%",
-            "Psionic Union": "22%",
-            "Echo Memory Cult": "14%"
-        }
-    }
-};
-
-/* ==========================================================
-   RANDOM GENERATION FOR ALL OTHER COUNTRIES
-========================================================== */
-function generateRandomFaiths(iso3, countryName) {
-    if (religionData[iso3]) return religionData[iso3];
-
-    let r1 = Math.random();
-    let r2 = Math.random();
-    let r3 = Math.random();
-    let r4 = Math.random();
-    let total = r1 + r2 + r3 + r4;
-
-    religionData[iso3] = {
-        name: countryName,
-        faiths: {
-            "Cyber Oracle Network": Math.round((r1 / total) * 100) + "%",
-            "Quantum Throne Sect": Math.round((r2 / total) * 100) + "%",
-            "Psionic Union": Math.round((r3 / total) * 100) + "%",
-            "Echo Memory Cult": Math.round((r4 / total) * 100) + "%"
-        }
-    };
-
-    return religionData[iso3];
-}
-
-/* ==========================================================
-   LOAD WORLD MAP
-========================================================== */
-Promise.all([
-    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-]).then(([world]) => {
-
-    const countries = topojson.feature(world, world.objects.countries).features;
-
-    // Mercator projection
-    const projection = d3.geoMercator()
-        .scale(125)
-        .translate([400, 250]);
+    const projection = d3.geoNaturalEarth1()
+        .scale(170)
+        .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
 
-    // Draw graticule
-    const graticule = d3.geoGraticule();
-    svg.append("path")
-        .datum(graticule())
-        .attr("class", "graticule")
-        .attr("d", path);
+    const tooltip = document.getElementById("mapTooltip");
+    const infoBox = document.getElementById("mapInfo");
+    const infoTitle = document.getElementById("infoTitle");
+    const infoContent = document.getElementById("infoContent");
 
-    // Draw all countries
-    svg.selectAll(".country")
-        .data(countries)
-        .enter()
-        .append("path")
-        .attr("class", "country")
-        .attr("d", path)
-        .on("mousemove", function (event, d) {
-            const name = d.properties.name;
-            tooltip.style("display", "block")
-                .style("left", event.pageX + 10 + "px")
-                .style("top", event.pageY - 25 + "px")
-                .html(name);
-        })
-        .on("mouseleave", () => {
-            tooltip.style("display", "none");
-        })
-        .on("click", function (event, d) {
-            const iso3 = d.properties.iso_a3;  // key fix
-            const name = d.properties.name;
-
-            const data = religionData[iso3] || generateRandomFaiths(iso3, name);
-
-            infoTitle.textContent = data.name;
-
-            let html = "";
-            for (let f in data.faiths) {
-                html += `<p><strong>${f}</strong>: ${data.faiths[f]}</p>`;
+    // ⬇ 全新的未来宗教数据（你指定的四个国家 + 中国）
+    const religionData = {
+        "China": {
+            title: "China – Eastern Nexus",
+            data: {
+                "Cyber Oracle Network": "33%",
+                "Quantum Throne Sect": "27%",
+                "Psionic Union": "22%",
+                "Echo Memory Cult": "18%"
             }
+        },
+        "United States": {
+            title: "United States – Western Singularity Zone",
+            data: {
+                "Cyber Oracle Network": "41%",
+                "Quantum Throne Sect": "32%",
+                "Psionic Union": "15%",
+                "Echo Memory Cult": "12%"
+            }
+        },
+        "India": {
+            title: "India – Southern Resonance Field",
+            data: {
+                "Cyber Oracle Network": "22%",
+                "Quantum Throne Sect": "18%",
+                "Psionic Union": "40%",
+                "Echo Memory Cult": "20%"
+            }
+        },
+        "Brazil": {
+            title: "Brazil – Amazonian Echo Domain",
+            data: {
+                "Cyber Oracle Network": "28%",
+                "Quantum Throne Sect": "24%",
+                "Psionic Union": "26%",
+                "Echo Memory Cult": "22%"
+            }
+        },
+        "Germany": {
+            title: "Germany – Central Quantum Loop",
+            data: {
+                "Cyber Oracle Network": "38%",
+                "Quantum Throne Sect": "33%",
+                "Psionic Union": "14%",
+                "Echo Memory Cult": "15%"
+            }
+        }
+    };
 
-            infoContent.innerHTML = html;
-            infoBox.style.display = "block";
+    // Draw map
+    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+        .then(worldData => {
+            const countries = topojson.feature(worldData, worldData.objects.countries).features;
+
+            // Draw graticule (经纬线)
+            const graticule = d3.geoGraticule();
+            svg.append("path")
+                .attr("class", "graticule")
+                .attr("d", path(graticule()));
+
+            // Draw all countries
+            svg.selectAll(".country")
+                .data(countries)
+                .enter()
+                .append("path")
+                .attr("class", "country")
+                .attr("d", path)
+                .attr("fill", "rgba(90,110,150,0.4)")
+                .attr("stroke", "#4af1ff88")
+                .attr("stroke-width", 1)
+
+                // Hover tooltip
+                .on("mousemove", function (event, d) {
+                    const name = d.properties.name;
+                    tooltip.style.display = "block";
+                    tooltip.style.left = event.pageX + 12 + "px";
+                    tooltip.style.top = event.pageY + 12 + "px";
+                    tooltip.innerHTML = name;
+                })
+                .on("mouseleave", function () {
+                    tooltip.style.display = "none";
+                })
+
+                // CLICK — Show country info (✨ FIXED!)
+                .on("click", function (event, d) {
+                    const name = d.properties.name;  // ← 保证每次点击都能读取正确国家名
+
+                    infoBox.style.display = "block";
+
+                    if (religionData[name]) {
+                        // Title
+                        infoTitle.innerHTML = religionData[name].title;
+
+                        // Body
+                        let html = "";
+                        const block = religionData[name].data;
+                        for (let faith in block) {
+                            html += `<p><strong>${faith}</strong>: ${block[faith]}</p>`;
+                        }
+                        infoContent.innerHTML = html;
+                    } else {
+                        // Countries without data
+                        infoTitle.innerHTML = name;
+                        infoContent.innerHTML = "No projected techno-faith data available.";
+                    }
+                });
         });
-});
+}
