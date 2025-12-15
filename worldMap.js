@@ -51,33 +51,32 @@ function worldMapInit() {
             echo: Math.round((d / sum) * 100)
         };
     }
+  /* =====================================================
+   RGB COLOR MIXING BASED ON FAITH PROPORTIONS (FIXED)
+===================================================== */
+function mixColor(profile) {
+    const total = profile.cyber + profile.quantum + profile.psionic + profile.echo;
 
-    /* =====================================================
-       RGB COLOR MIXING BASED ON FAITH PROPORTIONS
-    ===================================================== */
-    function mixColor(profile) {
-        const total = profile.cyber + profile.quantum + profile.psionic + profile.echo;
+    const r =
+        (FAITH_COLORS.cyber[0] * profile.cyber +
+         FAITH_COLORS.quantum[0] * profile.quantum +
+         FAITH_COLORS.psionic[0] * profile.psionic +
+         FAITH_COLORS.echo[0] * profile.echo) / total;
 
-        const r =
-            (FAITH_COLORS.cyber[0] * profile.cyber +
-            FAITH_COLORS.quantum[0] * profile.quantum +
-            FAITH_COLORS.psionic[0] * profile.psionic +
-            FAITH_COLORS.echo[0] * profile.echo) / total;
+    const g =
+        (FAITH_COLORS.cyber[1] * profile.cyber +
+         FAITH_COLORS.quantum[1] * profile.quantum +
+         FAITH_COLORS.psionic[1] * profile.psionic +
+         FAITH_COLORS.echo[1] * profile.echo) / total;
 
-        const g =
-            (FAITH_COLORS.cyber[1] * profile.cyber +
-            FAITH_COLORS.quantum[1] * profile.quantum +
-            FAITH_COLORS.psionic[1] * profile.psionic +
-            FAITH_COLORS.echo[1] * profile.echo) / total;
+    const b =
+        (FAITH_COLORS.cyber[2] * profile.cyber +
+         FAITH_COLORS.quantum[2] * profile.quantum +
+         FAITH_COLORS.psionic[2] * profile.psionic +
+         FAITH_COLORS.echo[2] * profile.echo) / total;
 
-        const b =
-            (FAITH_COLORS.cyber[2] * profile.cyber +
-            FAITH_COLORS.quantum[2] * profile.quantum +
-            FAITH_COLORS.psionic[2] * profile.psionic +
-            FAITH_COLORS.echo[2] * profile.echo) / total;
-
-        return `rgb(${r}, ${g}, ${b})`;
-    }
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}
 
     /* =====================================================
        SPECIAL CASES: Arctic & Antarctic
