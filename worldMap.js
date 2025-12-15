@@ -38,19 +38,31 @@ function worldMapInit() {
        AUTO GENERATE FAITH DATA FOR ALL COUNTRIES
     ===================================================== */
     function randomFaithProfile() {
-        let a = Math.random();
-        let b = Math.random();
-        let c = Math.random();
-        let d = Math.random();
-        let sum = a + b + c + d;
+    // 让其中一个宗教特别高（产生更强色彩差异）
+    const dominant = Math.floor(Math.random() * 4);
 
-        return {
-            cyber: Math.round((a / sum) * 100),
-            quantum: Math.round((b / sum) * 100),
-            psionic: Math.round((c / sum) * 100),
-            echo: Math.round((d / sum) * 100)
-        };
-    }
+    let cyber = Math.random() * 30 + 10;
+    let quantum = Math.random() * 30 + 10;
+    let psionic = Math.random() * 30 + 10;
+    let echo = Math.random() * 30 + 10;
+
+    // 给主导宗教额外 +60～80%
+    const boost = Math.random() * 40 + 60;
+    if (dominant === 0) cyber += boost;
+    if (dominant === 1) quantum += boost;
+    if (dominant === 2) psionic += boost;
+    if (dominant === 3) echo += boost;
+
+    // 归一化成百分比
+    const sum = cyber + quantum + psionic + echo;
+
+    return {
+        cyber: Math.round((cyber / sum) * 100),
+        quantum: Math.round((quantum / sum) * 100),
+        psionic: Math.round((psionic / sum) * 100),
+        echo: Math.round((echo / sum) * 100)
+    };
+}
   /* =====================================================
    RGB COLOR MIXING BASED ON FAITH PROPORTIONS (FIXED)
 ===================================================== */
