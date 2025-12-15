@@ -39,6 +39,7 @@
     cursor: pointer;
     transition: 0.25s;
 }
+
 #chartControls button:hover {
     background: rgba(74,241,255,0.25);
     box-shadow: 0 0 12px #4af1ff;
@@ -131,13 +132,20 @@ const chartData = [
   { faith: "Echo Memory Cult", value: 310 }
 ];
 
-/* Blue gradient set */
+/* Blue gradient colors */
 const colors = {
     cyber:  "rgb(74,140,255)",
     quantum:"rgb(80,200,255)",
     psionic:"rgb(60,255,220)",
     echo:   "rgb(120,180,255)"
 };
+
+function getColor(d) {
+    if (d.faith === "Cyber Oracle") return colors.cyber;
+    if (d.faith === "Quantum Throne") return colors.quantum;
+    if (d.faith === "Psionic Union") return colors.psionic;
+    if (d.faith === "Echo Memory Cult") return colors.echo;
+}
 
 const width = 900, height = 430;
 const margin = { top: 40, right: 50, bottom: 60, left: 120 };
@@ -147,21 +155,13 @@ const svg = d3.select("#neoChart")
     .attr("width", width)
     .attr("height", height);
 
-// Tooltip
 const tooltip = d3.select("body").append("div")
     .attr("class", "chart-tooltip");
-
-function getColor(d) {
-    if (d.faith === "Cyber Oracle") return colors.cyber;
-    if (d.faith === "Quantum Throne") return colors.quantum;
-    if (d.faith === "Psionic Union") return colors.psionic;
-    if (d.faith === "Echo Memory Cult") return colors.echo;
-}
 
 function clearChart() { svg.selectAll("*").remove(); }
 
 /* ==========================================================
-   BAR CHART — 发光 + hover expand 动画
+   BAR CHART
 ========================================================== */
 function drawBar() {
     clearChart();
@@ -222,21 +222,20 @@ function drawBar() {
 }
 
 /* ==========================================================
-   ULTIMATE NEON LINE CHART (Blue Cyberpunk Edition)
+   LINE CHART — Final Fixed Version
 ========================================================== */
 function drawLineChart() {
-    clearSVG();
+    clearChart();
 
     const x = d3.scalePoint()
-        .domain(data.map(d => d.faith))
+        .domain(chartData.map(d => d.faith))
         .range([margin.left, width - margin.right])
         .padding(0.5);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value)])
+        .domain([0, d3.max(chartData, d => d.value)])
         .range([height - margin.bottom, margin.top]);
 
-    /* Axes */
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
@@ -247,13 +246,11 @@ function drawLineChart() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    /* Line generator */
     const line = d3.line()
         .x(d => x(d.faith))
         .y(d => y(d.value))
         .curve(d3.curveCatmullRom.alpha(0.6));
 
-    /* Draw glowing gradient line */
     const gradient = svg.append("defs")
         .append("linearGradient")
         .attr("id", "neonLine")
@@ -264,14 +261,13 @@ function drawLineChart() {
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "rgb(50,140,255)");
 
     const pathNode = svg.append("path")
-        .datum(data)
+        .datum(chartData)
         .attr("fill", "none")
         .attr("stroke", "url(#neonLine)")
         .attr("stroke-width", 4)
         .attr("d", line)
         .style("filter", "drop-shadow(0 0 10px #4af1ff)");
 
-    /* Animate line drawing */
     const totalLength = pathNode.node().getTotalLength();
 
     pathNode
@@ -282,25 +278,20 @@ function drawLineChart() {
         .ease(d3.easeCubic)
         .attr("stroke-dashoffset", 0);
 
-    /* Glow-pulse dots */
-    const dots = svg.selectAll(".dot")
-        .data(data)
+    svg.selectAll(".dot")
+        .data(chartData)
         .enter()
         .append("circle")
         .attr("cx", d => x(d.faith))
         .attr("cy", d => y(d.value))
         .attr("r", 0)
-        .attr("fill", d => colorRGB(d))
+        .attr("fill", d => getColor(d))
         .style("filter", "drop-shadow(0 0 6px #4af1ff)")
         .transition()
         .duration(1000)
         .delay((d,i)=> 200*i)
         .attr("r", 8);
 
-    /* Tooltip */
-    const tooltip = document.querySelector(".chart-tooltip");
-
-    /* Interactive dot hover effect */
     svg.selectAll("circle")
         .on("mousemove", function (event, d) {
             d3.select(this)
@@ -308,10 +299,10 @@ function drawLineChart() {
               .attr("r", 12)
               .style("filter", "drop-shadow(0 0 12px #4af1ff)");
 
-            tooltip.style.display = "block";
-            tooltip.style.left = event.pageX + "px";
-            tooltip.style.top = event.pageY - 20 + "px";
-            tooltip.innerHTML = `<strong>${d.faith}</strong><br>${d.value} million`;
+            tooltip.style("display","block")
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
         })
         .on("mouseleave", function () {
             d3.select(this)
@@ -319,37 +310,12 @@ function drawLineChart() {
               .attr("r", 8)
               .style("filter", "drop-shadow(0 0 6px #4af1ff)");
 
-            tooltip.style.display = "none";
+            tooltip.style("display","none");
         });
-
-    /* Crosshair line */
-    const cross = svg.append("line")
-        .attr("stroke", "#4af1ff55")
-        .attr("stroke-width", 1.2)
-        .attr("y1", margin.top)
-        .attr("y2", height - margin.bottom)
-        .style("display", "none");
-
-    /* Mouse tracking */
-    svg.on("mousemove", (event) => {
-        const [mx] = d3.pointer(event);
-
-        const closestFaith = x.domain().reduce((a, b) =>
-            Math.abs(x(a) - mx) < Math.abs(x(b) - mx) ? a : b);
-
-        cross
-            .attr("x1", x(closestFaith))
-            .attr("x2", x(closestFaith))
-            .style("display", "block");
-    });
-
-    svg.on("mouseleave", () => {
-        cross.style("display", "none");
-    });
 }
 
 /* ==========================================================
-   AREA CHART — 水波亮度动画
+   AREA CHART
 ========================================================== */
 function drawArea() {
     clearChart();
@@ -391,7 +357,7 @@ document.querySelectorAll("#chartControls button").forEach(btn=>{
     btn.addEventListener("click",()=>{
         let type = btn.dataset.type;
         if (type==="bar") drawBar();
-        if (type==="line") drawLine();
+        if (type==="line") drawLineChart();
         if (type==="area") drawArea();
     });
 });
