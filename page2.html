@@ -54,85 +54,155 @@ Below are four major future religions that emerged by the year 2150.
 <li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
 </ul>
 
-<h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
+<h2 style="margin-top:50px;">Faith Population Trends (2020–2060)</h2>
 <p>
-This visualization shows estimated follower numbers (in millions) for each major future faith.
-Hover the bars to reveal details.
+This upgraded cyber-style RGB chart shows how each future faith grows over time.
+Hover to reveal extra effects and interactive data highlights.
 </p>
 
 <div id="barChart" style="width:100%;height:440px;margin-top:40px;"></div>
 
 </section>
 
-<!-- ======================= D3 BAR CHART ======================= -->
+<!-- ======================= D3 CYBER RGB LINE CHART ======================= -->
 <script>
+// ===================== CYBER RGB GRADIENT COLORS =====================
+const FAITH_COLORS = {
+    cyber: ["rgb(74,0,255)", "rgb(150,80,255)"],
+    quantum: ["rgb(255,215,0)", "rgb(255,255,130)"],
+    psionic: ["rgb(0,255,200)", "rgb(90,255,230)"],
+    echo: ["rgb(255,80,190)", "rgb(255,130,220)"]
+};
 
-/* Data (millions of followers) */
-const barData = [
-  { faith: "Cyber Oracle", value: 680 },
-  { faith: "Quantum Throne", value: 540 },
-  { faith: "Psionic Union", value: 420 },
-  { faith: "Echo Memory Cult", value: 310 }
+// ===================== DATA =====================
+const data = [
+    { year: 2020, cyber: 12, quantum: 8, psionic: 20, echo: 6 },
+    { year: 2030, cyber: 25, quantum: 14, psionic: 28, echo: 13 },
+    { year: 2040, cyber: 40, quantum: 22, psionic: 35, echo: 20 },
+    { year: 2050, cyber: 60, quantum: 29, psionic: 43, echo: 25 },
+    { year: 2060, cyber: 75, quantum: 40, psionic: 50, echo: 30 }
 ];
 
-const bw = 900;
-const bh = 420;
-const margin = { top: 40, right: 60, bottom: 60, left: 120 };
+const svg = d3.select("#barChart")
+    .append("svg")
+    .attr("width", 900)
+    .attr("height", 420);
 
-const svg2 = d3.select("#barChart")
-  .append("svg")
-  .attr("width", bw)
-  .attr("height", bh);
+const margin = { top: 40, right: 120, bottom: 40, left: 80 };
+const width = 900 - margin.left - margin.right;
+const height = 420 - margin.top - margin.bottom;
 
-/* Scales */
-const y2 = d3.scaleBand()
-  .domain(barData.map(d => d.faith))
-  .range([margin.top, bh - margin.bottom])
-  .padding(0.3);
+const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-const x2 = d3.scaleLinear()
-  .domain([0, 700])
-  .range([margin.left, bw - margin.right]);
+const x = d3.scaleLinear()
+    .domain(d3.extent(data, d => d.year))
+    .range([0, width]);
 
-/* Axes */
-svg2.append("g")
-  .attr("transform", `translate(0, ${bh - margin.bottom})`)
-  .call(d3.axisBottom(x2).ticks(7))
-  .attr("color", "#7bc4ff");
+const y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([height, 0]);
 
-svg2.append("g")
-  .attr("transform", `translate(${margin.left}, 0)`)
-  .call(d3.axisLeft(y2))
-  .attr("color", "#7bc4ff");
+// ===================== GRID =====================
+g.append("g")
+    .attr("class", "grid")
+    .call(d3.axisLeft(y).tickSize(-width).tickFormat(""))
+    .style("opacity", 0.15);
 
-/* Bars */
-svg2.selectAll(".bar")
-  .data(barData)
-  .enter()
-  .append("rect")
-  .attr("class", "bar")
-  .attr("x", margin.left)
-  .attr("y", d => y2(d.faith))
-  .attr("width", d => x2(d.value) - margin.left)
-  .attr("height", y2.bandwidth())
-  .attr("fill", "#4af1ff99")
-  .attr("stroke", "#4af1ff")
-  .attr("stroke-width", 1.5)
-  .style("cursor", "pointer")
-  .on("mousemove", (event, d) => {
-      const tooltip = document.querySelector(".chart-tooltip");
-      tooltip.style.display = "block";
-      tooltip.style.left = event.pageX + "px";
-      tooltip.style.top = event.pageY - 20 + "px";
-      tooltip.innerHTML = `
-        <strong>${d.faith}</strong><br>
-        Followers: ${d.value} million
-      `;
-  })
-  .on("mouseleave", () => {
-      document.querySelector(".chart-tooltip").style.display = "none";
-  });
+// ===================== AXES =====================
+g.append("g").call(d3.axisLeft(y));
+g.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("d")));
 
+// ===================== LINE GENERATOR =====================
+const line = d3.line()
+    .x(d => x(d.year))
+    .y(d => y(d.value))
+    .curve(d3.curveCatmullRom.alpha(0.5));
+
+let series = [
+    { key: "cyber", label: "Cyber Oracle" },
+    { key: "quantum", label: "Quantum Throne" },
+    { key: "psionic", label: "Psionic Union" },
+    { key: "echo", label: "Echo Memory Cult" }
+];
+
+const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "chart-tooltip")
+    .style("display", "none");
+
+const followLine = g.append("line")
+    .attr("stroke", "#4af1ff")
+    .attr("stroke-width", 1)
+    .style("opacity", 0);
+
+// ===================== DRAW LINES + POINTS =====================
+series.forEach(s => {
+    // Gradient
+    let gradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", `grad-${s.key}`)
+        .attr("x1", "0%").attr("y1", "0%")
+        .attr("x2", "100%").attr("y2", "0%");
+
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", FAITH_COLORS[s.key][0]);
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", FAITH_COLORS[s.key][1]);
+
+    // Line path
+    g.append("path")
+        .datum(data.map(d => ({ year: d.year, value: d[s.key] })))
+        .attr("fill", "none")
+        .attr("stroke", `url(#grad-${s.key})`)
+        .attr("stroke-width", 3)
+        .attr("d", line)
+        .style("filter", "drop-shadow(0 0 3px #4af1ff)")
+        .on("mouseover", function () {
+            d3.select(this)
+                .attr("stroke-width", 5)
+                .style("filter", "drop-shadow(0 0 8px #4af1ff)");
+        })
+        .on("mouseout", function () {
+            d3.select(this)
+                .attr("stroke-width", 3)
+                .style("filter", "drop-shadow(0 0 3px #4af1ff)");
+        });
+
+    // Points
+    g.selectAll(`.dot-${s.key}`)
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", `dot-${s.key}`)
+        .attr("cx", d => x(d.year))
+        .attr("cy", d => y(d[s.key]))
+        .attr("r", 6)
+        .attr("fill", FAITH_COLORS[s.key][1])
+        .style("cursor", "pointer")
+        .style("filter", "drop-shadow(0 0 4px #fff)")
+        .on("mousemove", function (event, d) {
+            tooltip.style("display", "block")
+                .style("left", (event.pageX + 12) + "px")
+                .style("top", (event.pageY - 20) + "px")
+                .html(`
+                    <strong>${s.label}</strong><br>
+                    Year: ${d.year}<br>
+                    Value: ${d[s.key]}%
+                `);
+
+            followLine
+                .attr("x1", x(d.year))
+                .attr("x2", x(d.year))
+                .attr("y1", 0)
+                .attr("y2", height)
+                .style("opacity", 0.5);
+        })
+        .on("mouseleave", () => {
+            tooltip.style("display", "none");
+            followLine.style("opacity", 0);
+        });
+});
 </script>
 
 </body>
