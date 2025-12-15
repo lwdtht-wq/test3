@@ -222,69 +222,129 @@ function drawBar() {
 }
 
 /* ==========================================================
-   LINE CHART — 发光节点 + 鼠标跟随 crosshair
+   ULTIMATE NEON LINE CHART (Blue Cyberpunk Edition)
 ========================================================== */
-function drawLine() {
-    clearChart();
+function drawLineChart() {
+    clearSVG();
 
     const x = d3.scalePoint()
-        .domain(chartData.map(d=>d.faith))
-        .range([margin.left, width-margin.right])
+        .domain(data.map(d => d.faith))
+        .range([margin.left, width - margin.right])
         .padding(0.5);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(chartData,d=>d.value)])
-        .range([height-margin.bottom, margin.top]);
+        .domain([0, d3.max(data, d => d.value)])
+        .range([height - margin.bottom, margin.top]);
 
+    /* Axes */
+    svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x))
+        .attr("color", "#88c7ff");
+
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .attr("color", "#88c7ff");
+
+    /* Line generator */
     const line = d3.line()
-        .x(d=>x(d.faith))
-        .y(d=>y(d.value))
-        .curve(d3.curveCatmullRom.alpha(0.7));
+        .x(d => x(d.faith))
+        .y(d => y(d.value))
+        .curve(d3.curveCatmullRom.alpha(0.6));
 
-    svg.append("path")
-        .datum(chartData)
-        .attr("fill","none")
-        .attr("stroke","#4af1ff")
-        .attr("stroke-width",3)
+    /* Draw glowing gradient line */
+    const gradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "neonLine")
+        .attr("x1", "0%").attr("x2", "100%")
+        .attr("y1", "0%").attr("y2", "0%");
+
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", "rgb(120,200,255)");
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", "rgb(50,140,255)");
+
+    const pathNode = svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "url(#neonLine)")
+        .attr("stroke-width", 4)
         .attr("d", line)
-        .style("filter","drop-shadow(0 0 8px #4af1ff)");
+        .style("filter", "drop-shadow(0 0 10px #4af1ff)");
 
-    svg.selectAll(".dot")
-        .data(chartData)
+    /* Animate line drawing */
+    const totalLength = pathNode.node().getTotalLength();
+
+    pathNode
+        .attr("stroke-dasharray", totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(1500)
+        .ease(d3.easeCubic)
+        .attr("stroke-dashoffset", 0);
+
+    /* Glow-pulse dots */
+    const dots = svg.selectAll(".dot")
+        .data(data)
         .enter()
         .append("circle")
-        .attr("cx", d=>x(d.faith))
-        .attr("cy", d=>y(d.value))
-        .attr("r",8)
-        .attr("fill",d=>getColor(d))
-        .style("filter","drop-shadow(0 0 6px #4af1ff)");
+        .attr("cx", d => x(d.faith))
+        .attr("cy", d => y(d.value))
+        .attr("r", 0)
+        .attr("fill", d => colorRGB(d))
+        .style("filter", "drop-shadow(0 0 6px #4af1ff)")
+        .transition()
+        .duration(1000)
+        .delay((d,i)=> 200*i)
+        .attr("r", 8);
 
-    const cross = svg.append("line")
-        .attr("stroke","#4af1ff88")
-        .attr("stroke-width",1.2)
-        .attr("y1", margin.top)
-        .attr("y2", height-margin.bottom)
-        .style("display","none");
+    /* Tooltip */
+    const tooltip = document.querySelector(".chart-tooltip");
 
-    svg.on("mousemove", (event) => {
-        const [mx] = d3.pointer(event);
-        const closest = x.domain().reduce((a,b)=>{
-            return Math.abs(x(a)-mx)<Math.abs(x(b)-mx)?a:b;
+    /* Interactive dot hover effect */
+    svg.selectAll("circle")
+        .on("mousemove", function (event, d) {
+            d3.select(this)
+              .transition().duration(200)
+              .attr("r", 12)
+              .style("filter", "drop-shadow(0 0 12px #4af1ff)");
+
+            tooltip.style.display = "block";
+            tooltip.style.left = event.pageX + "px";
+            tooltip.style.top = event.pageY - 20 + "px";
+            tooltip.innerHTML = `<strong>${d.faith}</strong><br>${d.value} million`;
+        })
+        .on("mouseleave", function () {
+            d3.select(this)
+              .transition().duration(200)
+              .attr("r", 8)
+              .style("filter", "drop-shadow(0 0 6px #4af1ff)");
+
+            tooltip.style.display = "none";
         });
 
-        cross.attr("x1", x(closest)).attr("x2", x(closest)).style("display","block");
+    /* Crosshair line */
+    const cross = svg.append("line")
+        .attr("stroke", "#4af1ff55")
+        .attr("stroke-width", 1.2)
+        .attr("y1", margin.top)
+        .attr("y2", height - margin.bottom)
+        .style("display", "none");
 
-        const d = chartData.find(v => v.faith===closest);
+    /* Mouse tracking */
+    svg.on("mousemove", (event) => {
+        const [mx] = d3.pointer(event);
 
-        tooltip.style("display","block")
-            .style("left", event.pageX + "px")
-            .style("top", event.pageY - 20 + "px")
-            .html(`<strong>${d.faith}</strong><br>${d.value} million`);
+        const closestFaith = x.domain().reduce((a, b) =>
+            Math.abs(x(a) - mx) < Math.abs(x(b) - mx) ? a : b);
+
+        cross
+            .attr("x1", x(closestFaith))
+            .attr("x2", x(closestFaith))
+            .style("display", "block");
     });
 
-    svg.on("mouseleave",()=>{
-        cross.style("display","none");
-        tooltip.style("display","none");
+    svg.on("mouseleave", () => {
+        cross.style("display", "none");
     });
 }
 
