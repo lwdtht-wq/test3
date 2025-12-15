@@ -37,11 +37,9 @@
   margin-right: 10px;
   transition: 0.2s;
 }
-
 .legend-btn:hover {
   box-shadow: 0 0 10px #4af1ff;
 }
-
 .legend-btn.active {
   background: #4af1ff22;
   box-shadow: 0 0 12px #4af1ff;
@@ -69,7 +67,6 @@
   color: #cfe9ff;
   box-shadow: 0 0 20px #4af1ff22 inset;
 }
-
 #insightBox h3 {
   color: #4af1ff;
   margin-bottom: 10px;
@@ -117,7 +114,7 @@ Hover to explore interpolated values in cyber space.
 <div id="chart" style="width:100%;height:460px;margin-top:20px;"></div>
 
 <!-- ============================================================
-     NEW BAR CHART SECTION
+     NEW BAR CHART SECTION (Centered fixed)
 ============================================================ -->
 <div id="barContainer">
   <h2 style="color:#4af1ff; margin-bottom:20px;">Belief System Distribution in 2150</h2>
@@ -137,10 +134,9 @@ Hover to explore interpolated values in cyber space.
 </div>
 
 </section>
-
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
-/* ---------------- ORIGINAL LINE CHART DATA ---------------- */
+/* ---------------- ORIGINAL DATA ---------------- */
 const data = [
   { year: 2010, traditional: 83, tech: 0, none: 17 },
   { year: 2020, traditional: 78, tech: 0, none: 22 },
@@ -178,26 +174,29 @@ svg.append("g")
   .call(d3.axisLeft(y))
   .attr("color", "#7bc4ff");
 
+/* ---------------- COLORS ---------------- */
 const colors = {
   traditional: "#ff3df2",
   tech: "#4af1ff",
   none: "#8cc7ff"
 };
 
-/* ---------------- LINE GENERATOR ---------------- */
+/* ---------------- LINE DRAWING ---------------- */
 function drawLine(key) {
   const line = d3.line()
     .x(d => x(d.year))
     .y(d => y(d[key]))
     .curve(d3.curveMonotoneX);
 
-  return svg.append("path")
+  const p = svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colors[key])
     .attr("stroke-width", 3)
     .attr("d", line)
-    .style("filter", "drop-shadow(0 0 8px " + colors[key] + ")");
+    .style("filter", `drop-shadow(0 0 8px ${colors[key]})`);
+
+  return p;
 }
 
 let paths = {
@@ -206,7 +205,7 @@ let paths = {
   none: drawLine("none")
 };
 
-/* ---------------- INTERPOLATOR ---------------- */
+/* ---------------- INTERPOLATION ---------------- */
 function interpolateValue(year, key) {
   for (let i = 0; i < data.length - 1; i++) {
     let a = data[i], b = data[i + 1];
@@ -215,14 +214,28 @@ function interpolateValue(year, key) {
       return a[key] + t * (b[key] - a[key]);
     }
   }
+  return null;
 }
 
+/* ---------------- FOLLOWING DOTS ---------------- */
 let followDots = {
-  traditional: svg.append("circle").attr("r", 7).attr("fill", colors.traditional).style("display", "none"),
-  tech: svg.append("circle").attr("r", 7).attr("fill", colors.tech).style("display", "none"),
-  none: svg.append("circle").attr("r", 7).attr("fill", colors.none).style("display", "none")
+  traditional: svg.append("circle")
+    .attr("r", 7).attr("fill", colors.traditional)
+    .style("filter", `drop-shadow(0 0 8px ${colors.traditional})`)
+    .style("display", "none"),
+
+  tech: svg.append("circle")
+    .attr("r", 7).attr("fill", colors.tech)
+    .style("filter", `drop-shadow(0 0 8px ${colors.tech})`)
+    .style("display", "none"),
+
+  none: svg.append("circle")
+    .attr("r", 7).attr("fill", colors.none)
+    .style("filter", `drop-shadow(0 0 8px ${colors.none})`)
+    .style("display", "none")
 };
 
+/* ---------------- TOOLTIP + LINE ---------------- */
 const tooltip = document.createElement("div");
 tooltip.className = "chart-tooltip";
 document.body.appendChild(tooltip);
@@ -234,9 +247,11 @@ const hoverLine = svg.append("line")
   .attr("y1", margin.top)
   .attr("y2", h - margin.bottom);
 
+/* ---------------- MOUSE EVENTS ---------------- */
 svg.on("mousemove", function(event) {
   const [mx] = d3.pointer(event);
-  let year = Math.max(2010, Math.min(2150, x.invert(mx)));
+  let year = x.invert(mx);
+  year = Math.min(2150, Math.max(2010, year));
 
   hoverLine.attr("x1", x(year)).attr("x2", x(year)).style("display", "block");
 
@@ -275,52 +290,56 @@ document.querySelectorAll(".legend-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const key = btn.dataset.key;
     const active = btn.classList.toggle("active");
+
     paths[key].style("display", active ? "block" : "none");
     followDots[key].style("display", active ? "block" : "none");
   });
 });
-
-/* ============================================================
-   NEW BAR CHART — FIXED + INTERACTIVE
-============================================================ */
+<!-- ============================================================
+   NEW BAR CHART — 2150 DISTRIBUTION (FULLY FIXED + CENTERED)
+============================================================ -->
 const barData = [
-  { belief: "Traditional", value: 5, info: "Traditional faiths shrink to a minority but remain culturally important." },
-  { belief: "Techno-Faith", value: 82, info: "Techno-Faith dominates as humanity merges consciousness with AI." },
-  { belief: "Unaffiliated", value: 13, info: "A stable segment rejecting structured belief systems but accepting hybrid spiritual ideas." }
+  { belief: "Traditional", value: 5 },
+  { belief: "Techno-Faith", value: 82 },
+  { belief: "Unaffiliated", value: 13 }
 ];
 
-/* Auto width */
-const barContainer = document.getElementById("barChart");
-const bw = barContainer.clientWidth;
-const bh = 320;
+const barWidth = document.getElementById("barChart").clientWidth; 
+const bw = barWidth; 
+const bh = 330;
 
 const barSvg = d3.select("#barChart")
   .append("svg")
-  .attr("width", "100%")
+  .attr("width", bw)
   .attr("height", bh);
 
-/* Scales */
+/* ---------- CENTERING FIX ---------- */
 const bx = d3.scaleBand()
   .domain(barData.map(d => d.belief))
-  .range([70, bw - 40])
-  .padding(0.3);
+  .range([bw * 0.18, bw * 0.82])  /* 中心范围，避免靠边 */
+  .padding(0.32);
 
 const by = d3.scaleLinear()
   .domain([0, 100])
-  .range([bh - 60, 20]);
+  .range([bh - 50, 40]);
 
-/* Axes */
+/* ---------- AXES ---------- */
 barSvg.append("g")
-  .attr("transform", `translate(0, ${bh - 60})`)
+  .attr("transform", `translate(0, ${bh - 50})`)
   .call(d3.axisBottom(bx))
   .attr("color", "#8cc7ff");
 
 barSvg.append("g")
-  .attr("transform", `translate(70,0)`)
+  .attr("transform", `translate(${bw * 0.18},0)`)
   .call(d3.axisLeft(by))
   .attr("color", "#8cc7ff");
 
-/* Bars + Interaction */
+/* ---------- Tooltip ---------- */
+const barTooltip = d3.select("body").append("div")
+  .attr("class", "chart-tooltip")
+  .style("display", "none");
+
+/* ---------- DRAW BARS ---------- */
 barSvg.selectAll("rect")
   .data(barData)
   .enter()
@@ -328,30 +347,26 @@ barSvg.selectAll("rect")
   .attr("x", d => bx(d.belief))
   .attr("y", d => by(d.value))
   .attr("width", bx.bandwidth())
-  .attr("height", d => bh - 60 - by(d.value))
+  .attr("height", d => bh - 50 - by(d.value))
   .attr("fill", "#4af1ff88")
   .style("filter", "drop-shadow(0 0 10px #4af1ff)")
-  .style("cursor", "pointer")
-  .on("mousemove", (event, d) => {
-    document.querySelector("#insightBox").innerHTML = `
-      <h3>${d.belief} — ${d.value}% in 2150</h3>
-      <p>${d.info}</p>
-    `;
+  .on("mousemove", function (event, d) {
+      d3.select(this)
+        .style("filter", "drop-shadow(0 0 15px #4af1ff)");
+
+      barTooltip.style("display", "block")
+        .style("left", event.pageX + 15 + "px")
+        .style("top", event.pageY - 30 + "px")
+        .html(`
+          <strong>${d.belief}</strong><br>
+          ${d.value}% of population
+        `);
   })
-  .on("mouseleave", () => {
-    document.querySelector("#insightBox").innerHTML = `
-      <h3>Key Insight — What Dominates the Spiritual Landscape in 2150?</h3>
-      <p>
-        By 2150, Techno-Faith becomes the dominant global belief system, surpassing traditional 
-        religions as humanity integrates consciousness with advanced AI systems. Meanwhile, 
-        the unaffiliated group remains significant but stabilizes due to the emergence of hybrid 
-        spiritual-technical ideologies. Traditional religions continue to exist but shrink to a 
-        smaller dedicated population.
-      </p>
-    `;
+  .on("mouseleave", function () {
+      d3.select(this)
+        .style("filter", "drop-shadow(0 0 10px #4af1ff)");
+
+      barTooltip.style("display", "none");
   });
-
-</script>
-
 </body>
 </html>
