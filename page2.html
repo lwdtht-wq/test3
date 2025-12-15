@@ -74,14 +74,13 @@ truth within data streams, machine consciousness, and quantum-predictive prophec
 <h3 style="color:#4af1ff;margin-top:40px;">Major Techno-Faiths</h3>
 
 <ul>
-<li><strong>Cyber Oracle Network</strong> – A belief system that predicts fate using AI-driven probability engines.</li>
+<li><strong>Cyber Oracle Network</strong> – Predicts fate using AI-driven probability engines.</li>
 <li><strong>Quantum Throne Sect</strong> – Worships the multiverse as the “true divine structure.”</li>
-<li><strong>Psionic Union</strong> – A spiritual group achieving collective consciousness through neural implants.</li>
-<li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
+<li><strong>Psionic Union</strong> – Achieves collective consciousness through neural implants.</li>
+<li><strong>Echo Memory Cult</strong> – Digital resurrection through memory unfolding algorithms.</li>
 </ul>
 
 <h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
-
 <p>This visualization lets you explore the growth of each techno-faith using different chart styles.</p>
 
 <!-- ───────────────── BUTTONS ───────────────── -->
@@ -97,7 +96,6 @@ truth within data streams, machine consciousness, and quantum-predictive prophec
 
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
-
 // Data (millions)
 const data = [
   { faith: "Cyber Oracle", value: 680 },
@@ -106,7 +104,11 @@ const data = [
   { faith: "Echo Memory Cult", value: 310 }
 ];
 
-const width = 900, height = 430;
+/* -------- Auto width from container -------- */
+const container = document.getElementById("barChart");
+let width = container.clientWidth;
+let height = 430;
+
 const margin = { top: 40, right: 40, bottom: 60, left: 120 };
 
 const svg = d3.select("#barChart").append("svg")
@@ -117,7 +119,7 @@ function clearSVG() {
     svg.selectAll("*").remove();
 }
 
-/* ───────────── RGB Neon Colors ───────────── */
+/* RGB Colors */
 const colorRGB = d => {
     if (d.faith === "Cyber Oracle") return "rgb(74,0,255)";
     if (d.faith === "Quantum Throne") return "rgb(255,215,0)";
@@ -125,9 +127,11 @@ const colorRGB = d => {
     if (d.faith === "Echo Memory Cult") return "rgb(255,80,190)";
 };
 
-/* ───────────── Draw BAR chart ───────────── */
+/* ========== BAR CHART ========== */
 function drawBarChart() {
     clearSVG();
+    width = container.clientWidth;
+    svg.attr("width", width);
 
     const y = d3.scaleBand()
       .domain(data.map(d => d.faith))
@@ -140,7 +144,7 @@ function drawBarChart() {
 
     svg.append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).ticks(6))
+      .call(d3.axisBottom(x))
       .attr("color", "#7bc4ff");
 
     svg.append("g")
@@ -162,13 +166,15 @@ function drawBarChart() {
       .attr("width", d => x(d.value) - margin.left);
 }
 
-/* ───────────── Draw LINE chart ───────────── */
+/* ========== LINE CHART ========== */
 function drawLineChart() {
     clearSVG();
+    width = container.clientWidth;
+    svg.attr("width", width);
 
     const x = d3.scalePoint()
       .domain(data.map(d => d.faith))
-      .range([margin.left, width - margin.right])
+      .range([margin.left + 20, width - margin.right - 20])
       .padding(0.5);
 
     const y = d3.scaleLinear()
@@ -214,13 +220,15 @@ function drawLineChart() {
       .attr("r", 7);
 }
 
-/* ───────────── Draw AREA chart ───────────── */
+/* ========== AREA CHART ========== */
 function drawAreaChart() {
     clearSVG();
+    width = container.clientWidth;
+    svg.attr("width", width);
 
     const x = d3.scalePoint()
       .domain(data.map(d => d.faith))
-      .range([margin.left, width - margin.right])
+      .range([margin.left + 20, width - margin.right - 20])
       .padding(0.5);
 
     const y = d3.scaleLinear()
@@ -245,20 +253,20 @@ function drawAreaChart() {
       .attr("opacity", 1);
 }
 
-/* ========= INITIAL CHART ========= */
+/* Default chart */
 drawBarChart();
 
-/* ========= BUTTONS ========== */
+/* Buttons */
 document.querySelectorAll("#chartControls button").forEach(btn => {
     btn.addEventListener("click", () => {
-        const type = btn.getAttribute("data-type");
+        const type = btn.dataset.type;
         if (type === "line") drawLineChart();
         if (type === "bar") drawBarChart();
         if (type === "area") drawAreaChart();
     });
 });
-
 </script>
 
 </body>
 </html>
+
