@@ -107,6 +107,24 @@ a {
   animation: glitch2 2.2s infinite;
 }
 
+@keyframes glitch1 {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch2 {
+  0% { transform: translate(0); }
+  20% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(-2px, -1px); }
+  100% { transform: translate(0); }
+}
+
 /* ==========================================================
    FLOATING ICON NAVIGATION
 ========================================================== */
@@ -118,7 +136,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  z-index: 99999; /* 保证永远在最上层 */
+  z-index: 99999;
   opacity: 0;
   transition: opacity 1s;
 }
@@ -256,15 +274,19 @@ a {
   filter: drop-shadow(0 0 12px #4af1ff55);
 }
 
-/* Country style */
+/* Country style — ★★ FIXED: 删除覆盖颜色的 fill ★★ */
 .country {
   cursor: pointer;
   transition: 0.25s;
-  fill: rgba(90,110,150,0.45);
+
+  /* ❌ 原本覆盖全部颜色 → 注释掉避免冲突 */
+  /* fill: rgba(90,110,150,0.45); */
+
   stroke: #4af1ff88;
   stroke-width: 1;
 }
 
+/* Hover effect stays the same */
 .country:hover {
   fill: rgba(74,241,255,0.55);
   stroke-width: 2;
@@ -277,7 +299,7 @@ a {
   stroke-width: 0.7;
 }
 
-/* FIXED INFO BOX (click) */
+/* Info box */
 #mapInfo {
   position: absolute;
   top: 20px;
@@ -290,10 +312,10 @@ a {
   color: #fff;
   z-index: 99999;
   display: none;
-  pointer-events: auto !important; /* ⭐ FIXED */
+  pointer-events: auto !important;
 }
 
-/* Hover tooltip (country name) */
+/* Hover tooltip */
 .map-tooltip {
   position: absolute;
   background: rgba(10,20,35,0.95);
@@ -340,3 +362,4 @@ a {
 }
 
 @keyframes fadeIn { to { opacity: 1; } }
+
