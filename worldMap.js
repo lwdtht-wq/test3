@@ -3,125 +3,84 @@ function worldMapInit() {
     const height = 520;
 
     const svg = d3.select("#worldMap")
-        .attr("width", width)
-        .attr("height", height);
+        .attr("viewBox", `0 0 ${width} ${height}`);
 
     const projection = d3.geoNaturalEarth1()
-        .scale(165)
+        .scale(160)
         .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
 
-    const tooltip = document.getElementById("mapTooltip");
-    const infoBox = document.getElementById("mapInfo");
-    const infoTitle = document.getElementById("infoTitle");
-    const infoContent = document.getElementById("infoContent");
+    const tooltip = d3.select("#mapTooltip");
+    const infoBox = d3.select("#mapInfo");
+    const infoTitle = d3.select("#infoTitle");
+    const infoContent = d3.select("#infoContent");
 
-    /* ===============================
-       Techno-Faith Data
-    =============================== */
-    const religionData = {
-        "China": {
-            title: "China — Eastern Nexus",
-            data: {
-                "Cyber Oracle Network": "33%",
-                "Quantum Throne Sect": "27%",
-                "Psionic Union": "22%",
-                "Echo Memory Cult": "18%"
-            }
-        },
-        "United States": {
-            title: "United States — Western Singularity Zone",
-            data: {
-                "Cyber Oracle Network": "41%",
-                "Quantum Throne Sect": "32%",
-                "Psionic Union": "15%",
-                "Echo Memory Cult": "12%"
-            }
-        },
-        "India": {
-            title: "India — Southern Resonance Field",
-            data: {
-                "Cyber Oracle Network": "22%",
-                "Quantum Throne Sect": "18%",
-                "Psionic Union": "40%",
-                "Echo Memory Cult": "20%"
-            }
-        },
-        "Brazil": {
-            title: "Brazil — Amazonian Echo Domain",
-            data: {
-                "Cyber Oracle Network": "28%",
-                "Quantum Throne Sect": "24%",
-                "Psionic Union": "26%",
-                "Echo Memory Cult": "22%"
-            }
-        },
-        "Germany": {
-            title: "Germany — Central Quantum Loop",
-            data: {
-                "Cyber Oracle Network": "38%",
-                "Quantum Throne Sect": "33%",
-                "Psionic Union": "14%",
-                "Echo Memory Cult": "15%"
-            }
-        }
-    };
+    // ----- Utility: Random percentages that add to 100 -----
+    function randomFaithData() {
+        let a = Math.random();
+        let b = Math.random();
+        let c = Math.random();
+        let d = Math.random();
+        let total = a + b + c + d;
+        return {
+            "Cyber Oracle": ((a / total) * 100).toFixed(1) + "%",
+            "Quantum Throne": ((b / total) * 100).toFixed(1) + "%",
+            "Psionic Union": ((c / total) * 100).toFixed(1) + "%",
+            "Echo Memory Cult": ((d / total) * 100).toFixed(1) + "%"
+        };
+    }
 
-    /* ===============================
-       LOAD WORLD MAP
-    =============================== */
+    // Store generated data so each country keeps its data consistent
+    const countryFaithInfo = {};
+
+    // ----- Load world map -----
     d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-        .then(worldData => {
-            const countries = topojson.feature(worldData, worldData.objects.countries).features;
+        .then(world => {
+            const countries = topojson.feature(world, world.objects.countries).features;
 
-            // Draw graticule (经纬线)
-            const graticule = d3.geoGraticule();
+            // Add graticule (latitude/longitude lines)
             svg.append("path")
+                .datum(d3.geoGraticule10())
                 .attr("class", "graticule")
-                .attr("d", path(graticule()));
+                .attr("d", path);
 
-            // Draw countries
+            // Draw all countries
             svg.selectAll(".country")
                 .data(countries)
                 .enter()
                 .append("path")
                 .attr("class", "country")
                 .attr("d", path)
-                .attr("fill", "rgba(90,110,150,0.4)")
-                .attr("stroke", "#4af1ff88")
-                .attr("stroke-width", 1)
-
-                /* Hover tooltip */
-                .on("mousemove", (event, d) => {
-                    const name = d.properties.name;
-                    tooltip.style.display = "block";
-                    tooltip.style.left = event.pageX + 12 + "px";
-                    tooltip.style.top = event.pageY + 12 + "px";
-                    tooltip.innerHTML = name;
+                .on("mousemove", function (event, d) {
+                    tooltip.style("display", "block")
+                        .style("left", event.pageX + 10 + "px")
+                        .style("top", event.pageY + 10 + "px")
+                        .html(`<strong>${d.properties.name}</strong>`);
                 })
-                .on("mouseleave", () => {
-                    tooltip.style.display = "none";
-                })
+                .on("mouseleave", () => tooltip.style("display", "none"))
+                .on("click", function (event, d) {
+                    const country = d.properties.name;
 
-                /* CLICK COUNTRY — 100% FIXED */
-                .on("click", (event, d) => {
-                    const name = d.properties.name;
+                    // ignore Antarctica
+                    if (!country || country === "Antarctica") return;
 
-                    infoBox.style.display = "block";
-
-                    if (religionData[name]) {
-                        infoTitle.textContent = religionData[name].title;
-
-                        let html = "";
-                        for (let faith in religionData[name].data) {
-                            html += `<p><strong>${faith}</strong>: ${religionData[name].data[faith]}</p>`;
-                        }
-                        infoContent.innerHTML = html;
-                    } else {
-                        infoTitle.textContent = name;
-                        infoContent.textContent = "No techno-faith projection available.";
+                    // Generate faith data if not already stored
+                    if (!countryFaithInfo[country]) {
+                        countryFaithInfo[country] = randomFaithData();
                     }
+
+                    const faiths = countryFaithInfo[country];
+
+                    infoTitle.text(country);
+                    infoContent.html(`
+                        <p><strong>Cyber Oracle:</strong> ${faiths["Cyber Oracle"]}</p>
+                        <p><strong>Quantum Throne:</strong> ${faiths["Quantum Throne"]}</p>
+                        <p><strong>Psionic Union:</strong> ${faiths["Psionic Union"]}</p>
+                        <p><strong>Echo Memory Cult:</strong> ${faiths["Echo Memory Cult"]}</p>
+                    `);
+
+                    infoBox.style("display", "block");
                 });
         });
 }
