@@ -10,15 +10,26 @@
 <script defer src="main.js"></script>
 
 <style>
-/* ────────── Cyberpunk Button Group ────────── */
-#chartControls {
+/* ==================== 发光外框 ==================== */
+#chartFrame {
     width: 100%;
+    padding: 25px;
+    margin-top: 40px;
+    border-radius: 14px;
+    background: rgba(10,20,35,0.55);
+    border: 1px solid #4af1ff88;
+    box-shadow: 0 0 22px #4af1ff55 inset, 0 0 25px #4af1ff55;
+    backdrop-filter: blur(6px);
+}
+
+/* ==================== Cyberpunk 按钮 ==================== */
+#chartControls {
     text-align: center;
     margin-bottom: 20px;
 }
 
 #chartControls button {
-    background: rgba(20, 30, 45, 0.6);
+    background: rgba(15, 30, 50, 0.7);
     border: 1px solid #4af1ff;
     color: #d0e7ff;
     padding: 10px 22px;
@@ -27,13 +38,26 @@
     font-size: 14px;
     cursor: pointer;
     transition: 0.25s;
-    backdrop-filter: blur(5px);
 }
-
 #chartControls button:hover {
-    background: rgba(74, 241, 255, 0.25);
+    background: rgba(74,241,255,0.25);
     box-shadow: 0 0 12px #4af1ff;
     transform: translateY(-2px);
+}
+
+/* Tooltip – 数值泡泡 */
+.chart-tooltip {
+    position: absolute;
+    background: rgba(20,30,45,0.9);
+    border: 1px solid #4af1ff;
+    color: #d0e7ff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    pointer-events: none;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 0 10px #4af1ff;
 }
 </style>
 
@@ -74,199 +98,245 @@ truth within data streams, machine consciousness, and quantum-predictive prophec
 <h3 style="color:#4af1ff;margin-top:40px;">Major Techno-Faiths</h3>
 
 <ul>
-<li><strong>Cyber Oracle Network</strong> – Predicts fate using AI-driven probability engines.</li>
+<li><strong>Cyber Oracle Network</strong> – A belief system that predicts fate using AI-driven probability engines.</li>
 <li><strong>Quantum Throne Sect</strong> – Worships the multiverse as the “true divine structure.”</li>
-<li><strong>Psionic Union</strong> – Achieves collective consciousness through neural implants.</li>
-<li><strong>Echo Memory Cult</strong> – Digital resurrection through memory unfolding algorithms.</li>
+<li><strong>Psionic Union</strong> – A spiritual group achieving collective consciousness through neural implants.</li>
+<li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
 </ul>
 
 <h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
 <p>This visualization lets you explore the growth of each techno-faith using different chart styles.</p>
 
-<!-- ───────────────── BUTTONS ───────────────── -->
-<div id="chartControls">
-    <button data-type="line">Line Chart</button>
-    <button data-type="bar">Bar Chart</button>
-    <button data-type="area">Area Chart</button>
-</div>
+<!-- ───────────────── 发光图表外框 ───────────────── -->
+<div id="chartFrame">
+    <div id="chartControls">
+        <button data-type="line">Line Chart</button>
+        <button data-type="bar">Bar Chart</button>
+        <button data-type="area">Area Chart</button>
+    </div>
 
-<div id="barChart" style="width:100%;height:440px;"></div>
+    <div id="neoChart"></div>
+</div>
 
 </section>
 
 <!-- ======================= D3 SCRIPT ======================= -->
 <script>
+
 // Data (millions)
-const data = [
+const chartData = [
   { faith: "Cyber Oracle", value: 680 },
   { faith: "Quantum Throne", value: 540 },
   { faith: "Psionic Union", value: 420 },
   { faith: "Echo Memory Cult", value: 310 }
 ];
 
-/* -------- Auto width from container -------- */
-const container = document.getElementById("barChart");
-let width = container.clientWidth;
-let height = 430;
-
-const margin = { top: 40, right: 40, bottom: 60, left: 120 };
-
-const svg = d3.select("#barChart").append("svg")
-  .attr("width", width)
-  .attr("height", height);
-
-function clearSVG() {
-    svg.selectAll("*").remove();
-}
-
-/* RGB Colors */
-const colorRGB = d => {
-    if (d.faith === "Cyber Oracle") return "rgb(74,0,255)";
-    if (d.faith === "Quantum Throne") return "rgb(255,215,0)";
-    if (d.faith === "Psionic Union") return "rgb(0,255,200)";
-    if (d.faith === "Echo Memory Cult") return "rgb(255,80,190)";
+/* Blue gradient set */
+const colors = {
+    cyber:  "rgb(74,140,255)",
+    quantum:"rgb(80,200,255)",
+    psionic:"rgb(60,255,220)",
+    echo:   "rgb(120,180,255)"
 };
 
-/* ========== BAR CHART ========== */
-function drawBarChart() {
-    clearSVG();
-    width = container.clientWidth;
-    svg.attr("width", width);
+const width = 900, height = 430;
+const margin = { top: 40, right: 50, bottom: 60, left: 120 };
 
-    const y = d3.scaleBand()
-      .domain(data.map(d => d.faith))
-      .range([margin.top, height - margin.bottom])
-      .padding(0.3);
+const svg = d3.select("#neoChart")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+// Tooltip
+const tooltip = d3.select("body").append("div")
+    .attr("class", "chart-tooltip");
+
+function getColor(d) {
+    if (d.faith === "Cyber Oracle") return colors.cyber;
+    if (d.faith === "Quantum Throne") return colors.quantum;
+    if (d.faith === "Psionic Union") return colors.psionic;
+    if (d.faith === "Echo Memory Cult") return colors.echo;
+}
+
+function clearChart() { svg.selectAll("*").remove(); }
+
+/* ==========================================================
+   BAR CHART — 发光 + hover expand 动画
+========================================================== */
+function drawBar() {
+    clearChart();
 
     const x = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
-      .range([margin.left, width - margin.right]);
+        .domain([0, d3.max(chartData, d=>d.value)])
+        .range([margin.left, width - margin.right]);
+
+    const y = d3.scaleBand()
+        .domain(chartData.map(d => d.faith))
+        .range([margin.top, height - margin.bottom])
+        .padding(0.3);
 
     svg.append("g")
-      .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
-      .attr("color", "#7bc4ff");
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x))
+        .attr("color", "#88c7ff");
 
     svg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y))
-      .attr("color", "#7bc4ff");
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .attr("color", "#88c7ff");
 
     svg.selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", margin.left)
-      .attr("y", d => y(d.faith))
-      .attr("height", y.bandwidth())
-      .attr("width", 0)
-      .attr("fill", colorRGB)
-      .transition()
-      .duration(800)
-      .attr("width", d => x(d.value) - margin.left);
+        .data(chartData)
+        .enter()
+        .append("rect")
+        .attr("x", margin.left)
+        .attr("y", d => y(d.faith))
+        .attr("height", y.bandwidth())
+        .attr("fill", d => getColor(d))
+        .attr("rx", 6)
+        .attr("width", 0)
+        .transition()
+        .duration(900)
+        .attr("width", d => x(d.value) - margin.left);
+
+    svg.selectAll("rect")
+        .on("mousemove", (event, d) => {
+            d3.select(event.target)
+              .transition().duration(150)
+              .attr("width", x(d.value) - margin.left + 20)
+              .style("filter", "drop-shadow(0 0 10px #4af1ff)");
+
+            tooltip.style("display","block")
+                .style("left", event.pageX + 12 + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
+        })
+        .on("mouseleave", (event,d) => {
+            d3.select(event.target)
+              .transition().duration(200)
+              .attr("width", x(d.value) - margin.left)
+              .style("filter","none");
+
+            tooltip.style("display","none");
+        });
 }
 
-/* ========== LINE CHART ========== */
-function drawLineChart() {
-    clearSVG();
-    width = container.clientWidth;
-    svg.attr("width", width);
+/* ==========================================================
+   LINE CHART — 发光节点 + 鼠标跟随 crosshair
+========================================================== */
+function drawLine() {
+    clearChart();
 
     const x = d3.scalePoint()
-      .domain(data.map(d => d.faith))
-      .range([margin.left + 20, width - margin.right - 20])
-      .padding(0.5);
+        .domain(chartData.map(d=>d.faith))
+        .range([margin.left, width-margin.right])
+        .padding(0.5);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
-      .range([height - margin.bottom, margin.top]);
-
-    svg.append("g")
-      .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
-      .attr("color", "#7bc4ff");
-
-    svg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y))
-      .attr("color", "#7bc4ff");
+        .domain([0, d3.max(chartData,d=>d.value)])
+        .range([height-margin.bottom, margin.top]);
 
     const line = d3.line()
-      .x(d => x(d.faith))
-      .y(d => y(d.value))
-      .curve(d3.curveCatmullRom.alpha(0.6));
+        .x(d=>x(d.faith))
+        .y(d=>y(d.value))
+        .curve(d3.curveCatmullRom.alpha(0.7));
 
     svg.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "rgb(74,241,255)")
-      .attr("stroke-width", 3)
-      .attr("d", line)
-      .attr("opacity", 0)
-      .transition()
-      .duration(800)
-      .attr("opacity", 1);
+        .datum(chartData)
+        .attr("fill","none")
+        .attr("stroke","#4af1ff")
+        .attr("stroke-width",3)
+        .attr("d", line)
+        .style("filter","drop-shadow(0 0 8px #4af1ff)");
 
     svg.selectAll(".dot")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", d => x(d.faith))
-      .attr("cy", d => y(d.value))
-      .attr("r", 0)
-      .attr("fill", colorRGB)
-      .transition()
-      .duration(800)
-      .attr("r", 7);
+        .data(chartData)
+        .enter()
+        .append("circle")
+        .attr("cx", d=>x(d.faith))
+        .attr("cy", d=>y(d.value))
+        .attr("r",8)
+        .attr("fill",d=>getColor(d))
+        .style("filter","drop-shadow(0 0 6px #4af1ff)");
+
+    const cross = svg.append("line")
+        .attr("stroke","#4af1ff88")
+        .attr("stroke-width",1.2)
+        .attr("y1", margin.top)
+        .attr("y2", height-margin.bottom)
+        .style("display","none");
+
+    svg.on("mousemove", (event) => {
+        const [mx] = d3.pointer(event);
+        const closest = x.domain().reduce((a,b)=>{
+            return Math.abs(x(a)-mx)<Math.abs(x(b)-mx)?a:b;
+        });
+
+        cross.attr("x1", x(closest)).attr("x2", x(closest)).style("display","block");
+
+        const d = chartData.find(v => v.faith===closest);
+
+        tooltip.style("display","block")
+            .style("left", event.pageX + "px")
+            .style("top", event.pageY - 20 + "px")
+            .html(`<strong>${d.faith}</strong><br>${d.value} million`);
+    });
+
+    svg.on("mouseleave",()=>{
+        cross.style("display","none");
+        tooltip.style("display","none");
+    });
 }
 
-/* ========== AREA CHART ========== */
-function drawAreaChart() {
-    clearSVG();
-    width = container.clientWidth;
-    svg.attr("width", width);
+/* ==========================================================
+   AREA CHART — 水波亮度动画
+========================================================== */
+function drawArea() {
+    clearChart();
 
     const x = d3.scalePoint()
-      .domain(data.map(d => d.faith))
-      .range([margin.left + 20, width - margin.right - 20])
-      .padding(0.5);
+        .domain(chartData.map(d=>d.faith))
+        .range([margin.left,width-margin.right])
+        .padding(0.5);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
-      .range([height - margin.bottom, margin.top]);
+        .domain([0,d3.max(chartData,d=>d.value)])
+        .range([height-margin.bottom,margin.top]);
 
     const area = d3.area()
-      .x(d => x(d.faith))
-      .y0(height - margin.bottom)
-      .y1(d => y(d.value))
-      .curve(d3.curveCatmullRom.alpha(0.6));
+        .x(d=>x(d.faith))
+        .y0(height-margin.bottom)
+        .y1(d=>y(d.value))
+        .curve(d3.curveCatmullRom.alpha(0.65));
 
     svg.append("path")
-      .datum(data)
-      .attr("fill", "rgba(74,241,255,0.25)")
-      .attr("stroke", "rgb(74,241,255)")
-      .attr("stroke-width", 2)
-      .attr("d", area)
-      .attr("opacity", 0)
-      .transition()
-      .duration(900)
-      .attr("opacity", 1);
+        .datum(chartData)
+        .attr("fill","rgba(74,241,255,0.25)")
+        .attr("stroke","#4af1ff")
+        .attr("stroke-width",2)
+        .attr("d",area)
+        .style("filter","drop-shadow(0 0 12px #4af1ff)");
+
+    svg.select("path")
+        .transition()
+        .duration(1500)
+        .attr("fill","rgba(74,241,255,0.35)");
 }
 
-/* Default chart */
-drawBarChart();
+/* 默认加载柱状图 */
+drawBar();
 
-/* Buttons */
-document.querySelectorAll("#chartControls button").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const type = btn.dataset.type;
-        if (type === "line") drawLineChart();
-        if (type === "bar") drawBarChart();
-        if (type === "area") drawAreaChart();
+/* 按钮切换 */
+document.querySelectorAll("#chartControls button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        let type = btn.dataset.type;
+        if (type==="bar") drawBar();
+        if (type==="line") drawLine();
+        if (type==="area") drawArea();
     });
 });
+
 </script>
 
 </body>
 </html>
-
