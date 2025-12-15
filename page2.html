@@ -318,7 +318,7 @@ function drawLineChart() {
 
 
 // =============================================================
-//  ★★★ CYBER PULSE AREA CHART（科技脉冲效果 B 完整版）★★★
+//  ★★★ CYBER PULSE AREA CHART（科技脉冲效果 B + 鼠标交互）★★★
 // =============================================================
 function drawArea() {
     clearChart();
@@ -332,7 +332,7 @@ function drawArea() {
         .domain([0,d3.max(chartData,d=>d.value)])
         .range([height-margin.bottom,margin.top]);
 
-    // Create dynamic gradient
+    // Create gradient
     const defs = svg.append("defs");
     const grad = defs.append("linearGradient")
         .attr("id", "pulseGrad")
@@ -356,14 +356,14 @@ function drawArea() {
         .attr("d",area)
         .style("filter","drop-shadow(0 0 18px #4af1ff)");
 
-    // Pulse animation
+    // Fade-in animation
     areaPath
         .attr("opacity",0)
         .transition()
         .duration(1400)
         .attr("opacity",1);
 
-    // Jumping dots
+    // Dots with hover tooltip
     const dots = svg.selectAll(".dot")
         .data(chartData)
         .enter()
@@ -378,7 +378,32 @@ function drawArea() {
         .duration(600)
         .attr("r", 10);
 
-    // Ripple waves
+    // Add mouse interaction AFTER dots are drawn
+    svg.selectAll("circle")
+        .on("mousemove", function(event, d) {
+            d3.select(this)
+                .transition().duration(150)
+                .attr("r", 15)
+                .style("filter", "drop-shadow(0 0 15px #4af1ff)");
+
+            tooltip.style("display","block")
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`
+                    <strong>${d.faith}</strong><br>
+                    ${d.value} million followers
+                `);
+        })
+        .on("mouseleave", function(event, d) {
+            d3.select(this)
+                .transition().duration(200)
+                .attr("r", 10)
+                .style("filter", "drop-shadow(0 0 8px #4af1ff)");
+
+            tooltip.style("display","none");
+        });
+
+    // Ripple waves (keep)
     chartData.forEach((d,i) => {
         svg.append("circle")
             .attr("cx", x(d.faith))
