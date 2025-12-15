@@ -62,10 +62,20 @@ function worldMapInit() {
                 .on("click", function (event, d) {
                     const country = d.properties.name;
 
-                    // ignore Antarctica
-                    if (!country || country === "Antarctica") return;
+                    if (!country) return;
 
-                    // Generate faith data if not already stored
+                    // ---- Special rule for Arctic & Antarctica ----
+                    if (country === "Antarctica" || country === "Arctic") {
+                        infoTitle.text(country);
+                        infoContent.html(`
+                            <p>No human population.</p>
+                            <p>No faith data available.</p>
+                        `);
+                        infoBox.style("display", "block");
+                        return;
+                    }
+
+                    // ---- Normal countries: generate or load faith data ----
                     if (!countryFaithInfo[country]) {
                         countryFaithInfo[country] = randomFaithData();
                     }
@@ -84,3 +94,4 @@ function worldMapInit() {
                 });
         });
 }
+
