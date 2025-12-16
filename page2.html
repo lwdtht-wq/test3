@@ -7,30 +7,22 @@
 
 <link rel="stylesheet" href="style.css">
 <script src="https://d3js.org/d3.v7.min.js"></script>
+<script defer src="main.js"></script>
 
 <style>
-/* ==================== 固定外框（不溢出 900px） ==================== */
+/* ==================== 发光外框 ==================== */
 #chartFrame {
-    width: 900px;                /* 固定宽度 */
-    max-width: 900px;            /* 防止任何情况突破框 */
-    margin: 40px auto;           /* 居中 */
+    width: 100%;
     padding: 25px;
+    margin-top: 40px;
     border-radius: 14px;
     background: rgba(10,20,35,0.55);
     border: 1px solid #4af1ff88;
     box-shadow: 0 0 22px #4af1ff55 inset, 0 0 25px #4af1ff55;
     backdrop-filter: blur(6px);
-    overflow: hidden;            /* 强制图表不溢出 */
 }
 
-/* ==================== 图表区域（锁在 900px 内） ==================== */
-#neoChart {
-    width: 100%;
-    max-width: 850px;            /* 给两侧留白 */
-    margin: auto;
-}
-
-/* ==================== 按钮 ==================== */
+/* ==================== Cyberpunk 按钮 ==================== */
 #chartControls {
     text-align: center;
     margin-bottom: 20px;
@@ -43,6 +35,7 @@
     padding: 10px 22px;
     margin: 0 8px;
     border-radius: 8px;
+    font-size: 14px;
     cursor: pointer;
     transition: 0.25s;
 }
@@ -53,7 +46,7 @@
     transform: translateY(-2px);
 }
 
-/* Tooltip */
+/* Tooltip – 数值泡泡 */
 .chart-tooltip {
     position: absolute;
     background: rgba(20,30,45,0.9);
@@ -66,6 +59,19 @@
     display: none;
     z-index: 9999;
     box-shadow: 0 0 10px #4af1ff;
+}
+
+/* 修复图表外框溢出 —— neoChart 必须成为可缩放容器 */
+#neoChart {
+    width: 100%;
+    overflow: hidden; 
+}
+
+/* SVG 自适应缩放 */
+#neoChart svg {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 </style>
 
@@ -80,7 +86,7 @@
     </div>
 </div>
 
-<!-- ======================= NAV ======================= -->
+<!-- ======================= FLOATING NAV ======================= -->
 <nav id="sideNav" class="hidden">
     <a href="index.html" class="nav-icon" data-label="Home">🜂</a>
     <a href="page1.html" class="nav-icon" data-label="Trends">🜁</a>
@@ -106,18 +112,17 @@ truth within data streams, machine consciousness, and quantum-predictive prophec
 <h3 style="color:#4af1ff;margin-top:40px;">Major Techno-Faiths</h3>
 
 <ul>
-<li><strong>Cyber Oracle Network</strong> – Predicts fate using AI probability engines.</li>
-<li><strong>Quantum Throne Sect</strong> – Worships the multiverse as divine structure.</li>
-<li><strong>Psionic Union</strong> – Achieves collective consciousness via implants.</li>
-<li><strong>Echo Memory Cult</strong> – Digital resurrection through memory algorithms.</li>
+<li><strong>Cyber Oracle Network</strong> – A belief system that predicts fate using AI-driven probability engines.</li>
+<li><strong>Quantum Throne Sect</strong> – Worships the multiverse as the “true divine structure.”</li>
+<li><strong>Psionic Union</strong> – A spiritual group achieving collective consciousness through neural implants.</li>
+<li><strong>Echo Memory Cult</strong> – A religion centered on digital resurrection through memory unfolding algorithms.</li>
 </ul>
 
 <h2 style="margin-top:50px;">Faith Population Distribution in 2150</h2>
 <p>This visualization lets you explore the growth of each techno-faith using different chart styles.</p>
 
-<!-- ======================= FIXED 900PX CHART FRAME ======================= -->
+<!-- ───────────────── 发光图表外框 ───────────────── -->
 <div id="chartFrame">
-
     <div id="chartControls">
         <button data-type="line">Line Chart</button>
         <button data-type="bar">Bar Chart</button>
@@ -129,9 +134,9 @@ truth within data streams, machine consciousness, and quantum-predictive prophec
 
 </section>
 
-<!-- ======================= D3 SCRIPT ======================= -->
+<!-- ======================= FINAL FIXED D3 SCRIPT ======================= -->
 <script>
-// DATA
+// ======================== DATA ==========================
 const chartData = [
   { faith: "Cyber Oracle", value: 680 },
   { faith: "Quantum Throne", value: 540 },
@@ -139,7 +144,7 @@ const chartData = [
   { faith: "Echo Memory Cult", value: 310 }
 ];
 
-// Colors
+// Blue color theme
 const colors = {
     cyber:  "rgb(74,140,255)",
     quantum:"rgb(80,200,255)",
@@ -154,35 +159,41 @@ function getColor(d) {
     if (d.faith === "Echo Memory Cult") return colors.echo;
 }
 
-// FIXED WIDTH SVG (never overflow)
-const width = 850;   // inside frame, safely below 900px
-const height = 420;
-const margin = { top: 40, right: 40, bottom: 60, left: 150 };
+// ======================== FIXED RESPONSIVE SVG ==========================
+// Use fixed viewBox for internal drawing logic; SVG auto-scales to container
+const baseWidth = 900;
+const baseHeight = 430;
 
 const svg = d3.select("#neoChart")
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+const width = baseWidth;
+const height = baseHeight;
+
+const margin = { top: 40, right: 40, bottom: 60, left: 120 };
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "chart-tooltip");
 
-function clearChart() {
-    svg.selectAll("*").remove();
-}
+function clearChart() { svg.selectAll("*").remove(); }
 
-/* ---------------- BAR CHART ---------------- */
+
+// =============================================================
+//  BAR CHART
+// =============================================================
 function drawBar() {
     clearChart();
 
     const x = d3.scaleLinear()
-        .domain([0, d3.max(chartData, d => d.value)])
+        .domain([0, d3.max(chartData, d=>d.value)])
         .range([margin.left, width - margin.right]);
 
     const y = d3.scaleBand()
         .domain(chartData.map(d => d.faith))
         .range([margin.top, height - margin.bottom])
-        .padding(0.35);
+        .padding(0.3);
 
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -194,22 +205,25 @@ function drawBar() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    svg.selectAll("rect")
+    svg.selectAll(".bar")
         .data(chartData)
         .enter()
         .append("rect")
         .attr("x", margin.left)
         .attr("y", d => y(d.faith))
         .attr("height", y.bandwidth())
-        .attr("rx", 6)
         .attr("fill", d => getColor(d))
+        .attr("rx", 6)
         .attr("width", 0)
         .transition()
         .duration(900)
         .attr("width", d => x(d.value) - margin.left);
 }
 
-/* ---------------- LINE CHART ---------------- */
+
+// =============================================================
+//  LINE CHART
+// =============================================================
 function drawLineChart() {
     clearChart();
 
@@ -246,7 +260,7 @@ function drawLineChart() {
         .y(d => y(d.value))
         .curve(d3.curveCatmullRom.alpha(0.6));
 
-    const path = svg.append("path")
+    const pathNode = svg.append("path")
         .datum(chartData)
         .attr("fill", "none")
         .attr("stroke", "url(#neonLine)")
@@ -254,38 +268,30 @@ function drawLineChart() {
         .attr("d", line)
         .style("filter", "drop-shadow(0 0 10px #4af1ff)");
 
-    const total = path.node().getTotalLength();
+    const totalLength = pathNode.node().getTotalLength();
 
-    path.attr("stroke-dasharray", total)
-        .attr("stroke-dashoffset", total)
+    pathNode
+        .attr("stroke-dasharray", totalLength)
+        .attr("stroke-dashoffset", totalLength)
         .transition().duration(1500)
         .attr("stroke-dashoffset", 0);
-
-    svg.selectAll("circle")
-        .data(chartData)
-        .enter()
-        .append("circle")
-        .attr("cx", d => x(d.faith))
-        .attr("cy", d => y(d.value))
-        .attr("r", 0)
-        .attr("fill", d => getColor(d))
-        .transition()
-        .duration(1000)
-        .attr("r", 9);
 }
 
-/* ---------------- AREA CHART ---------------- */
+
+// =============================================================
+//  AREA CHART
+// =============================================================
 function drawArea() {
     clearChart();
 
     const x = d3.scalePoint()
-        .domain(chartData.map(d => d.faith))
-        .range([margin.left, width - margin.right])
+        .domain(chartData.map(d=>d.faith))
+        .range([margin.left,width-margin.right])
         .padding(0.5);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(chartData, d => d.value)])
-        .range([height - margin.bottom, margin.top]);
+        .domain([0,d3.max(chartData,d=>d.value)])
+        .range([height-margin.bottom,margin.top]);
 
     const defs = svg.append("defs");
     const grad = defs.append("linearGradient")
@@ -297,21 +303,22 @@ function drawArea() {
     grad.append("stop").attr("offset", "100%").attr("stop-color", "rgba(40,80,140,0.2)");
 
     const area = d3.area()
-        .x(d => x(d.faith))
-        .y0(height - margin.bottom)
-        .y1(d => y(d.value))
+        .x(d=>x(d.faith))
+        .y0(height-margin.bottom)
+        .y1(d=>y(d.value))
         .curve(d3.curveCatmullRom.alpha(0.65));
 
     svg.append("path")
         .datum(chartData)
-        .attr("fill", "url(#pulseGrad)")
-        .attr("stroke", "#4af1ff")
-        .attr("stroke-width", 2)
-        .attr("d", area)
-        .style("filter", "drop-shadow(0 0 18px #4af1ff)");
+        .attr("fill","url(#pulseGrad)")
+        .attr("stroke","#4af1ff")
+        .attr("stroke-width",2)
+        .attr("d",area)
+        .style("filter","drop-shadow(0 0 18px #4af1ff)");
 }
 
-/* ---------------- INITIAL CHART ---------------- */
+
+// ======================== BUTTON EVENTS ==========================
 drawBar();
 
 document.querySelectorAll("#chartControls button").forEach(btn => {
