@@ -60,6 +60,19 @@
     z-index: 9999;
     box-shadow: 0 0 10px #4af1ff;
 }
+
+/* 修复图表外框溢出 —— neoChart 必须成为可缩放容器 */
+#neoChart {
+    width: 100%;
+    overflow: hidden; 
+}
+
+/* SVG 自适应缩放 */
+#neoChart svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 </style>
 
 </head>
@@ -146,18 +159,20 @@ function getColor(d) {
     if (d.faith === "Echo Memory Cult") return colors.echo;
 }
 
-// ======================== RESPONSIVE WIDTH ==========================
-// 自动根据容器宽度决定 SVG 宽度（防止溢出）
-const container = document.getElementById("neoChart");
-let width = container.clientWidth - 10;   // 动态宽度
-let height = 430;
-
-const margin = { top: 40, right: 40, bottom: 60, left: 120 };
+// ======================== FIXED RESPONSIVE SVG ==========================
+// Use fixed viewBox for internal drawing logic; SVG auto-scales to container
+const baseWidth = 900;
+const baseHeight = 430;
 
 const svg = d3.select("#neoChart")
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+const width = baseWidth;
+const height = baseHeight;
+
+const margin = { top: 40, right: 40, bottom: 60, left: 120 };
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "chart-tooltip");
@@ -180,7 +195,6 @@ function drawBar() {
         .range([margin.top, height - margin.bottom])
         .padding(0.3);
 
-    // Axes
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
@@ -191,7 +205,6 @@ function drawBar() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    // Bars
     svg.selectAll(".bar")
         .data(chartData)
         .enter()
@@ -205,32 +218,11 @@ function drawBar() {
         .transition()
         .duration(900)
         .attr("width", d => x(d.value) - margin.left);
-
-    svg.selectAll("rect")
-        .on("mousemove", (event, d) => {
-            d3.select(event.target)
-              .transition().duration(150)
-              .attr("width", x(d.value) - margin.left + 15)
-              .style("filter", "drop-shadow(0 0 10px #4af1ff)");
-
-            tooltip.style("display","block")
-                .style("left", event.pageX + 12 + "px")
-                .style("top", event.pageY - 20 + "px")
-                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
-        })
-        .on("mouseleave", (event,d) => {
-            d3.select(event.target)
-              .transition().duration(200)
-              .attr("width", x(d.value) - margin.left)
-              .style("filter","none");
-
-            tooltip.style("display","none");
-        });
 }
 
 
 // =============================================================
-//  LINE CHART（蓝色发光最终版）
+//  LINE CHART
 // =============================================================
 function drawLineChart() {
     clearChart();
@@ -244,7 +236,6 @@ function drawLineChart() {
         .domain([0, d3.max(chartData, d => d.value)])
         .range([height - margin.bottom, margin.top]);
 
-    // Axes
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
@@ -255,7 +246,6 @@ function drawLineChart() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    // Gradient glow
     const gradient = svg.append("defs")
         .append("linearGradient")
         .attr("id", "neonLine")
@@ -285,23 +275,11 @@ function drawLineChart() {
         .attr("stroke-dashoffset", totalLength)
         .transition().duration(1500)
         .attr("stroke-dashoffset", 0);
-
-    svg.selectAll("circle")
-        .data(chartData)
-        .enter()
-        .append("circle")
-        .attr("cx", d => x(d.faith))
-        .attr("cy", d => y(d.value))
-        .attr("r", 0)
-        .attr("fill", d => getColor(d))
-        .transition()
-        .duration(1000)
-        .attr("r", 9);
 }
 
 
 // =============================================================
-//  AREA CHART（保持你的效果）
+//  AREA CHART
 // =============================================================
 function drawArea() {
     clearChart();
