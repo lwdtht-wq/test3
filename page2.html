@@ -60,19 +60,6 @@
     z-index: 9999;
     box-shadow: 0 0 10px #4af1ff;
 }
-
-/* 修复图表外框溢出 —— neoChart 必须成为可缩放容器 */
-#neoChart {
-    width: 100%;
-    overflow: hidden; 
-}
-
-/* SVG 自适应缩放 */
-#neoChart svg {
-    width: 100%;
-    height: auto;
-    display: block;
-}
 </style>
 
 </head>
@@ -159,20 +146,14 @@ function getColor(d) {
     if (d.faith === "Echo Memory Cult") return colors.echo;
 }
 
-// ======================== FIXED RESPONSIVE SVG ==========================
-// Use fixed viewBox for internal drawing logic; SVG auto-scales to container
-const baseWidth = 900;
-const baseHeight = 430;
+// ======================== SVG SETUP ==========================
+const width = 900, height = 430;
+const margin = { top: 40, right: 50, bottom: 60, left: 120 };
 
 const svg = d3.select("#neoChart")
     .append("svg")
-    .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
-    .attr("preserveAspectRatio", "xMidYMid meet");
-
-const width = baseWidth;
-const height = baseHeight;
-
-const margin = { top: 40, right: 40, bottom: 60, left: 120 };
+    .attr("width", width)
+    .attr("height", height);
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "chart-tooltip");
@@ -181,7 +162,7 @@ function clearChart() { svg.selectAll("*").remove(); }
 
 
 // =============================================================
-//  BAR CHART
+//  BAR CHART（保留你的版本）
 // =============================================================
 function drawBar() {
     clearChart();
@@ -205,7 +186,7 @@ function drawBar() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    svg.selectAll(".bar")
+    const bars = svg.selectAll(".bar")
         .data(chartData)
         .enter()
         .append("rect")
@@ -218,11 +199,31 @@ function drawBar() {
         .transition()
         .duration(900)
         .attr("width", d => x(d.value) - margin.left);
+
+    svg.selectAll("rect")
+        .on("mousemove", (event, d) => {
+            d3.select(event.target)
+              .transition().duration(150)
+              .attr("width", x(d.value) - margin.left + 15)
+              .style("filter", "drop-shadow(0 0 10px #4af1ff)");
+
+            tooltip.style("display","block")
+                .style("left", event.pageX + 12 + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
+        })
+        .on("mouseleave", (event,d) => {
+            d3.select(event.target)
+              .transition().duration(200)
+              .attr("width", x(d.value) - margin.left)
+              .style("filter","none");
+            tooltip.style("display","none");
+        });
 }
 
 
 // =============================================================
-//  LINE CHART
+//  LINE CHART（保留你的发光线版本）
 // =============================================================
 function drawLineChart() {
     clearChart();
@@ -246,6 +247,13 @@ function drawLineChart() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
+    // Line generator
+    const line = d3.line()
+        .x(d => x(d.faith))
+        .y(d => y(d.value))
+        .curve(d3.curveCatmullRom.alpha(0.6));
+
+    // Gradient glow
     const gradient = svg.append("defs")
         .append("linearGradient")
         .attr("id", "neonLine")
@@ -254,11 +262,6 @@ function drawLineChart() {
 
     gradient.append("stop").attr("offset", "0%").attr("stop-color", "rgb(120,200,255)");
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "rgb(50,140,255)");
-
-    const line = d3.line()
-        .x(d => x(d.faith))
-        .y(d => y(d.value))
-        .curve(d3.curveCatmullRom.alpha(0.6));
 
     const pathNode = svg.append("path")
         .datum(chartData)
@@ -273,13 +276,49 @@ function drawLineChart() {
     pathNode
         .attr("stroke-dasharray", totalLength)
         .attr("stroke-dashoffset", totalLength)
-        .transition().duration(1500)
+        .transition()
+        .duration(1500)
+        .ease(d3.easeCubic)
         .attr("stroke-dashoffset", 0);
+
+    svg.selectAll(".dot")
+        .data(chartData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.faith))
+        .attr("cy", d => y(d.value))
+        .attr("r", 0)
+        .attr("fill", d => getColor(d))
+        .style("filter", "drop-shadow(0 0 6px #4af1ff)")
+        .transition()
+        .duration(1000)
+        .delay((d,i)=> 200*i)
+        .attr("r", 9);
+
+    svg.selectAll("circle")
+        .on("mousemove", (event, d) => {
+            d3.select(event.target)
+              .transition().duration(200)
+              .attr("r", 14)
+              .style("filter", "drop-shadow(0 0 15px #4af1ff)");
+
+            tooltip.style("display","block")
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
+        })
+        .on("mouseleave", function () {
+            d3.select(this)
+              .transition().duration(200)
+              .attr("r", 9)
+              .style("filter", "drop-shadow(0 0 6px #4af1ff)");
+            tooltip.style("display","none");
+        });
 }
 
 
 // =============================================================
-//  AREA CHART
+//  ★★★ CYBER PULSE AREA CHART（科技脉冲效果 B + 鼠标交互）★★★
 // =============================================================
 function drawArea() {
     clearChart();
@@ -293,13 +332,14 @@ function drawArea() {
         .domain([0,d3.max(chartData,d=>d.value)])
         .range([height-margin.bottom,margin.top]);
 
+    // Create gradient
     const defs = svg.append("defs");
     const grad = defs.append("linearGradient")
         .attr("id", "pulseGrad")
         .attr("x1", "0%").attr("x2", "0%")
         .attr("y1", "0%").attr("y2", "100%");
 
-    grad.append("stop").attr("offset", "0%").attr("stop-color", "rgba(120,200,255,0.55)");
+    grad.append("stop").attr("offset", "0%" ).attr("stop-color", "rgba(120,200,255,0.55)");
     grad.append("stop").attr("offset", "100%").attr("stop-color", "rgba(40,80,140,0.2)");
 
     const area = d3.area()
@@ -308,26 +348,89 @@ function drawArea() {
         .y1(d=>y(d.value))
         .curve(d3.curveCatmullRom.alpha(0.65));
 
-    svg.append("path")
+    const areaPath = svg.append("path")
         .datum(chartData)
         .attr("fill","url(#pulseGrad)")
         .attr("stroke","#4af1ff")
-        .attr("stroke-width",2)
+        .attr("stroke-width",2.5)
         .attr("d",area)
         .style("filter","drop-shadow(0 0 18px #4af1ff)");
+
+    // Fade-in animation
+    areaPath
+        .attr("opacity",0)
+        .transition()
+        .duration(1400)
+        .attr("opacity",1);
+
+    // Dots with hover tooltip
+    const dots = svg.selectAll(".dot")
+        .data(chartData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.faith))
+        .attr("cy", d => y(d.value))
+        .attr("r", 0)
+        .attr("fill", d => getColor(d))
+        .style("filter","drop-shadow(0 0 8px #4af1ff)")
+        .transition()
+        .delay((d,i)=>200*i)
+        .duration(600)
+        .attr("r", 10);
+
+    // Add mouse interaction AFTER dots are drawn
+    svg.selectAll("circle")
+        .on("mousemove", function(event, d) {
+            d3.select(this)
+                .transition().duration(150)
+                .attr("r", 15)
+                .style("filter", "drop-shadow(0 0 15px #4af1ff)");
+
+            tooltip.style("display","block")
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY - 20 + "px")
+                .html(`
+                    <strong>${d.faith}</strong><br>
+                    ${d.value} million followers
+                `);
+        })
+        .on("mouseleave", function(event, d) {
+            d3.select(this)
+                .transition().duration(200)
+                .attr("r", 10)
+                .style("filter", "drop-shadow(0 0 8px #4af1ff)");
+
+            tooltip.style("display","none");
+        });
+
+    // Ripple waves (keep)
+    chartData.forEach((d,i) => {
+        svg.append("circle")
+            .attr("cx", x(d.faith))
+            .attr("cy", y(d.value))
+            .attr("r", 0)
+            .attr("stroke", "#4af1ff55")
+            .attr("fill", "none")
+            .transition()
+            .delay(300*i + 200)
+            .duration(1200)
+            .attr("r", 35)
+            .attr("stroke-opacity", 0);
+    });
 }
 
 
-// ======================== BUTTON EVENTS ==========================
-drawBar();
+// ======================== BUTTONS ==========================
+drawBar();  // initial load
 
-document.querySelectorAll("#chartControls button").forEach(btn => {
-    btn.addEventListener("click", () => {
-        if (btn.dataset.type === "bar") drawBar();
-        if (btn.dataset.type === "line") drawLineChart();
-        if (btn.dataset.type === "area") drawArea();
+document.querySelectorAll("#chartControls button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        if (btn.dataset.type==="bar") drawBar();
+        if (btn.dataset.type==="line") drawLineChart();
+        if (btn.dataset.type==="area") drawArea();
     });
 });
+
 </script>
 
 </body>
