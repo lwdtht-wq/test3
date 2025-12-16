@@ -146,9 +146,13 @@ function getColor(d) {
     if (d.faith === "Echo Memory Cult") return colors.echo;
 }
 
-// ======================== SVG SETUP ==========================
-const width = 900, height = 430;
-const margin = { top: 40, right: 50, bottom: 60, left: 120 };
+// ======================== RESPONSIVE WIDTH ==========================
+// 自动根据容器宽度决定 SVG 宽度（防止溢出）
+const container = document.getElementById("neoChart");
+let width = container.clientWidth - 10;   // 动态宽度
+let height = 430;
+
+const margin = { top: 40, right: 40, bottom: 60, left: 120 };
 
 const svg = d3.select("#neoChart")
     .append("svg")
@@ -162,7 +166,7 @@ function clearChart() { svg.selectAll("*").remove(); }
 
 
 // =============================================================
-//  BAR CHART（保留你的版本）
+//  BAR CHART
 // =============================================================
 function drawBar() {
     clearChart();
@@ -176,6 +180,7 @@ function drawBar() {
         .range([margin.top, height - margin.bottom])
         .padding(0.3);
 
+    // Axes
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
@@ -186,7 +191,8 @@ function drawBar() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    const bars = svg.selectAll(".bar")
+    // Bars
+    svg.selectAll(".bar")
         .data(chartData)
         .enter()
         .append("rect")
@@ -217,13 +223,14 @@ function drawBar() {
               .transition().duration(200)
               .attr("width", x(d.value) - margin.left)
               .style("filter","none");
+
             tooltip.style("display","none");
         });
 }
 
 
 // =============================================================
-//  LINE CHART（保留你的发光线版本）
+//  LINE CHART（蓝色发光最终版）
 // =============================================================
 function drawLineChart() {
     clearChart();
@@ -237,6 +244,7 @@ function drawLineChart() {
         .domain([0, d3.max(chartData, d => d.value)])
         .range([height - margin.bottom, margin.top]);
 
+    // Axes
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
@@ -247,12 +255,6 @@ function drawLineChart() {
         .call(d3.axisLeft(y))
         .attr("color", "#88c7ff");
 
-    // Line generator
-    const line = d3.line()
-        .x(d => x(d.faith))
-        .y(d => y(d.value))
-        .curve(d3.curveCatmullRom.alpha(0.6));
-
     // Gradient glow
     const gradient = svg.append("defs")
         .append("linearGradient")
@@ -262,6 +264,11 @@ function drawLineChart() {
 
     gradient.append("stop").attr("offset", "0%").attr("stop-color", "rgb(120,200,255)");
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "rgb(50,140,255)");
+
+    const line = d3.line()
+        .x(d => x(d.faith))
+        .y(d => y(d.value))
+        .curve(d3.curveCatmullRom.alpha(0.6));
 
     const pathNode = svg.append("path")
         .datum(chartData)
@@ -276,12 +283,10 @@ function drawLineChart() {
     pathNode
         .attr("stroke-dasharray", totalLength)
         .attr("stroke-dashoffset", totalLength)
-        .transition()
-        .duration(1500)
-        .ease(d3.easeCubic)
+        .transition().duration(1500)
         .attr("stroke-dashoffset", 0);
 
-    svg.selectAll(".dot")
+    svg.selectAll("circle")
         .data(chartData)
         .enter()
         .append("circle")
@@ -289,36 +294,14 @@ function drawLineChart() {
         .attr("cy", d => y(d.value))
         .attr("r", 0)
         .attr("fill", d => getColor(d))
-        .style("filter", "drop-shadow(0 0 6px #4af1ff)")
         .transition()
         .duration(1000)
-        .delay((d,i)=> 200*i)
         .attr("r", 9);
-
-    svg.selectAll("circle")
-        .on("mousemove", (event, d) => {
-            d3.select(event.target)
-              .transition().duration(200)
-              .attr("r", 14)
-              .style("filter", "drop-shadow(0 0 15px #4af1ff)");
-
-            tooltip.style("display","block")
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY - 20 + "px")
-                .html(`<strong>${d.faith}</strong><br>${d.value} million`);
-        })
-        .on("mouseleave", function () {
-            d3.select(this)
-              .transition().duration(200)
-              .attr("r", 9)
-              .style("filter", "drop-shadow(0 0 6px #4af1ff)");
-            tooltip.style("display","none");
-        });
 }
 
 
 // =============================================================
-//  ★★★ CYBER PULSE AREA CHART（科技脉冲效果 B + 鼠标交互）★★★
+//  AREA CHART（保持你的效果）
 // =============================================================
 function drawArea() {
     clearChart();
@@ -332,14 +315,13 @@ function drawArea() {
         .domain([0,d3.max(chartData,d=>d.value)])
         .range([height-margin.bottom,margin.top]);
 
-    // Create gradient
     const defs = svg.append("defs");
     const grad = defs.append("linearGradient")
         .attr("id", "pulseGrad")
         .attr("x1", "0%").attr("x2", "0%")
         .attr("y1", "0%").attr("y2", "100%");
 
-    grad.append("stop").attr("offset", "0%" ).attr("stop-color", "rgba(120,200,255,0.55)");
+    grad.append("stop").attr("offset", "0%").attr("stop-color", "rgba(120,200,255,0.55)");
     grad.append("stop").attr("offset", "100%").attr("stop-color", "rgba(40,80,140,0.2)");
 
     const area = d3.area()
@@ -348,89 +330,26 @@ function drawArea() {
         .y1(d=>y(d.value))
         .curve(d3.curveCatmullRom.alpha(0.65));
 
-    const areaPath = svg.append("path")
+    svg.append("path")
         .datum(chartData)
         .attr("fill","url(#pulseGrad)")
         .attr("stroke","#4af1ff")
-        .attr("stroke-width",2.5)
+        .attr("stroke-width",2)
         .attr("d",area)
         .style("filter","drop-shadow(0 0 18px #4af1ff)");
-
-    // Fade-in animation
-    areaPath
-        .attr("opacity",0)
-        .transition()
-        .duration(1400)
-        .attr("opacity",1);
-
-    // Dots with hover tooltip
-    const dots = svg.selectAll(".dot")
-        .data(chartData)
-        .enter()
-        .append("circle")
-        .attr("cx", d => x(d.faith))
-        .attr("cy", d => y(d.value))
-        .attr("r", 0)
-        .attr("fill", d => getColor(d))
-        .style("filter","drop-shadow(0 0 8px #4af1ff)")
-        .transition()
-        .delay((d,i)=>200*i)
-        .duration(600)
-        .attr("r", 10);
-
-    // Add mouse interaction AFTER dots are drawn
-    svg.selectAll("circle")
-        .on("mousemove", function(event, d) {
-            d3.select(this)
-                .transition().duration(150)
-                .attr("r", 15)
-                .style("filter", "drop-shadow(0 0 15px #4af1ff)");
-
-            tooltip.style("display","block")
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY - 20 + "px")
-                .html(`
-                    <strong>${d.faith}</strong><br>
-                    ${d.value} million followers
-                `);
-        })
-        .on("mouseleave", function(event, d) {
-            d3.select(this)
-                .transition().duration(200)
-                .attr("r", 10)
-                .style("filter", "drop-shadow(0 0 8px #4af1ff)");
-
-            tooltip.style("display","none");
-        });
-
-    // Ripple waves (keep)
-    chartData.forEach((d,i) => {
-        svg.append("circle")
-            .attr("cx", x(d.faith))
-            .attr("cy", y(d.value))
-            .attr("r", 0)
-            .attr("stroke", "#4af1ff55")
-            .attr("fill", "none")
-            .transition()
-            .delay(300*i + 200)
-            .duration(1200)
-            .attr("r", 35)
-            .attr("stroke-opacity", 0);
-    });
 }
 
 
-// ======================== BUTTONS ==========================
-drawBar();  // initial load
+// ======================== BUTTON EVENTS ==========================
+drawBar();
 
-document.querySelectorAll("#chartControls button").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-        if (btn.dataset.type==="bar") drawBar();
-        if (btn.dataset.type==="line") drawLineChart();
-        if (btn.dataset.type==="area") drawArea();
+document.querySelectorAll("#chartControls button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        if (btn.dataset.type === "bar") drawBar();
+        if (btn.dataset.type === "line") drawLineChart();
+        if (btn.dataset.type === "area") drawArea();
     });
 });
-
 </script>
 
 </body>
